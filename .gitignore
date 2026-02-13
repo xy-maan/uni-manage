@@ -1,0 +1,45 @@
+# --- General / IDE / OS ---
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/
+*.swp
+*.bak
+
+# --- Django / Backend (API Focused) ---
+# Recursive Python cache
+**/__pycache__/
+**/*.py[cod]
+**/*$py.class
+
+# Environment and Secrets
+backend/venv/
+backend/env/
+backend/.env
+backend/.env.local
+
+# Database and Media
+backend/db.sqlite3
+backend/media/
+backend/static/
+backend/staticfiles/
+
+# --- React / Frontend ---
+# Dependencies and Cache
+**/node_modules/
+**/.cache/
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+
+# Production Build Artifacts
+frontend/build/
+frontend/dist/
+
+# Frontend Environment Variables (Comprehensive)
+frontend/.env
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
