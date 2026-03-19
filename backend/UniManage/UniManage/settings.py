@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'dj_rest_auth',
+    'dj_rest_auth.registration',
 
     # Allauth - Social OAuth
     'allauth',
@@ -122,7 +123,12 @@ REST_FRAMEWORK = {
 # 2. dj-rest-auth JWT Configuration
 REST_AUTH = {
     'USE_JWT': True,
+    'JWT_AUTH_COOKIE': 'uni-manage-auth',
+    'JWT_AUTH_REFRESH_COOKIE': 'uni-manage-refresh',
+    'JWT_AUTH_HTTPONLY': False,  # Allow tokens in response body (not just cookies)
+    'JWT_AUTH_RETURN_EXPIRATION': True,
     'TOKEN_MODEL': None,  # Disable token authentication, use JWT only
+    'SESSION_LOGIN': False,
 }
 
 # 3. SimpleJWT Specifics (Matches the logic we discussed)
@@ -178,3 +184,29 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 SITE_ID = 1
+
+# Django Allauth Configuration
+ACCOUNT_EMAIL_VERIFICATION = 'none'  # No email verification needed for social auth
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_USERNAME_REQUIRED = False
+SOCIALACCOUNT_AUTO_SIGNUP = True  # Automatically create account on social login
+SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'  # Skip email verification for social accounts
+
+# Social account providers settings
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    },
+    'microsoft': {
+        'SCOPE': [
+            'User.Read',
+        ],
+    }
+}
