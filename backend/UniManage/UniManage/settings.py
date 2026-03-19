@@ -55,7 +55,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.microsoft',
 
     # Your Apps
-    'accounts',
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -108,7 +108,7 @@ DATABASES = {
 }
 
 
-AUTH_USER_MODEL = 'accounts.User'
+AUTH_USER_MODEL = 'users.User'
 
 # 1. API Auth Configuration
 REST_FRAMEWORK = {
@@ -185,13 +185,18 @@ STATIC_URL = 'static/'
 
 SITE_ID = 1
 
-# Django Allauth Configuration
-ACCOUNT_EMAIL_VERIFICATION = 'none'  # No email verification needed for social auth
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_USERNAME_REQUIRED = False
-SOCIALACCOUNT_AUTO_SIGNUP = True  # Automatically create account on social login
-SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'  # Skip email verification for social accounts
+
+ACCOUNT_LOGIN_METHODS = {'email'}
+ACCOUNT_SIGNUP_FIELDS = ['email']
+
+# Verification & Signup flow
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+SOCIALACCOUNT_AUTO_SIGNUP = True
+SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'
+
+# Essential for Social Auth
+SOCIALACCOUNT_QUERY_EMAIL = True
+SOCIALACCOUNT_STORE_TOKENS = True # Useful if you need to call Google/MS APIs later
 
 # Social account providers settings
 SOCIALACCOUNT_PROVIDERS = {
