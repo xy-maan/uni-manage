@@ -1,20 +1,95 @@
 from rest_framework import status, generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from dj_rest_auth.registration.views import SocialLoginView
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
-from allauth.socialaccount.providers.microsoft.views import MicrosoftGraphOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from django.conf import settings
+from django.shortcuts import redirect
+from django.http import HttpResponseRedirect
+from urllib.parse import urlencode
+import requests
 
 from .models import StudentProfile, SupervisorProfile, User
 from .serializers import StudentProfileSerializer, SupervisorProfileSerializer, UserSerializer
 
 class GoogleLogin(SocialLoginView):
     adapter_class = GoogleOAuth2Adapter
-    callback_url = "http://localhost:3000/login/callback"
+    callback_url = settings.GOOGLE_CALLBACK_URL
     client_class = OAuth2Client
+
+class GoogleAuthRedirect(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        google_auth_url = "https://accounts.google.com/o/oauth2/v2/auth"
+        params = {
+            'client_id': settings.GOOGLE_CLIENT_ID,
+            'redirect_uri': settings.GOOGLE_CALLBACK_URL,
+            'response_type': 'code',
+            'scope': 'openid email profile',
+            'access_type': 'online',
+            'prompt': 'select_account',
+        }
+        url = f"{google_auth_url}?{urlencode(params)}"
+        return HttpResponseRedirect(url)
+
+class GoogleAuthCallback(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        code = request.GET.get('code')
+        error = request.GET.get('error')
+
+        if error:
+            return redirect(f"{settings.FRONTEND_URL}/auth/error?error={error}")
+
+        if not code:
+            return redirect(f"{settings.FRONTEND_URL}/auth/error?error=no_code")
+
+        try:
+            token_response = requests.post(
+                'https://oauth2.googleapis.com/token',
+                data={
+                    'code': code,
+                    'client_id': settings.GOOGLE_CLIENT_ID,
+                    'client_secret': settings.GOOGLE_CLIENT_SECRET,
+                    'redirect_uri': settings.GOOGLE_CALLBACK_URL,
+                    'grant_type': 'authorization_code',
+                },
+                timeout=10
+            )
+            token_data = token_response.json()
+
+            if 'error' in token_data:
+                return redirect(f"{settings.FRONTEND_URL}/auth/error?error={token_data['error']}")
+
+            access_token = token_data.get('access_token')
+            id_token = token_data.get('id_token')
+
+            login_response = requests.post(
+                request.build_absolute_uri('/api/users/login/google/'),
+                json={
+                    'access_token': access_token,
+                    'id_token': id_token,
+                },
+                timeout=10
+            )
+
+            if login_response.status_code == 200:
+                jwt_data = login_response.json()
+                params = {
+                    'access_token': jwt_data.get('access'),
+                    'refresh_token': jwt_data.get('refresh'),
+                }
+                return redirect(f"{settings.FRONTEND_URL}/auth/success?{urlencode(params)}")
+            else:
+                error_detail = login_response.json().get('detail', 'login_failed')
+                return redirect(f"{settings.FRONTEND_URL}/auth/error?error={error_detail}")
+
+        except requests.RequestException:
+            return redirect(f"{settings.FRONTEND_URL}/auth/error?error=network_error")
 
 class UserStatusView(APIView):
     permission_classes = [IsAuthenticated]
