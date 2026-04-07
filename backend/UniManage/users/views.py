@@ -11,25 +11,16 @@ from django.conf import settings
 from .models import StudentProfile, SupervisorProfile, User
 from .serializers import StudentProfileSerializer, SupervisorProfileSerializer, UserSerializer
 
-# 1. GOOGLE & MICROSOFT LOGIN VIEWS
 class GoogleLogin(SocialLoginView):
     adapter_class = GoogleOAuth2Adapter
-    callback_url = "http://localhost:3000/login/callback" # Your React URL
-    client_class = OAuth2Client
-
-class MicrosoftLogin(SocialLoginView):
-    adapter_class = MicrosoftGraphOAuth2Adapter
     callback_url = "http://localhost:3000/login/callback"
     client_class = OAuth2Client
 
-# 2. CHECK USER STATUS VIEW
-# React calls this after login to know where to redirect the user
 class UserStatusView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         user = request.user
-        # If role is empty, they haven't completed the registration step yet
         is_complete = user.role != ""
         
         return Response({
@@ -39,14 +30,12 @@ class UserStatusView(APIView):
             "full_name": user.get_full_name()
         })
 
-# 3. COMPLETE PROFILE VIEW
-# This is where they submit the Major, Academic Level, or Department
 class CompleteProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
         user = request.user
-        role = request.data.get('role') # Expecting 'STUDENT' or 'SUPERVISOR'
+        role = request.data.get('role')
         
         if user.role != "":
             return Response({"error": "Profile already completed"}, status=status.HTTP_400_BAD_REQUEST)
@@ -54,32 +43,28 @@ class CompleteProfileView(APIView):
         if role not in [User.Role.STUDENT, User.Role.SUPERVISOR]:
             return Response({"error": "Invalid role selected"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Update the base User model
         user.role = role
         user.save()
 
-        # Handle Student Logic
         if role == User.Role.STUDENT:
             StudentProfile.objects.create(
                 user=user,
                 major=request.data.get('major'),
                 academic_level=request.data.get('academic_level'),
-                skills=request.data.get('skills', []), # JSON list from React tags
+                skills=request.data.get('skills', []),
                 gpa=request.data.get('gpa', 0.0)
             )
             return Response({"message": "Student profile created successfully"}, status=status.HTTP_201_CREATED)
 
-        # Handle Supervisor Logic
         elif role == User.Role.SUPERVISOR:
             SupervisorProfile.objects.create(
                 user=user,
                 is_professor=request.data.get('is_professor', True),
                 department=request.data.get('department'),
-                expertise=request.data.get('expertise', []) # JSON list
+                expertise=request.data.get('expertise', [])
             )
             return Response({"message": "Supervisor profile created successfully"}, status=status.HTTP_201_CREATED)
 
-# 4. PROFILE DETAIL VIEWS
 class StudentProfileDetail(generics.RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = StudentProfileSerializer

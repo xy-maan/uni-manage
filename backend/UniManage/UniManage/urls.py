@@ -3,6 +3,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('users/', include('allauth.urls')),  # Allauth URLs (required for OAuth flow)
+    path('users/', include('allauth.urls')),
     path('api/users/', include('users.urls')),
 ]
