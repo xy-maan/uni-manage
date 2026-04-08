@@ -72,15 +72,16 @@ WSGI_APPLICATION = 'UniManage.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'mssql',
-        'NAME': 'UniManageDB',
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': 'localhost',
-        'PORT': '1433',
+        'ENGINE': os.getenv('DB_ENGINE', 'mssql'),
+        'NAME': os.getenv('DB_NAME', 'UniManageDB'),
+        'USER': os.getenv('DB_USER', ''),
+        'PASSWORD': os.getenv('DB_PASSWORD', ''),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'PORT': os.getenv('DB_PORT', '1433'),
         'OPTIONS': {
-            'driver': 'ODBC Driver 17 for SQL Server',
+            'driver': os.getenv('DB_DRIVER', 'ODBC Driver 17 for SQL Server'),
             'long_data_int_precision': True,
+            'trusted_connection': os.getenv('DB_TRUSTED_CONNECTION', 'yes'),
         },
     }
 }
