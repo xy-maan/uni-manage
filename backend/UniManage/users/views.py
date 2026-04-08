@@ -96,7 +96,13 @@ class UserStatusView(APIView):
 
     def get(self, request):
         user = request.user
-        is_complete = user.role != ""
+        
+        if user.role == User.Role.STUDENT:
+            is_complete = hasattr(user, 'student_profile')
+        elif user.role == User.Role.SUPERVISOR:
+            is_complete = hasattr(user, 'supervisor_profile')
+        else:
+            is_complete = False
         
         return Response({
             "is_complete": is_complete,
@@ -110,16 +116,11 @@ class CompleteProfileView(APIView):
 
     def post(self, request):
         user = request.user
-        role = request.data.get('role')
         
-        if user.role != "":
+        if hasattr(user, 'student_profile') or hasattr(user, 'supervisor_profile'):
             return Response({"error": "Profile already completed"}, status=status.HTTP_400_BAD_REQUEST)
 
-        if role not in [User.Role.STUDENT, User.Role.SUPERVISOR]:
-            return Response({"error": "Invalid role selected"}, status=status.HTTP_400_BAD_REQUEST)
-
-        user.role = role
-        user.save()
+        role = user.role
 
         if role == User.Role.STUDENT:
             StudentProfile.objects.create(
