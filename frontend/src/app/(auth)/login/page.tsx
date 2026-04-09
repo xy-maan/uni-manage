@@ -1,17 +1,47 @@
+
+import ButtonAOuth from '@/app/_Components/Auth/ButtonAOuth/ButtonAOuth'
+import RoleSwitcher from '@/app/_Components/Auth/RoleSwitcher/RoleSwitcher'
+import Link from 'next/link'
 import React from 'react'
-
-export default function Login() {
+export type roleType={
+    role?:string
+}
+export default function LoginPage({ role = 'student' }:  roleType ) {
   return (
-    <div className=' min-h-screen flex flex-col '>
-<div className="w-1/2 mx-auto bg-(--card) flex flex-col items-start justify-start p-4 rounded-xl border border-(--border) ">
-<div className="">
-  <div className="">
-  <h3 className='text-foreground '>sign in</h3>
-<p className='text-muted-foreground'>Choose your account type to continue</p>
-</div>
-</div>
-</div>
-
+      <div className=" w-full max-w-md mt-8 min-h-[88vh]">
+      <div className="lg:w-full  md:w-3/4 w-full mx-auto bg-card flex flex-col items-start justify-start rounded-xl border border-border ">
+        <div className="w-full gap-6 flex flex-col ">
+          <div className="flex flex-col items-start px-6 pt-6 gap-1.5 ">
+            <h4 className="text-foreground ">Sign In</h4>
+            <p className="text-muted-foreground">
+             Choose your account type to continue
+            </p>
+          </div>
+          <div className="px-6 pb-6">
+                 <RoleSwitcher mode="login" role={role} />
+              <div className="mb-4 relative">
+              <div className="absolute inset-0 flex items-center ">
+                <div className="bg-border  w-full h-px "></div>
+              </div>
+              <div className="relative flex justify-center">
+                <span className="bg-background px-2 text-muted-foreground text-xs uppercase">
+                Or continue with
+                </span>
+              </div>
+            </div>
+            <div className="">
+             <ButtonAOuth/>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+        <div className="mt-6">
+          <p className="text-center text-sm text-muted-foreground ">Already have an account?<Link  href={`/register/${role}`}>
+         
+   <span className='text-primary hover:underline font-medium'>Sign Up</span></Link></p>
+        </div>
+      
     </div>
-  )
+    )
 }
