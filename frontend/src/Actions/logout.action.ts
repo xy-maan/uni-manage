@@ -17,6 +17,7 @@ export async function logoutHandle(){
     });
     const result = await res.json();
     clearTokens()
+
     console.log(result);
       return {...result, ok: res.ok,}
 };

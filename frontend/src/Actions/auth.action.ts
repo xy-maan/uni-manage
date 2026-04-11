@@ -4,7 +4,7 @@ export async function GetUserStatus(token: string) {
          method: 'GET',
         headers: { Authorization: `Bearer ${token}` },
       });
-
+      
       const payload = await res.json();
   return{
     payload,

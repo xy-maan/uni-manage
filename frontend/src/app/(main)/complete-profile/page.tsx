@@ -1,7 +1,36 @@
-import React from 'react'
+"use client"
+import { GetUserStatus } from '@/Actions/auth.action'
+import RegisterStudent from '@/app/_Components/Auth/Forms/RegisterForms/RegisterStudent/RegisterStudent'
+import RegisterSupervisor from '@/app/_Components/Auth/Forms/RegisterForms/RegisterSupervisor/RegisterSupervisor'
+import RoleSwitcher from '@/app/_Components/Auth/RoleSwitcher/RoleSwitcher'
+import { getAccessToken } from '@/lib/cookies'
+import React, { useEffect, useState } from 'react'
 
 export default function page() {
-  return (
-    <div>page</div>
-  )
+  const [role, setRole] = useState<string | null>(null);
+ async function getRole(){
+  const token =await getAccessToken()
+  const { payload }= await GetUserStatus(token)
+  console.log(payload.role);
+  setRole(payload.role)
+ }
+ useEffect(() => {
+  getRole()
+ }, [])
+ 
+  return <div className="w-full max-w-md mt-8 min-h-[88vh] ">
+      <div className="lg:w-full  md:w-3/4 w-full mx-auto bg-card flex flex-col items-start justify-start rounded-xl border border-border ">
+        <div className="w-full gap-6  ">
+          <div className=" px-6 pt-6 gap-1.5">
+          <div className="flex items-center justify-center">  <h4 className="text-foreground text-center "> Please Complete Your Profile</h4></div>
+            <div className="border-b border-input mt-5"></div>
+
+          </div>
+<div className="px-6 pb-6">
+{role=="STUDENT"&&<RegisterStudent/>}
+{role=="SUPERVISOR"&&<RegisterSupervisor/>}
+</div>
+  </div>
+  </div>
+  </div>
 }

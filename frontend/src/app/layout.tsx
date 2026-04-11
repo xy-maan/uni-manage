@@ -7,6 +7,7 @@ import TanStackProvider from "./Providers/TanStackProvider";
 import { Toaster } from "sonner";
 
 import ParentProvider from "./Providers/ParentProvider";
+import TokenContextProvider from "./Providers/TokenContext";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -35,12 +36,14 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="light">
               <TanStackProvider>
           <div className="min-h-screen bg-linear-to-br from-primary/5 via-secondary/5 to-background">
+            <TokenContextProvider>
             <Navbar />
-            <main className="flex flex-1 items-center bg-background justify-center mx-auto ">
-              <ParentProvider>
+            <main className="w-full flex flex-1 flex-col items-center bg-background">
+                 <ParentProvider>
                 {children}
                 </ParentProvider>
             </main>
+              </TokenContextProvider>
           </div>
                   </TanStackProvider>
         </ThemeProvider>

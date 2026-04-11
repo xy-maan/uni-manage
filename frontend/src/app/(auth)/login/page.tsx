@@ -8,7 +8,7 @@ export type roleType={
 }
 export default function LoginPage({ role = 'student' }:  roleType ) {
   return (
-      <div className=" w-full max-w-md mt-8 min-h-[88vh]">
+      <div className=" w-full max-w-md mt-8 min-h-[88vh] ">
       <div className="lg:w-full  md:w-3/4 w-full mx-auto bg-card flex flex-col items-start justify-start rounded-xl border border-border ">
         <div className="w-full gap-6 flex flex-col ">
           <div className="flex flex-col items-start px-6 pt-6 gap-1.5 ">
@@ -18,7 +18,7 @@ export default function LoginPage({ role = 'student' }:  roleType ) {
             </p>
           </div>
           <div className="px-6 pb-6">
-                 <RoleSwitcher mode="login" role={role} />
+                 {/* <RoleSwitcher mode="login" role={role} /> */}
               <div className="mb-4 relative">
               <div className="absolute inset-0 flex items-center ">
                 <div className="bg-border  w-full h-px "></div>
@@ -41,7 +41,7 @@ export default function LoginPage({ role = 'student' }:  roleType ) {
          
    <span className='text-primary hover:underline font-medium'>Sign Up</span></Link></p>
         </div>
-      
+
     </div>
     )
 }
