@@ -1,11 +1,8 @@
 import { getToken } from 'next-auth/jwt'
 import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
-import { getAccessToken } from './lib/cookies'
- 
-// This function can be marked `async` if using `await` inside
+import type { NextRequest } from 'next/server' 
 export async function proxy(request: NextRequest) {
-    const token = request.cookies.get("accessToken")?.value;
+    const token = request.cookies.get("access_token")?.value;
    if(token){
     if(request.nextUrl.pathname==="/login"){
       return NextResponse.redirect(new URL('/', request.url))

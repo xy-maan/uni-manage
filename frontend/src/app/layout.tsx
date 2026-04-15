@@ -3,11 +3,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "./_Components/Navbar/Navbar";
 import { ThemeProvider } from "next-themes";
-import TanStackProvider from "./Providers/TanStackProvider";
 import { Toaster } from "sonner";
-
 import ParentProvider from "./Providers/ParentProvider";
-import TokenContextProvider from "./Providers/TokenContext";
+// import UserDataContext from "./Providers/UserDataContext";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -33,20 +31,18 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning
       >
-        <ThemeProvider attribute="class" defaultTheme="light">
-              <TanStackProvider>
-          <div className="min-h-screen bg-linear-to-br from-primary/5 via-secondary/5 to-background">
-            <TokenContextProvider>
-            <Navbar />
-            <main className="w-full flex flex-1 flex-col items-center bg-background">
                  <ParentProvider>
+        <ThemeProvider attribute="class" defaultTheme="light">
+          <div className="min-h-screen bg-linear-to-br from-primary/5 via-secondary/5 to-background">
+              {/* <UserDataContext> */}
+            <Navbar />
+            <main className="w-full flex flex-1 flex-col items-center bg-background min-h-screen ">
                 {children}
-                </ParentProvider>
             </main>
-              </TokenContextProvider>
+              {/* </UserDataContext> */}
           </div>
-                  </TanStackProvider>
         </ThemeProvider>
+                </ParentProvider>
       </body>
     </html>
   );

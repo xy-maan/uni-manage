@@ -1,0 +1,34 @@
+'use client';
+import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
+export default function AuthError() {
+	const searchParams = useSearchParams();
+	const error = searchParams.get('error');
+
+	const errorMessages: Record<string, string> = {
+		access_denied: 'You denied access to your Google account.',
+		no_code: 'No authorization code received from Google.',
+		network_error: 'Network error occurred. Please try again.',
+		login_failed: 'Failed to create your account. Please try again.',
+        invalid_email: 'You must use a university email (.edu.eg) to register.',
+		default: 'An error occurred during authentication.',
+	};
+
+	const message = errorMessages[error || ''] || errorMessages['default'];
+//  toast.error(message, { position: "top-center", duration: 2000 });
+	return (
+		<div className=' mt-8  max-w-md min-h-[88vh] w-full'>
+			<div className="flex flex-col  lg:w-full  md:w-3/4 w-full p-4 bg-card mx-auto justify-center rounded-xl border border-border">
+                <h1 className=' text-red-400 font-semibold my-3'>Login Error</h1>
+			<p className='text-muted-foreground text-sm'>{message}</p>
+		<Link href="/login" className=''>
+        <Button className="mt-5 bg-transparent text-foreground cursor-pointer font-medium hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 w-1/2 items-center justify-start ">	
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-arrow-left size-4"><path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path></svg>
+        Try again</Button>
+        </Link>
+            </div>
+		</div>
+	);
+}

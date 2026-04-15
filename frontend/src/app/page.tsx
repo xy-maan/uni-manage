@@ -8,7 +8,8 @@ import FeatureHome from "./_Components/FeatureHome/FeatureHome";
 import BenefitHome from "./_Components/BenefitHome/BenefitHome";
 import AcademicHome from "./_Components/AcademicHome/AcademicHome";
 import Footer from "./_Components/Footer/Footer";
-export default function Home() {
+import getAuthData from "@/utilities/getAuthData";
+export default async function Home() {
   return (
     <div className="flex flex-col w-full">
       <div  className="section-home relative flex items-center justify-center  bg-linear-to-br from-primary/5 via-secondary/5 to-background py-20 lg:py-32 overflow-hidden ">
@@ -186,7 +187,7 @@ export default function Home() {
                       strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      className="lucide lucideCircle-check h-6 w-6 text-white"
+                      className="lucide lucideCircle-check size-6 text-white"
                     >
                       <circle cx="12" cy="12" r="10"></circle>
                       <path d="m9 12 2 2 4-4"></path>

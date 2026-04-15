@@ -29,7 +29,7 @@ export default function BenefitHome() {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="lucide lucide-shield h-6 w-6 text-white"
+                className="lucide lucide-shield size-6 text-white"
               >
                 <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path>
               </svg>
@@ -65,7 +65,7 @@ export default function BenefitHome() {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="lucide lucide-circle-check h-4 w-4 text-success"
+                className="lucide lucide-circle-check size-4 text-success"
               >
                 <circle cx="12" cy="12" r="10"></circle>
                 <path d="m9 12 2 2 4-4"></path>
@@ -88,7 +88,7 @@ export default function BenefitHome() {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="lucide lucide-circle-check h-4 w-4 text-success"
+                className="lucide lucide-circle-check size-4 text-success"
               >
                 <circle cx="12" cy="12" r="10"></circle>
                 <path d="m9 12 2 2 4-4"></path>
@@ -108,7 +108,7 @@ export default function BenefitHome() {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="lucide lucide-circle-check h-4 w-4 text-success"
+                className="lucide lucide-circle-check size-4 text-success"
               >
                 <circle cx="12" cy="12" r="10"></circle>
                 <path d="m9 12 2 2 4-4"></path>
@@ -128,7 +128,7 @@ export default function BenefitHome() {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="lucide lucide-circle-check h-4 w-4 text-success"
+                className="lucide lucide-circle-check size-4 text-success"
               >
                 <circle cx="12" cy="12" r="10"></circle>
                 <path d="m9 12 2 2 4-4"></path>
@@ -148,7 +148,7 @@ export default function BenefitHome() {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="lucide lucide-circle-check h-4 w-4 text-success"
+                className="lucide lucide-circle-check size-4 text-success"
               >
                 <circle cx="12" cy="12" r="10"></circle>
                 <path d="m9 12 2 2 4-4"></path>
@@ -168,7 +168,7 @@ export default function BenefitHome() {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="lucide lucide-circle-check h-4 w-4 text-success"
+                className="lucide lucide-circle-check size-4 text-success"
               >
                 <circle cx="12" cy="12" r="10"></circle>
                 <path d="m9 12 2 2 4-4"></path>

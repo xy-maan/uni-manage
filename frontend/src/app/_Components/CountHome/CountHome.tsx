@@ -12,7 +12,7 @@ const countData = [
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="lucide lucide-users h-6 w-6 text-primary"
+        className="lucide lucide-users size-6 text-primary"
       >
         <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
         <circle cx="9" cy="7" r="4"></circle>
@@ -35,7 +35,7 @@ const countData = [
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="lucide lucide-building2 lucide-building-2 h-6 w-6 text-primary"
+        className="lucide lucide-building2 lucide-building-2 size-6 text-primary"
       >
         <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"></path>
         <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"></path>
@@ -61,7 +61,7 @@ const countData = [
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="lucide lucide-award h-6 w-6 text-primary"
+        className="lucide lucide-award size-6 text-primary"
       >
         <path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"></path>
         <circle cx="12" cy="8" r="6"></circle>
@@ -82,7 +82,7 @@ const countData = [
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="lucide lucide-trending-up h-6 w-6 text-primary"
+        className="lucide lucide-trending-up size-6 text-primary"
       >
         <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
         <polyline points="16 7 22 7 22 13"></polyline>

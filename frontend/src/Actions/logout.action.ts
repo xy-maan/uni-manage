@@ -1,10 +1,14 @@
 "use server"
 import { clearTokens, getAccessToken, getRefreshToken } from "@/lib/cookies";
+import { Logout } from "@/types/logout";
+import getAuthData from "@/utilities/getAuthData";
 import { getCookie } from "cookies-next";
-export async function logoutHandle(){
+export async function logoutAction(){
   const access_token =await getAccessToken();
   const refresh_token =await getRefreshToken();
-    if (!access_token || !refresh_token) {
+   const tokens=await getAuthData()
+
+    if (!access_token || !refresh_token|| !tokens) {
    throw new Error("No tokens found");
   }
    const res= await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/logout/`, {
@@ -15,9 +19,8 @@ export async function logoutHandle(){
       },
       body: JSON.stringify({ refresh: refresh_token }),
     });
-    const result = await res.json();
+    const payload:Logout = await res.json();
     clearTokens()
-
-    console.log(result);
-      return {...result, ok: res.ok,}
+      return {    payload,
+    ok: res.ok,}
 };

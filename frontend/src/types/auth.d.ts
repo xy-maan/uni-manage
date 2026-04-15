@@ -1,30 +1,6 @@
-import "next-auth"
-import "next-auth/jwt"
+import { schemaStudent } from "@/schemas/schemaStudent/Student.schema"
+import { schemaSupervisor } from "@/schemas/schemaSupervisor/Supervisor.schema"
+import {z} from "zod"
 
-declare module "next-auth" {
-  interface Session {
-    backendAccessToken: string
-    backendRefreshToken: string
-    backendError?: string
-    user: {
-      pk: number
-      email: string
-      first_name: string
-      last_name: string
-    }
-  }
-}
-
-declare module "next-auth/jwt" {
-  interface JWT {
-    backendAccessToken?: string
-    backendRefreshToken?: string
-    backendError?: string
-    user?: {
-      pk: number
-      email: string
-      first_name: string
-      last_name: string
-    }
-  }
-}
+export type StudentFormType=z.infer<typeof schemaStudent>
+export type SupervisorFormType=z.infer<typeof schemaSupervisor>

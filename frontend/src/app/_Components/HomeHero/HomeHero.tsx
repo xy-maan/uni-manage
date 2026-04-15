@@ -177,7 +177,7 @@ export default function HomeHero() {
                         strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        className="lucide lucideCircle-check h-6 w-6 text-white"
+                        className="lucide lucideCircle-check size-6 text-white"
                       >
                         <circle cx="12" cy="12" r="10"></circle>
                         <path d="m9 12 2 2 4-4"></path>

@@ -42,7 +42,7 @@ export default function AcademicHome() {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="lucide lucide-circle-check h-4 w-4 text-success mt-0.5"
+                className="lucide lucide-circle-check size-4 text-success mt-0.5"
               >
                 <circle cx="12" cy="12" r="10"></circle>
                 <path d="m9 12 2 2 4-4"></path>
@@ -60,7 +60,7 @@ export default function AcademicHome() {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="lucide lucide-circle-check h-4 w-4 text-success mt-0.5"
+                className="lucide lucide-circle-check size-4 text-success mt-0.5"
               >
                 <circle cx="12" cy="12" r="10"></circle>
                 <path d="m9 12 2 2 4-4"></path>
@@ -78,7 +78,7 @@ export default function AcademicHome() {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="lucide lucide-circle-check h-4 w-4 text-success mt-0.5"
+                className="lucide lucide-circle-check size-4 text-success mt-0.5"
               >
                 <circle cx="12" cy="12" r="10"></circle>
                 <path d="m9 12 2 2 4-4"></path>
@@ -96,7 +96,7 @@ export default function AcademicHome() {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="lucide lucide-circle-check h-4 w-4 text-success mt-0.5"
+                className="lucide lucide-circle-check size-4 text-success mt-0.5"
               >
                 <circle cx="12" cy="12" r="10"></circle>
                 <path d="m9 12 2 2 4-4"></path>
@@ -105,7 +105,7 @@ export default function AcademicHome() {
             </div>
           </div>
 <Link href="/login">           <Button className="w-full text-center">Get Started
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-right ml-2 h-4 w-4"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-right ml-2 size-4"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
         </Button></Link>
         </CardContent>
       </Card>
@@ -145,7 +145,7 @@ export default function AcademicHome() {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="lucide lucide-circle-check h-4 w-4 text-success mt-0.5"
+                className="lucide lucide-circle-check size-4 text-success mt-0.5"
               >
                 <circle cx="12" cy="12" r="10"></circle>
                 <path d="m9 12 2 2 4-4"></path>
@@ -163,7 +163,7 @@ export default function AcademicHome() {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="lucide lucide-circle-check h-4 w-4 text-success mt-0.5"
+                className="lucide lucide-circle-check size-4 text-success mt-0.5"
               >
                 <circle cx="12" cy="12" r="10"></circle>
                 <path d="m9 12 2 2 4-4"></path>
@@ -181,7 +181,7 @@ export default function AcademicHome() {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="lucide lucide-circle-check h-4 w-4 text-success mt-0.5"
+                className="lucide lucide-circle-check size-4 text-success mt-0.5"
               >
                 <circle cx="12" cy="12" r="10"></circle>
                 <path d="m9 12 2 2 4-4"></path>
@@ -199,7 +199,7 @@ export default function AcademicHome() {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="lucide lucide-circle-check h-4 w-4 text-success mt-0.5"
+                className="lucide lucide-circle-check size-4 text-success mt-0.5"
               >
                 <circle cx="12" cy="12" r="10"></circle>
                 <path d="m9 12 2 2 4-4"></path>
@@ -208,7 +208,7 @@ export default function AcademicHome() {
             </div>
           </div>
    <Link href="/login">     <Button className="w-full text-center">Get Started
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-right ml-2 h-4 w-4"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-right ml-2 size-4"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
         </Button></Link>
         </CardContent>
       </Card>

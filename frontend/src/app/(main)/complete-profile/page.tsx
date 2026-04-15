@@ -1,15 +1,19 @@
 "use client"
-import { GetUserStatus } from '@/Actions/auth.action'
-import RegisterStudent from '@/app/_Components/Auth/Forms/RegisterForms/RegisterStudent/RegisterStudent'
-import RegisterSupervisor from '@/app/_Components/Auth/Forms/RegisterForms/RegisterSupervisor/RegisterSupervisor'
+import { GetUserStatus } from '@/Actions/status.action'
+import FormStudent from '@/app/_Components/Auth/Forms/FormStudent/FormStudent'
+import FormSupervisor from '@/app/_Components/Auth/Forms/FormSupervisor/FormSupervisor'
 import RoleSwitcher from '@/app/_Components/Auth/RoleSwitcher/RoleSwitcher'
 import { getAccessToken } from '@/lib/cookies'
+import { useSession } from 'next-auth/react'
 import React, { useEffect, useState } from 'react'
 
 export default function page() {
   const [role, setRole] = useState<string | null>(null);
+  // const session= useSession()
+  // console.log(session);
  async function getRole(){
   const token =await getAccessToken()
+  
   const { payload }= await GetUserStatus(token)
   console.log(payload.role);
   setRole(payload.role)
@@ -27,8 +31,8 @@ export default function page() {
 
           </div>
 <div className="px-6 pb-6">
-{role=="STUDENT"&&<RegisterStudent/>}
-{role=="SUPERVISOR"&&<RegisterSupervisor/>}
+{role=="STUDENT"&&<FormStudent/>}
+{role=="SUPERVISOR"&&<FormSupervisor/>}
 </div>
   </div>
   </div>

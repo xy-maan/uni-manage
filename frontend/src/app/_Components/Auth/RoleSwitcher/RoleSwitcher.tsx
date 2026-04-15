@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import RegisterStudent from "../Forms/RegisterForms/RegisterStudent/RegisterStudent";
-import RegisterSupervisor from "../Forms/RegisterForms/RegisterSupervisor/RegisterSupervisor";
+import RegisterStudent from "../Forms/FormStudent/FormStudent";
+import RegisterSupervisor from "../Forms/RegisterSupervisor/RegisterSupervisor";
 import { useRouter } from "next/navigation";
 import SupervisorLoginForm from "./../Forms/LoginForms/SupervisorLoginForm/SupervisorLoginForm";
 import StudentLoginForm from "./../Forms/LoginForms/StudentLoginForm/StudentLoginForm";
