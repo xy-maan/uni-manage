@@ -21,28 +21,24 @@ class Post(models.Model):
         TEXT = 'TEXT', 'Text Post'
         POLL = 'POLL', 'Poll'
 
-    class Visibility(models.TextChoices):
-        UNIVERSITY_ONLY = 'UNIVERSITY_ONLY', 'University Only (Private)'
-        PUBLIC = 'PUBLIC', 'Public'
-
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='posts')
     title = models.CharField(max_length=255)
     content = models.TextField(blank=True)  # Optional for polls without a body
     post_type = models.CharField(max_length=20, choices=PostType.choices, default=PostType.TEXT)
-    visibility = models.CharField(max_length=20, choices=Visibility.choices, default=Visibility.UNIVERSITY_ONLY)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='posts')
     tags = models.ManyToManyField(Tag, related_name='posts', blank=True)
+    
+    # Interactions
+    views_count = models.PositiveIntegerField(default=0)
+    upvotes = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='upvoted_posts', blank=True)
+    downvotes = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='downvoted_posts', blank=True)
+    
+    # Optional Poll expiration
+    poll_ends_at = models.DateTimeField(null=True, blank=True)
     
     # Track when the post was created and edited
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-    @property
-    def author_domain(self):
-        """Helper to get the email domain of the author for university filtering."""
-        if self.author and self.author.email and '@' in self.author.email:
-            return self.author.email.split('@')[1]
-        return None
 
     def __str__(self):
         return self.title
@@ -71,4 +67,14 @@ class PollVote(models.Model):
         unique_together = ('poll_option', 'user')
 
     def __str__(self):
-        return f"{self.user.username} voted for {self.poll_option.text}"
+        return f"{self.user.username} voted for {self.poll_option.text} on {self.poll_option.post.title}"
+
+class Comment(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='authored_comments')
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Comment by {self.author.username} on {self.post.title}"
