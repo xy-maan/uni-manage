@@ -1,5 +1,25 @@
 # UniManage API Documentation
 
+## Navigation
+
+- [1. Authentication & Users](#1-authentication--users)
+  - [Base URL](#base-url)
+  - [Authentication](#authentication)
+  - [Google OAuth Complete Flow](#google-oauth-complete-flow)
+  - [Endpoints](#endpoints)
+  - [Token Management](#token-management)
+  - [Quick Reference](#quick-reference)
+  - [Environment Setup](#environment-setup)
+  - [Common Errors](#common-errors)
+- [2. Community APIs](#2-community-apis)
+  - [Posts & Feed](#posts--feed)
+  - [Interactions](#interactions)
+  - [Metadata Selectors](#metadata-selectors)
+
+---
+
+# 1. Authentication & Users
+
 ## Base URL
 
 ```
@@ -837,3 +857,115 @@ GOOGLE_CALLBACK_URL=http://localhost:8000/api/users/auth/google/callback/
 ---
 
 **Last Updated:** April 7, 2026
+
+---
+
+# 2. Community APIs
+**Base URL:** `/api/community/`  
+*(All endpoints require Bearer Token Authentication)*
+
+### 1. Posts & Feed
+
+#### Get Feed
+- **Method:** `GET`
+- **Endpoint:** `/posts/`
+- **Description:** Retrieves the community feed. Automatically filters to return public posts and private posts matching the current user's email domain.
+- **Returns:** List of posts including author details (`author_name`, `author_username`, `author_role`), tags, attachments, poll options, and interaction metrics (`views_count`, `upvotes_count`, `downvotes_count`, `comments_count`, `has_upvoted`, `has_downvoted`).
+
+#### Create Post
+- **Method:** `POST`
+- **Endpoint:** `/posts/`
+- **Description:** Creates a new post or poll.
+- **Payload (Text Post):**
+  ```json
+  {
+    "title": "Best practices in React?",
+    "content": "Looking for advice...",
+    "post_type": "TEXT",
+    "tag_names": ["React", "Frontend"] 
+  }
+  ```
+- **Payload (Poll):**
+  ```json
+  {
+    "title": "Which framework is better?",
+    "post_type": "POLL",
+    "poll_option_texts": ["Next.js", "Vue.js"]
+  }
+  ```
+
+#### Get Single Post
+- **Method:** `GET`
+- **Endpoint:** `/posts/{id}/`
+- **Description:** Retrieves the details of a single post.
+- **Note:** Successfully calling this endpoint automatically increments the `views_count` for that post (with a 24-hour Redis/cache-based anti-abuse limit).
+
+#### Upload Attachment
+- **Method:** `POST`
+- **Endpoint:** `/posts/{id}/upload_attachment/`
+- **Description:** Attaches a file to an existing post. Supports Drag and Drop uploads.
+- **Payload:** Requires `multipart/form-data` with the key named `file`.
+
+---
+
+### 2. Interactions
+#### Upvote a Post
+- **Method:** `POST`
+- **Endpoint:** `/posts/{id}/upvote/`
+- **Description:** Toggles an upvote for the current user. Removes existing downvote if present.
+- **Returns:** Updated upvotes/downvotes metrics:
+  ```json
+  {
+    "upvotes_count": 25,
+    "downvotes_count": 2,
+    "has_upvoted": true,
+    "has_downvoted": false
+  }
+  ```
+
+#### Downvote a Post
+- **Method:** `POST`
+- **Endpoint:** `/posts/{id}/downvote/`
+- **Description:** Toggles a downvote for the current user. Removes existing upvote if present.
+- **Returns:** Updated upvotes/downvotes metrics.
+
+#### Get Comments
+- **Method:** `GET`
+- **Endpoint:** `/posts/{id}/comments/`
+- **Description:** Retrieves all comments for a post, ordered newest first. Includes author name, username, and role.
+
+#### Add Comment
+- **Method:** `POST`
+- **Endpoint:** `/posts/{id}/comments/`
+- **Description:** Adds a new comment to a post.
+- **Payload:**
+  ```json
+  {
+    "content": "Here is my answer..."
+  }
+  ```
+
+#### Vote on a Poll
+- **Method:** `POST`
+- **Endpoint:** `/posts/{id}/vote-poll/`
+- **Description:** Records a user's vote on a poll. Returns an error if the user has already voted on this specific poll.
+- **Payload:**
+  ```json
+  {
+    "option_id": 5
+  }
+  ```
+
+---
+
+### 3. Metadata Selectors
+
+#### Get Tags
+- **Method:** `GET`
+- **Endpoint:** `/tags/`
+- **Description:** Returns all community tags for multi-select dropdowns. Deduplicates based on lowercase parsing backend logic.
+
+#### Get Categories
+- **Method:** `GET`
+- **Endpoint:** `/categories/`
+- **Description:** Returns a list of available categories and their slugs for the category creation dropdown.

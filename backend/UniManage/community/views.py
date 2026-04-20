@@ -91,7 +91,7 @@ class PostViewSet(viewsets.ModelViewSet):
             "has_downvoted": has_downvoted
         })
 
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=['post'], url_path='vote-poll')
     def vote_poll(self, request, pk=None):
         post = self.get_object()
         if post.post_type != Post.PostType.POLL:
