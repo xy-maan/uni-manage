@@ -17,10 +17,14 @@ import { usePathname, useRouter } from "next/navigation";
 import { logoutAction } from "@/Actions/logout.action";
 import { toast } from "sonner";
 import { signOut, useSession } from "next-auth/react";
-import { clearTokens } from "@/lib/cookies";
+import StatusData from "../StatusData/StatusData";
+import { UserContext } from "@/app/Providers/UserDataContext";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from "@/components/ui/select";
+// import { clearTokens } from "@/lib/cookies";
 // import { AuthContext } from "@/app/Providers/UserDataContext";
 export default function Navbar() {
   const { theme, setTheme } = useTheme();
+  const {status,data}=useSession()
   const router = useRouter();
   const [isOpenMenu, setIsOpenMenu] = useState(false);
   const [activeSection, setActiveSection] = useState("");
@@ -36,23 +40,13 @@ const isDashboard = role === "student" || role === "supervisor";
     }
     setActiveSection("");
   }, []);
-const {status,data}=useSession()
-  async function handleLogout() {
-    const { ok, payload } = await logoutAction();
-    if (ok) {
-      toast.success(payload.detail, {
-        position: "top-center",
-        duration: 2000,
-      });
-      await clearTokens();
-      await signOut({
-            callbackUrl:'/login'
-        })
-      router.push("/login");
-    } else {
-      toast.error(payload.detail, { position: "top-center", duration: 2000 });
-    }
-  }
+const context=useContext(UserContext)
+if(!context){
+  throw new Error("Not Exit")
+}
+
+const  { loading }=context
+if (loading) return null;
   return (
     <>
       <nav className="sticky w-full z-20  bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60  top-0 left-0 text-muted-foreground border-b dark:border-gray-700 border-gray-300 ">
@@ -108,7 +102,7 @@ const {status,data}=useSession()
                   `}
                 aria-current="page"
               >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-layout-dashboard h-4 w-4"><rect width="7" height="9" x="3" y="3" rx="1"></rect><rect width="7" height="5" x="14" y="3" rx="1"></rect><rect width="7" height="9" x="14" y="12" rx="1"></rect><rect width="7" height="5" x="3" y="16" rx="1"></rect></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"   strokeWidth="2"   strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-layout-dashboard h-4 w-4"><rect width="7" height="9" x="3" y="3" rx="1"></rect><rect width="7" height="5" x="14" y="3" rx="1"></rect><rect width="7" height="9" x="14" y="12" rx="1"></rect><rect width="7" height="5" x="3" y="16" rx="1"></rect></svg>
                 Dashboard
               </Link>
             </li>
@@ -120,7 +114,7 @@ const {status,data}=useSession()
                   `}
                 aria-current="page"
               >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-folder-open h-4 w-4"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"></path></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"   strokeWidth="2"   strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-folder-open h-4 w-4"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"></path></svg>
                 Projects
               </Link>
             </li>
@@ -132,7 +126,7 @@ const {status,data}=useSession()
                   `}
                 aria-current="page"
               >
-                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-store h-4 w-4"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"></path><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"></path><path d="M2 7h20"></path><path d="M22 7v3a2 2 0 0 1-2 2a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7"></path></svg>
+                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"   strokeWidth="2"   strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-store h-4 w-4"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"></path><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"></path><path d="M2 7h20"></path><path d="M22 7v3a2 2 0 0 1-2 2a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7"></path></svg>
                 Marketplace
               </Link>
             </li>
@@ -145,9 +139,68 @@ const {status,data}=useSession()
                   `}
                 aria-current="page"
               >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-message-square-more h-4 w-4"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="M8 10h.01"></path><path d="M12 10h.01"></path><path d="M16 10h.01"></path></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"   strokeWidth="2"   strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-message-square-more h-4 w-4"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="M8 10h.01"></path><path d="M12 10h.01"></path><path d="M16 10h.01"></path></svg>
                 Community
               </Link>
+            </li>
+               <li className="m-0 ">
+{/* <Link href={`/${role}/findteam`}>    */}
+       <DropdownMenu >
+                  <DropdownMenuTrigger asChild className="flex  text-muted-foreground hover:text-foreground hover:bg-muted/50  items-center gap-2 px-4 py-2 rounded-lg transition-all font-medium text-sm">
+                    <div className="flex items-center justify-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-ellipsis h-4 w-4"><circle cx={12} cy={12} r={1} /><circle cx={19} cy={12} r={1} /><circle cx={5} cy={12} r={1} /></svg>
+
+                      <span className="cursor-pointer text-sm ">
+                       More 
+                      </span>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="lucide lucide-chevron-down size-3 mt-1 "
+                      >
+                        <path d="m6 9 6 6 6-6"></path>
+                      </svg>
+                    </div>
+                  </DropdownMenuTrigger>
+                      <DropdownMenuContent
+                    align="end"
+                    sideOffset={8}
+                   className="w-48"
+                  >
+                    <DropdownMenuGroup>
+                      <DropdownMenuLabel>More Options</DropdownMenuLabel>
+                    </DropdownMenuGroup>
+                    <DropdownMenuGroup>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem asChild className="px-1 cursor-pointer">
+                        <Link href="/login">
+               <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-users h-4 w-4 mr-2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx={9} cy={7} r={4} /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+
+                              <Link href={`/${role}/findteam`}>
+          <span>Find Team</span>
+        </Link>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild className="px-1 cursor-pointer">
+                        <Link href="/login">
+                         <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-settings h-4 w-4 mr-2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" /><circle cx={12} cy={12} r={3} /></svg>
+
+                          <span>Settings</span>
+                        </Link>
+                      </DropdownMenuItem>
+                  
+                    </DropdownMenuGroup>
+                  </DropdownMenuContent>
+</DropdownMenu>
+{/* </Link> */}
+  
             </li>
           </ul>}
         {!isDashboard&&  <ul className="md:flex hidden font-medium p-4 md:p-0 mt-4  rounded-base md:space-x-8 rtl:space-x-reverse md:flex-row md:justify-between md:mt-0 md:border-0 ">
@@ -234,110 +287,10 @@ const {status,data}=useSession()
             <li className="size-16 flex items-center justify-cente">
                   {status === "loading" ? (
     <span className="w-9 h-9 flex items-center justify-center">  <span className="loader-auth"></span></span>
-  ):<>{  status == "authenticated" && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild className="">
-                    <div className="flex items-center justify-center hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 size-9 rounded-full border border-border">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="lucide lucide-user size-4"
-                      >
-                        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>o
-                        <circle cx="12" cy="7" r="4"></circle>
-                      </svg>
-                    </div>
-                  </DropdownMenuTrigger>
-
-                  <DropdownMenuContent
-                    align="end"
-                    sideOffset={8}
-                    className="w-55"
-                  >
-                    <DropdownMenuGroup className="gap-0">
-                      <DropdownMenuLabel>
-                        <div className="flex flex-col">
-                          <h2 className="font-medium">{data?.user?.name}</h2>
-                          <p className="text-xs text-muted-foreground">
-                            {data?.user?.email}
-                          </p>
-                        </div>
-                      </DropdownMenuLabel>
-                    </DropdownMenuGroup>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuGroup>
-                      <DropdownMenuItem
-                        asChild
-                        className="px-2  hover:!bg-transparent"
-                      >
-                        <Link href="/">
-                          <span className="flex items-center focus:bg-accent focus:text-accent-foreground gap-2 cursor-pointer">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              className="lucide lucide-circle-user size-4 mr-2"
-                            >
-                              <circle cx="12" cy="12" r="10"></circle>
-                              <circle cx="12" cy="10" r="3"></circle>
-                              <path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662"></path>
-                            </svg>{" "}
-                            Profile
-                          </span>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        asChild
-                        className="px-2  hover:!bg-transparent"
-                      >
-                        <Link href="/">
-                          <span className="flex items-center focus:bg-accent focus:text-accent-foreground gap-2 cursor-pointer">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              className="lucide lucide-settings size-4 mr-2"
-                            >
-                              <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
-                              <circle cx="12" cy="12" r="3"></circle>
-                            </svg>
-                            Setting
-                          </span>
-                        </Link>
-                      </DropdownMenuItem>
-                    </DropdownMenuGroup>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuGroup>
-                      <DropdownMenuItem
-                        className="flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm focus:bg-accent  hover:!bg-transparent cursor-pointer !text-destructive hover:!text-destructive focus:!text-destructive"
-                        onClick={() => handleLogout()}
-                      >
-                        Logout
-                      </DropdownMenuItem>
-                    </DropdownMenuGroup>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              )}
- {status=="unauthenticated"&&    <DropdownMenu>
+  ):<>{  status === "authenticated"  &&
+                <StatusData/>}
+  
+                {status === "unauthenticated" && <DropdownMenu>
                   <DropdownMenuTrigger asChild className="">
                     <div className="flex items-center justify-center gap-1">
                       <span className="cursor-pointer text-sm text-foreground">
@@ -439,7 +392,9 @@ const {status,data}=useSession()
                       </DropdownMenuItem>
                     </DropdownMenuGroup>
                   </DropdownMenuContent>
-                </DropdownMenu>}</>}
+                </DropdownMenu>
+              }
+ </>}
 
             </li>
           </ul>
@@ -560,7 +515,7 @@ const {status,data}=useSession()
                 className={`px-4  pl-2 py-2 mb-3 block w-full text-left text-sm font-medium hover:bg-muted rounded-lg transition-colors text-foreground font-semibold text-muted-foreground hover:text-foreground
                   `}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-layout-dashboard h-4 w-4"><rect width="7" height="9" x="3" y="3" rx="1"></rect><rect width="7" height="5" x="14" y="3" rx="1"></rect><rect width="7" height="9" x="14" y="12" rx="1"></rect><rect width="7" height="5" x="3" y="16" rx="1"></rect></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"   strokeWidth="2"   strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-layout-dashboard h-4 w-4"><rect width="7" height="9" x="3" y="3" rx="1"></rect><rect width="7" height="5" x="14" y="3" rx="1"></rect><rect width="7" height="9" x="14" y="12" rx="1"></rect><rect width="7" height="5" x="3" y="16" rx="1"></rect></svg>
                 Dashboard
               </Link>
             </li>
@@ -571,7 +526,7 @@ const {status,data}=useSession()
                 className={`px-4  pl-2 py-2 mb-3 block w-full text-left text-sm font-medium hover:bg-muted rounded-lg transition-colors text-foreground font-semibold text-muted-foreground hover:text-foreground
                   `}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-folder-open h-4 w-4"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"></path></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"   strokeWidth="2"   strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-folder-open h-4 w-4"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"></path></svg>
                 Projects
               </Link>
             </li>
@@ -582,7 +537,7 @@ const {status,data}=useSession()
                 className={`px-4  pl-2 py-2 mb-3 block w-full text-left text-sm font-medium hover:bg-muted rounded-lg transition-colors text-foreground font-semibold text-muted-foreground hover:text-foreground
                   `}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-store h-4 w-4"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"></path><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"></path><path d="M2 7h20"></path><path d="M22 7v3a2 2 0 0 1-2 2a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7"></path></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"   strokeWidth="2"   strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-store h-4 w-4"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"></path><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"></path><path d="M2 7h20"></path><path d="M22 7v3a2 2 0 0 1-2 2a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7"></path></svg>
                 Marketplace
               </Link>
             </li>
@@ -593,7 +548,7 @@ const {status,data}=useSession()
                 className={`px-4  pl-2 py-2 mb-3 block w-full text-left text-sm font-medium hover:bg-muted rounded-lg transition-colors text-foreground font-semibold text-muted-foreground hover:text-foreground
                   `}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-message-square-more h-4 w-4"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="M8 10h.01"></path><path d="M12 10h.01"></path><path d="M16 10h.01"></path></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"   strokeWidth="2"   strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-message-square-more h-4 w-4"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="M8 10h.01"></path><path d="M12 10h.01"></path><path d="M16 10h.01"></path></svg>
                 Community
               </Link>
             </li>

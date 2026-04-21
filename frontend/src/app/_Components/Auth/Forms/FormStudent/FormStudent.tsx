@@ -27,6 +27,7 @@ import z from "zod";
 import { completeProfileAction } from "@/Actions/complete.action";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 export type RoleDataType={
    role: string,
     major: string,
@@ -35,6 +36,9 @@ export type RoleDataType={
    skills: string[];
 }
 export default function FormStudent() {
+  
+const { data } = useSession();
+
   const router=useRouter()
 const formObj = useForm<StudentFormType>({
   resolver: zodResolver(schemaStudent),
@@ -61,7 +65,7 @@ const formObj = useForm<StudentFormType>({
       .map((s:string) => s.trim())
       .filter((s:string) => s !== ""),
     };
-const res=await completeProfileAction(roleData)
+const res=await completeProfileAction(roleData,data?.djangoAccess)
 if(res.ok)
 {
   toast.success(res.payload.message,{position:"top-center",duration:2000})

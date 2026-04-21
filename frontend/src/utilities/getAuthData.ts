@@ -1,15 +1,17 @@
+
 "use server";
 import { decode } from "next-auth/jwt";
 import { cookies } from "next/headers";
+
 export default async function getAuthData() {
   try {
     const cookieStore = await cookies();
-    //  NextAuth token
+
     const nextAuthToken =
       cookieStore.get("next-auth.session-token")?.value ||
       cookieStore.get("__Secure-next-auth.session-token")?.value;
 
-    let nextAuthData = null;
+    let nextAuthData: any = null;
 
     if (nextAuthToken) {
       nextAuthData = await decode({
@@ -18,10 +20,12 @@ export default async function getAuthData() {
       });
     }
 
-    //  Django tokens
-    const access = cookieStore.get("access_token")?.value;
-    const refresh = cookieStore.get("refresh_token")?.value;
-console.log(nextAuthData);
+         const access = nextAuthData?.djangoAccess || null;
+    const refresh = nextAuthData?.djangoRefresh || null;
+
+
+    console.log({ access, refresh, nextAuthData });
+
     return {
       nextAuth: nextAuthData,
       django: {

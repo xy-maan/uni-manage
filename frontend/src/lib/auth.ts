@@ -1,5 +1,15 @@
 import { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import { refreshTokenAction } from '@/Actions/refresh.action';
+import { jwtDecode } from 'jwt-decode';
+type JwtPayload = {
+  exp?: number;
+};
+function decodeTokenExpiry(token: string): number {
+   const decoded = jwtDecode<JwtPayload>(token);
+
+  return decoded.exp ? decoded.exp * 1000 : 0;
+}
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -15,42 +25,71 @@ export const authOptions: NextAuthOptions = {
   ],
 
   callbacks: {
-    async signIn({ account, profile,user }) {
-    //     if (!user.email?.endsWith(".edu.eg")) {
-    //   return "/auth/error?error=invalid_email"; 
-    // }
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/login/google/`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            access_token: account?.access_token,
-            id_token: account?.id_token,
-          }),
-        });
+    async signIn({ account, profile, user }) {
+      //     if (!user.email?.endsWith(".edu.eg")) {
+      //   return "/auth/error?error=invalid_email";
+      // }
+   if (!account?.access_token) return "/auth/error?error=no_google_token";
 
-        if (response.ok) {
-          const payload = await response.json();
-          account!.djangoAccess = payload.access;
-          account!.djangoRefresh = payload.refresh;
-          return true;
-        }
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/login/google/`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        access_token: account.access_token,
+        id_token: account.id_token,
+      }),
+    }
+  );
 
-        return '/auth/error?error=login_failed';
-      } catch {
-        return '/auth/error?error=network_error';
-      }
-    },
+  if (!response.ok) return "/auth/error?error=login_failed";
 
-    async jwt({ token, account }) {
-      if (account) {
-        token.access_token = account.access_token;
-        token.id_token = account.id_token;
-        token.djangoAccess = account.djangoAccess;
-        token.djangoRefresh = account.djangoRefresh;
-      }
-      return token;
-    },
+  const payload = await response.json();
+  account.djangoAccess = payload.access;
+  account.djangoRefresh = payload.refresh;
+  return true;
+},
+async jwt({ token, account }) {
+  if (account) {
+    token.access_token = account.access_token;
+    token.id_token = account.id_token;
+    token.djangoAccess = account.djangoAccess;
+    token.djangoRefresh = account.djangoRefresh;
+
+    if (account.djangoAccess) {
+      token.djangoAccessExpires = decodeTokenExpiry(account.djangoAccess);
+    }
+
+    return token;
+  }
+
+  if (
+    token.djangoAccess &&
+    token.djangoAccessExpires &&
+    Date.now() < (token.djangoAccessExpires )
+  ) {
+    return token;
+  }
+
+  if (!token.djangoRefresh) {
+    return { ...token, error: "NoRefreshToken" };
+  }
+
+  const { ok, access } = await refreshTokenAction(token.djangoRefresh as string);
+
+  if (!ok || !access) {
+    return { ...token, error: "RefreshAccessTokenError" };
+  }
+
+  return {
+    ...token,
+    djangoAccess: access,
+    djangoAccessExpires: decodeTokenExpiry(access),
+    error: undefined,
+  };
+  
+},
 
     async session({ session, token }) {
       session.access_token = token.access_token;
@@ -62,7 +101,7 @@ export const authOptions: NextAuthOptions = {
   },
 
   pages: {
-    signIn:"/login",
-    error: '/auth/error'
+    signIn: "/login",
+    error: "/auth/error",
   },
 };

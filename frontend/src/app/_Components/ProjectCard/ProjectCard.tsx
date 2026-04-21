@@ -86,10 +86,10 @@ export default function ProjectCard({
       </div>}
 {variant=="dashboard"&&<div className="card-footer px-6 pb-6 flex items-center justify-between ">
   <div className="flex items-center gap-2 text-sm text-foreground/70">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-calendar size-4"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M3 10h18"></path></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"   strokeWidth="2"   strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-calendar size-4"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M3 10h18"></path></svg>
     <span>Due: Apr 30, 2026</span>
   </div>
-  <Button>View Project <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-arrow-right ml-2 size-4"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></Button>
+  <Button>View Project <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"   strokeWidth="2"   strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-right ml-2 size-4"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></Button>
   </div>}
     </div>
 //     <div className="card-project bg-card text-card-foreground gap-6 rounded-xl group relative border-2 transition-all duration-300 h-full flex flex-col hover:border-primary/30 shadow-md hover:shadow-xl hover:scale-[1.02]">

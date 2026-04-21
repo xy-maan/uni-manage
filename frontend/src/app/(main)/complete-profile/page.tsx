@@ -3,25 +3,40 @@ import { GetUserStatus } from '@/Actions/status.action'
 import FormStudent from '@/app/_Components/Auth/Forms/FormStudent/FormStudent'
 import FormSupervisor from '@/app/_Components/Auth/Forms/FormSupervisor/FormSupervisor'
 import RoleSwitcher from '@/app/_Components/Auth/RoleSwitcher/RoleSwitcher'
-import { getAccessToken } from '@/lib/cookies'
+// import { getAccessToken } from '@/lib/cookies'
 import { useSession } from 'next-auth/react'
 import React, { useEffect, useState } from 'react'
 
 export default function page() {
+//   const [role, setRole] = useState<string | null>(null);
+//   // const session= useSession()
+//   // console.log(session);
+//  async function getRole(){
+//   const token =await getAccessToken()
+  
+//   const { payload }= await GetUserStatus(token)
+//   console.log(payload.role);
+//   setRole(payload.role)
+//  }
+//  useEffect(() => {
+//   getRole()
+//  }, [])
+    const { data: session, status } = useSession();
   const [role, setRole] = useState<string | null>(null);
   // const session= useSession()
   // console.log(session);
- async function getRole(){
-  const token =await getAccessToken()
-  
-  const { payload }= await GetUserStatus(token)
-  console.log(payload.role);
-  setRole(payload.role)
- }
- useEffect(() => {
-  getRole()
- }, [])
- 
+  useEffect(() => {
+    if (status === "loading") return;
+
+    if (!session?.djangoAccess) return;
+
+    getRole();
+  }, [session, status]);
+
+  async function getRole() {
+    const { payload } = await GetUserStatus(session!.djangoAccess!);
+    setRole(payload.role);
+  }
   return <div className="w-full max-w-md mt-8 min-h-[88vh] ">
       <div className="lg:w-full  md:w-3/4 w-full mx-auto bg-card flex flex-col items-start justify-start rounded-xl border border-border ">
         <div className="w-full gap-6  ">

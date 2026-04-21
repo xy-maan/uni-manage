@@ -11,20 +11,12 @@ export default function LoginPage({ role = 'student' }:  roleType ) {
         <div className="w-full gap-6 flex flex-col ">
           <div className="flex flex-col items-start px-6 pt-6 gap-1.5 ">
             <h4 className="text-foreground ">Sign In</h4>
-            <p className="text-muted-foreground">
-             Choose your account type to continue
-            </p>
           </div>
           <div className="px-6 pb-6">
                  {/* <RoleSwitcher mode="login" role={role} /> */}
               <div className="mb-4 relative">
               <div className="absolute inset-0 flex items-center ">
                 <div className="bg-border  w-full h-px "></div>
-              </div>
-              <div className="relative flex justify-center">
-                <span className="bg-background px-2 text-muted-foreground text-xs uppercase">
-                Or continue with
-                </span>
               </div>
             </div>
             <div className="">

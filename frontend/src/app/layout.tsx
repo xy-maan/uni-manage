@@ -5,7 +5,7 @@ import Navbar from "./_Components/Navbar/Navbar";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 import ParentProvider from "./Providers/ParentProvider";
-// import UserDataContext from "./Providers/UserDataContext";
+import { UserProvider } from "./Providers/UserDataContext";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -34,12 +34,12 @@ export default function RootLayout({
                  <ParentProvider>
         <ThemeProvider attribute="class" defaultTheme="light">
           <div className="min-h-screen bg-linear-to-br from-primary/5 via-secondary/5 to-background">
-              {/* <UserDataContext> */}
+              <UserProvider>
             <Navbar />
             <main className="w-full flex flex-1 flex-col items-center bg-background min-h-screen ">
                 {children}
             </main>
-              {/* </UserDataContext> */}
+              </UserProvider>
           </div>
         </ThemeProvider>
                 </ParentProvider>

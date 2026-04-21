@@ -6,6 +6,7 @@ declare module 'next-auth' {
     id_token?: string;
     djangoAccess?: string;
     djangoRefresh?: string;
+    error?: string;
   }
   interface Account {
     djangoAccess?: string;
@@ -19,5 +20,7 @@ declare module 'next-auth/jwt' {
     id_token?: string;
     djangoAccess?: string;
     djangoRefresh?: string;
+    error?: string;
+      djangoAccessExpires?: number;
   }
 }

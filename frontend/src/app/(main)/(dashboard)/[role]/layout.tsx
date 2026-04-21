@@ -8,7 +8,7 @@ export default async function RoleLayout({
 }) {
   const { role } = await params;
   return (
-    <div className="container mx-auto px-4 lg:px-8 py-8">
+    <div className="min-h-screen w-full">
       {children}
     </div>
   );

@@ -1,26 +1,27 @@
 "use server"
-import { clearTokens, getAccessToken, getRefreshToken } from "@/lib/cookies";
+import { authOptions } from "@/lib/auth";
 import { Logout } from "@/types/logout";
-import getAuthData from "@/utilities/getAuthData";
-import { getCookie } from "cookies-next";
+import { getServerSession } from "next-auth";
 export async function logoutAction(){
-  const access_token =await getAccessToken();
-  const refresh_token =await getRefreshToken();
-   const tokens=await getAuthData()
+  const session = await getServerSession(authOptions);
 
-    if (!access_token || !refresh_token|| !tokens) {
-   throw new Error("No tokens found");
+  if (!session?.djangoAccess || !session?.djangoRefresh) {
+    return {
+      ok: false,
+      payload: { detail: "Session expired, please login again" },
+    };
   }
    const res= await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/logout/`, {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${access_token}`,
+        "Authorization": `Bearer ${session.djangoAccess}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ refresh: refresh_token }),
+      body: JSON.stringify({ refresh: session.djangoRefresh }),
     });
+    console.log("status:", res.status);
     const payload:Logout = await res.json();
-    clearTokens()
+    console.log("payload:", payload)
       return {    payload,
     ok: res.ok,}
 };
