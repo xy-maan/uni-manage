@@ -20,6 +20,7 @@ import { signOut, useSession } from "next-auth/react";
 import StatusData from "../StatusData/StatusData";
 import { UserContext } from "@/app/Providers/UserDataContext";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { GetCategoryAction } from "@/Actions/getCategory.action";
 // import { clearTokens } from "@/lib/cookies";
 // import { AuthContext } from "@/app/Providers/UserDataContext";
 export default function Navbar() {
@@ -40,13 +41,12 @@ const isDashboard = role === "student" || role === "supervisor";
     }
     setActiveSection("");
   }, []);
-const context=useContext(UserContext)
-if(!context){
-  throw new Error("Not Exit")
-}
 
-const  { loading }=context
-if (loading) return null;
+{status === "loading" && (
+  <span className="size-9 flex items-center justify-center">
+    <span className="loader-auth"></span>
+  </span>
+)}
   return (
     <>
       <nav className="sticky w-full z-20  bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60  top-0 left-0 text-muted-foreground border-b dark:border-gray-700 border-gray-300 ">
@@ -206,7 +206,7 @@ if (loading) return null;
         {!isDashboard&&  <ul className="md:flex hidden font-medium p-4 md:p-0 mt-4  rounded-base md:space-x-8 rtl:space-x-reverse md:flex-row md:justify-between md:mt-0 md:border-0 ">
             <li>
               <Link
-                href="#projects"
+                href="/#projects"
                 onClick={() => setActiveSection("projects")}
                 className={`block py-2 px-3  transition-colors  rounded md:bg-transparent md:p-0 text-sm font-medium 
                   ${
@@ -223,7 +223,7 @@ if (loading) return null;
 
             <li>
               <Link
-                href="#feature"
+                href="/#feature"
                 onClick={() => setActiveSection("Feature")}
                 className={`block py-2 px-3 transition-colors  rounded md:bg-transparent md:p-0 text-sm font-medium 
                   ${
@@ -239,7 +239,7 @@ if (loading) return null;
             </li>
             <li>
               <Link
-                href="#work"
+                href="/#work"
                 onClick={() => setActiveSection("work")}
                 className={`block py-2 px-3  transition-colors  rounded md:bg-transparent md:p-0 text-sm font-medium 
                   ${
@@ -255,7 +255,7 @@ if (loading) return null;
             </li>
             <li>
               <Link
-                href="#access"
+                href="/#access"
                 onClick={() => setActiveSection("access")}
                 className={`block py-2 px-3  transition-colors  rounded md:bg-transparent md:p-0 text-sm font-medium 
                   ${
@@ -448,8 +448,8 @@ if (loading) return null;
       {!isDashboard&&<>
             <li>
               <Link
-                href="#projects"
-                onClick={() => setActiveSection("projects")}
+                href="/#projects"
+                onClick={() =>{ setActiveSection("projects")  ; setIsOpenMenu(false);} }
                 className={`px-4  pl-2 py-2 mb-3 block w-full text-left text-sm font-medium hover:bg-muted rounded-lg transition-colors
                   ${
                     activeSection === "projects"
@@ -457,14 +457,15 @@ if (loading) return null;
                       : "text-muted-foreground hover:text-foreground"
                   }
                   `}
+                  
               >
                 Projects
               </Link>
             </li>
             <li>
               <Link
-                href="#feature"
-                onClick={() => setActiveSection("feature")}
+                href="/#feature"
+                onClick={() =>{ setActiveSection("feature");   setIsOpenMenu(false);}}
                 className={`px-4  pl-2 py-2 mb-3 block w-full text-left text-sm font-medium hover:bg-muted rounded-lg transition-colors
                   ${
                     activeSection === "feature"
@@ -478,8 +479,8 @@ if (loading) return null;
             </li>
             <li>
               <Link
-                href="#work"
-                onClick={() => setActiveSection("work")}
+                href="/#work"
+                onClick={() => {setActiveSection("work");   setIsOpenMenu(false);}}
                 className={`px-4  pl-2 py-2 mb-3 block w-full text-left text-sm font-medium hover:bg-muted rounded-lg transition-colors
                   ${
                     activeSection === "work"
@@ -493,8 +494,8 @@ if (loading) return null;
             </li>
             <li>
               <Link
-                href="#access"
-                onClick={() => setActiveSection("access")}
+                href="/#access"
+                onClick={() => {setActiveSection("access");  setIsOpenMenu(false)}}
                 className={`px-4  pl-2 py-2 mb-3 block w-full text-left text-sm font-medium hover:bg-muted rounded-lg transition-colors
                   ${
                     activeSection === "access"
@@ -514,8 +515,12 @@ if (loading) return null;
                 href="/dashboard"
                 className={`px-4  pl-2 py-2 mb-3 block w-full text-left text-sm font-medium hover:bg-muted rounded-lg transition-colors text-foreground font-semibold text-muted-foreground hover:text-foreground
                   `}
+                   onClick={() => {
+    setIsOpenMenu(false); 
+  }}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"   strokeWidth="2"   strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-layout-dashboard h-4 w-4"><rect width="7" height="9" x="3" y="3" rx="1"></rect><rect width="7" height="5" x="14" y="3" rx="1"></rect><rect width="7" height="9" x="14" y="12" rx="1"></rect><rect width="7" height="5" x="3" y="16" rx="1"></rect></svg>
+              
                 Dashboard
               </Link>
             </li>
@@ -525,6 +530,9 @@ if (loading) return null;
                 href="/projects"
                 className={`px-4  pl-2 py-2 mb-3 block w-full text-left text-sm font-medium hover:bg-muted rounded-lg transition-colors text-foreground font-semibold text-muted-foreground hover:text-foreground
                   `}
+                   onClick={() => {
+    setIsOpenMenu(false); 
+  }}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"   strokeWidth="2"   strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-folder-open h-4 w-4"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"></path></svg>
                 Projects
@@ -536,6 +544,9 @@ if (loading) return null;
                 href="/marketplace"
                 className={`px-4  pl-2 py-2 mb-3 block w-full text-left text-sm font-medium hover:bg-muted rounded-lg transition-colors text-foreground font-semibold text-muted-foreground hover:text-foreground
                   `}
+                   onClick={() => {
+    setIsOpenMenu(false); 
+  }}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"   strokeWidth="2"   strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-store h-4 w-4"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"></path><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"></path><path d="M2 7h20"></path><path d="M22 7v3a2 2 0 0 1-2 2a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7"></path></svg>
                 Marketplace
@@ -547,6 +558,9 @@ if (loading) return null;
                 href="/community"
                 className={`px-4  pl-2 py-2 mb-3 block w-full text-left text-sm font-medium hover:bg-muted rounded-lg transition-colors text-foreground font-semibold text-muted-foreground hover:text-foreground
                   `}
+                   onClick={() => {
+    setIsOpenMenu(false); 
+  }}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"   strokeWidth="2"   strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-message-square-more h-4 w-4"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="M8 10h.01"></path><path d="M12 10h.01"></path><path d="M16 10h.01"></path></svg>
                 Community
@@ -592,7 +606,9 @@ if (loading) return null;
                       <path d="M22 10v6"></path>
                       <path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"></path>
                     </svg>
-                    <span>Student / Supervisor</span>
+                    <span   onClick={() => {
+    setIsOpenMenu(false); 
+  }}>Student / Supervisor</span>
                 </div>
                   </Link>
                   <Link href="/login">

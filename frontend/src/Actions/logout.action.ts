@@ -11,7 +11,7 @@ export async function logoutAction(){
       payload: { detail: "Session expired, please login again" },
     };
   }
-   const res= await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/logout/`, {
+   const res= await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/users/logout/`, {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${session.djangoAccess}`,

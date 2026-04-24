@@ -14,14 +14,14 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SupervisorFormType } from "@/types/auth";
+import { SupervisorFormType } from "@/types/schema";
 import z from "zod";
 import { completeProfileAction } from "@/Actions/complete.action";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Checkbox } from "@/components/ui/checkbox";
-import { schemaSupervisor } from "@/schemas/AuthSchema/Supervisor.schema";
+import { schemaSupervisor } from "@/schemas/Supervisor.schema";
 export type RoleDataType={
    role: string,
    is_professor: boolean,

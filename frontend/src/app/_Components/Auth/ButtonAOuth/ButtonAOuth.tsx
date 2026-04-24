@@ -8,7 +8,7 @@ export default function ButtonAOuth() {
     if (loading) return;
   setLoading(true);
     await signIn("google", {
-      callbackUrl: "/auth/callback",
+      callbackUrl: "/",
     });
   }
   return (

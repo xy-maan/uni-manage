@@ -1,12 +1,12 @@
 import { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import { refreshTokenAction } from '@/Actions/refresh.action';
-import { jwtDecode } from 'jwt-decode';
+import { refreshTokenAction } from "@/Actions/refresh.action";
+import { jwtDecode } from "jwt-decode";
 type JwtPayload = {
   exp?: number;
 };
 function decodeTokenExpiry(token: string): number {
-   const decoded = jwtDecode<JwtPayload>(token);
+  const decoded = jwtDecode<JwtPayload>(token);
 
   return decoded.exp ? decoded.exp * 1000 : 0;
 }
@@ -29,74 +29,79 @@ export const authOptions: NextAuthOptions = {
       //     if (!user.email?.endsWith(".edu.eg")) {
       //   return "/auth/error?error=invalid_email";
       // }
-   if (!account?.access_token) return "/auth/error?error=no_google_token";
+      if (!account?.access_token) return "/auth/error?error=no_google_token";
 
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/login/google/`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        access_token: account.access_token,
-        id_token: account.id_token,
-      }),
-    }
-  );
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/users/login/google/`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            access_token: account.access_token,
+            id_token: account.id_token,
+          }),
+        },
+      );
 
-  if (!response.ok) return "/auth/error?error=login_failed";
+      if (!response.ok) return "/auth/error?error=login_failed";
 
-  const payload = await response.json();
-  account.djangoAccess = payload.access;
-  account.djangoRefresh = payload.refresh;
-  return true;
-},
-async jwt({ token, account }) {
-  if (account) {
-    token.access_token = account.access_token;
-    token.id_token = account.id_token;
-    token.djangoAccess = account.djangoAccess;
-    token.djangoRefresh = account.djangoRefresh;
+      const payload = await response.json();
+      account.djangoAccess = payload.access;
+      account.djangoRefresh = payload.refresh;
+      return true;
+    },
+    async jwt({ token, account }) {
+      if (account) {
+        token.djangoAccess = account.djangoAccess;
+        token.djangoRefresh = account.djangoRefresh;
+        token.access_token = account.access_token;
+        token.id_token = account.id_token;
 
-    if (account.djangoAccess) {
-      token.djangoAccessExpires = decodeTokenExpiry(account.djangoAccess);
-    }
+        if (account.djangoAccess) {
+          token.djangoAccessExpires = decodeTokenExpiry(
+            account.djangoAccess as string,
+          );
+        }
 
-    return token;
-  }
+        return token;
+      }
 
-  if (
-    token.djangoAccess &&
-    token.djangoAccessExpires &&
-    Date.now() < (token.djangoAccessExpires )
-  ) {
-    return token;
-  }
+      if (
+        token.djangoAccess &&
+        token.djangoAccessExpires &&
+        Date.now() < (token.djangoAccessExpires as number)
+      ) {
+        return token;
+      }
 
-  if (!token.djangoRefresh) {
-    return { ...token, error: "NoRefreshToken" };
-  }
+      if (!token.djangoRefresh) {
+        return { ...token, error: "NoRefreshToken" };
+      }
 
-  const { ok, access } = await refreshTokenAction(token.djangoRefresh as string);
 
-  if (!ok || !access) {
-    return { ...token, error: "RefreshAccessTokenError" };
-  }
+      const { ok, access } = await refreshTokenAction(
+        token.djangoRefresh as string,
+      );
 
-  return {
-    ...token,
-    djangoAccess: access,
-    djangoAccessExpires: decodeTokenExpiry(access),
-    error: undefined,
-  };
-  
-},
+      if (!ok || !access) {
+        return { ...token, error: "RefreshAccessTokenError" };
+      }
+
+      return {
+        ...token,
+        djangoAccess: access,
+        djangoAccessExpires: decodeTokenExpiry(access),
+        error: undefined,
+      };
+    },
 
     async session({ session, token }) {
-      session.access_token = token.access_token;
+     session.access_token = token.access_token;
       session.id_token = token.id_token;
       session.djangoAccess = token.djangoAccess;
       session.djangoRefresh = token.djangoRefresh;
-      return session;
+      session.error = token.error;
+        return session;
     },
   },
 

@@ -27,12 +27,13 @@ export default function StatusData() {
         position: "top-center",
         duration: 2000,
       });
-      await signOut({
-            callbackUrl:'/login'
-        })
+    
     } else {
       toast.error(payload.detail, { position: "top-center", duration: 2000 });
     }
+      await signOut({
+            callbackUrl:'/login'
+        })
   }
   return (
     <div>

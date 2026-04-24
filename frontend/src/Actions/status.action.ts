@@ -1,7 +1,7 @@
 "use server";
 import { UserData } from "@/types/userStatus";
 export async function GetUserStatus(token: string) {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/status/`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/users/status/`, {
          method: 'GET',
         headers: { Authorization: `Bearer ${token}` },
         

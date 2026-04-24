@@ -6,6 +6,7 @@ import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 import ParentProvider from "./Providers/ParentProvider";
 import { UserProvider } from "./Providers/UserDataContext";
+import ReactQueryProvider from "./Providers/ReactQueryProvider";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -36,9 +37,12 @@ export default function RootLayout({
           <div className="min-h-screen bg-linear-to-br from-primary/5 via-secondary/5 to-background">
               <UserProvider>
             <Navbar />
+<ReactQueryProvider>
+
             <main className="w-full flex flex-1 flex-col items-center bg-background min-h-screen ">
                 {children}
             </main>
+</ReactQueryProvider>
               </UserProvider>
           </div>
         </ThemeProvider>

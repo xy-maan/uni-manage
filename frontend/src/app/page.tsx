@@ -19,6 +19,8 @@ export default async function BasicPage() {
    const accessToken = auth.django.access;
 
   const { payload, ok } = await GetUserStatus(accessToken);
+    console.log("status:", { payload, ok }); // ← شوف إيه اللي بيرجع
+
   
   if (!ok) {
     redirect("/login?error=session_expired");

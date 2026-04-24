@@ -21,8 +21,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { schemaStudent } from "@/schemas/AuthSchema/Student.schema";
-import { StudentFormType } from "@/types/auth";
+import { schemaStudent } from "@/schemas/Student.schema";
+import { StudentFormType } from "@/types/schema";
 import z from "zod";
 import { completeProfileAction } from "@/Actions/complete.action";
 import { toast } from "sonner";
@@ -36,10 +36,7 @@ export type RoleDataType={
    skills: string[];
 }
 export default function FormStudent() {
-  
-const { data } = useSession();
-
-  const router=useRouter()
+const router=useRouter()
 const formObj = useForm<StudentFormType>({
   resolver: zodResolver(schemaStudent),
   defaultValues: {
@@ -65,7 +62,7 @@ const formObj = useForm<StudentFormType>({
       .map((s:string) => s.trim())
       .filter((s:string) => s !== ""),
     };
-const res=await completeProfileAction(roleData,data?.djangoAccess)
+const res=await completeProfileAction(roleData)
 if(res.ok)
 {
   toast.success(res.payload.message,{position:"top-center",duration:2000})
