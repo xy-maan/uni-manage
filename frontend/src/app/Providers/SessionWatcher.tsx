@@ -12,9 +12,11 @@ export default function SessionWatcher() {
           session?.error === "RefreshAccessTokenError" ||
           session?.error === "NoRefreshToken"
         ) {
-            signOut({ callbackUrl: "/login",redirect: true });
-        }
-    }, [session]);
+    signOut({ callbackUrl: "/login", redirect: false }).then(() => {
+       window.location.href = "/login";
+    });
+  }
+}, [session])
     
     return null;
 }
