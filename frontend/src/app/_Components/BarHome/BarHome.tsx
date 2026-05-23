@@ -10,7 +10,7 @@ export default function BarHome() {
         <div className="student-bar">
           <Button
             className={`flex items-center justify-between text-sm font-medium  rounded-md gap-1.5 px-3 pr-4 has-[>svg]:px-2.5 py-0 cursor-pointer border transition-all duration-200 transform-none  pb-0.75 ${
-              activeBar === "student"
+              activeBar == "student"
                 ? "bg-primary text-primary-foreground hover:bg-primary/90"
                 : "bg-background text-foreground hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50"
             }`}
@@ -40,7 +40,7 @@ export default function BarHome() {
         <div className="">
           <Button
             className={`flex items-center justify-between text-sm font-medium  rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 py-0 cursor-pointer  border transition-all duration-200 transform-none pb-0.75 pr-4 ${
-              activeBar === "supervisor"
+              activeBar == "supervisor"
                 ? "bg-primary text-primary-foreground hover:bg-primary/90"
                 : " bg-background text-foreground hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50"
             }`}
@@ -108,7 +108,7 @@ export default function BarHome() {
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="lucide lucide-arrow-right ml-2 h-5 w-5"
+            className="lucide lucide-arrow-right ml-2 size-5"
           >
             <path d="M5 12h14"></path>
             <path d="m12 5 7 7-7 7"></path>

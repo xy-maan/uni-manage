@@ -24,7 +24,7 @@ export default function PollOptions({
       toast.error(payload.detail, { position: "top-center", duration: 2000 });
     setPollOptions((prev) =>
       prev.map((o) =>
-        o.id === optionId
+        o.id == optionId
           ? { ...o, vote_count: o.vote_count + 1, has_voted: true }
           : o,
       ),

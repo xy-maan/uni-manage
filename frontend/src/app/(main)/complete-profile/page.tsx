@@ -26,7 +26,7 @@ export default function page() {
   // const session= useSession()
   // console.log(session);
   useEffect(() => {
-    if (status === "loading") return;
+    if (status == "loading") return;
 
     if (!session?.djangoAccess) return;
 

@@ -22,5 +22,6 @@ declare module 'next-auth/jwt' {
     djangoRefresh?: string;
     error?: string;
       djangoAccessExpires?: number;
+        sessionExpires?: number;
   }
 }

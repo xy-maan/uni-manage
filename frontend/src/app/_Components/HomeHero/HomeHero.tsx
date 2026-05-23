@@ -60,7 +60,7 @@ export default function HomeHero() {
                           strokeWidth="2"
                           strokeLinecap="round"
                           strokeLinejoin="round"
-                          className="lucide lucide-arrow-right ml-2 h-5 w-5"
+                          className="lucide lucide-arrow-right ml-2 size-5"
                         >
                           <path d="M5 12h14"></path>
                           <path d="m12 5 7 7-7 7"></path>
@@ -78,7 +78,7 @@ export default function HomeHero() {
                         strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        className="lucide lucide-eye mr-2 h-5 w-5"
+                        className="lucide lucide-eye mr-2 size-5"
                       >
                         <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path>
                         <circle cx="12" cy="12" r="3"></circle>
@@ -99,7 +99,7 @@ export default function HomeHero() {
                           strokeWidth="2"
                           strokeLinecap="round"
                           strokeLinejoin="round"
-                          className="lucide lucideGraduation-cap h-5 w-5 text-white"
+                          className="lucide lucideGraduation-cap size-5 text-white"
                         >
                           <path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"></path>
                           <path d="M22 10v6"></path>
@@ -117,7 +117,7 @@ export default function HomeHero() {
                           strokeWidth="2"
                           strokeLinecap="round"
                           strokeLinejoin="round"
-                          className="lucide lucide-users h-5 w-5 text-white"
+                          className="lucide lucide-users size-5 text-white"
                         >
                           <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
                           <circle cx="9" cy="7" r="4"></circle>
@@ -136,7 +136,7 @@ export default function HomeHero() {
                           strokeWidth="2"
                           strokeLinecap="round"
                           strokeLinejoin="round"
-                          className="lucide lucide-target h-5 w-5 text-white"
+                          className="lucide lucide-target size-5 text-white"
                         >
                           <circle cx="12" cy="12" r="10"></circle>
                           <circle cx="12" cy="12" r="6"></circle>

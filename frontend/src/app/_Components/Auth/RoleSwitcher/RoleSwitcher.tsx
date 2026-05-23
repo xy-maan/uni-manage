@@ -14,14 +14,14 @@ export default function RoleSwitcher({ role }: { role: string }) {
       <div className="bg-muted rounded-2xl h-9 flex items-center justify-between p-0.75 mb-6 text-muted-foreground">
         <span
           className={`flex items-center justify-center w-1/2 cursor-pointer"   
-            ${role === "STUDENT" ? "text-foreground" : "text-muted-foreground"}`}
+            ${role == "STUDENT" ? "text-foreground" : "text-muted-foreground"}`}
         >
           <span className="text-sm ">Student</span>
         </span>
         <span
           className={`flex items-center justify-center w-1/2 cursor-pointer"   
               ${
-                role === "SUPERVISOR"
+                role == "SUPERVISOR"
                   ? "text-foreground"
                   : "text-muted-foreground"
               }`}
@@ -30,8 +30,8 @@ export default function RoleSwitcher({ role }: { role: string }) {
         </span>
       </div>
       <>
-        {role === "STUDENT" && <RegisterStudent />}
-        {/* {role === "SUPERVISOR" && <RegisterSupervisor />} */}
+        {role == "STUDENT" && <RegisterStudent />}
+        {/* {role == "SUPERVISOR" && <RegisterSupervisor />} */}
       </>
     </div>
   );

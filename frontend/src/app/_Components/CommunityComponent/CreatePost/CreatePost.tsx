@@ -65,7 +65,7 @@ export default function CreatePost() {
 
   const { control, handleSubmit } = formObj;
 async function handleCreatePost(data: CreateTextPostValues) {
-  if (switchPost === "text") {
+  if (switchPost == "text") {
     await handleCreatePostText(data);
   } else {
     await handleCreatePostPoll(data);
@@ -146,7 +146,7 @@ useEffect(() => {
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="lucide lucide-plus h-4 w-4"
+              className="lucide lucide-plus size-4"
             >
               <path d="M5 12h14"></path>
               <path d="M12 5v14"></path>
@@ -187,7 +187,7 @@ useEffect(() => {
                       strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      className="lucide lucide-file-text h-4 w-4 mr-2"
+                      className="lucide lucide-file-text size-4 mr-2"
                     >
                       <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path>
                       <path d="M14 2v4a2 2 0 0 0 2 2h4"></path>
@@ -212,7 +212,7 @@ useEffect(() => {
                       strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      className="lucide lucide-chart-column h-4 w-4 mr-2"
+                      className="lucide lucide-chart-column size-4 mr-2"
                     >
                       <path d="M3 3v16a2 2 0 0 0 2 2h16"></path>
                       <path d="M18 17V9"></path>
@@ -277,8 +277,8 @@ useEffect(() => {
                   )}
                 />
               </div>
-              {switchPost === "text" && <FileUploadSection control={control} />}
-              {switchPost === "poll" && <PollSection control={control} />}
+              {switchPost == "text" && <FileUploadSection control={control} />}
+              {switchPost == "poll" && <PollSection control={control} />}
      <div className="space-y-2 my-3">
                 <Controller
                   name="tag_names"
@@ -326,7 +326,7 @@ useEffect(() => {
                     strokeWidth={2}
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    className="lucide lucide-send h-4 w-4"
+                    className="lucide lucide-send size-4"
                   >
                     <path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z" />
                     <path d="m21.854 2.147-10.94 10.939" />

@@ -149,6 +149,11 @@ html {
   --sidebar-border: #334155;
   --sidebar-ring: #3b82f6;
 }
+h1{
+      font-size: var(--text-2xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+}
 .card {
   background-color: var(--card);
 }

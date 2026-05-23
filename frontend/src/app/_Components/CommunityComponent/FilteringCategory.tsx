@@ -1,22 +1,40 @@
+"use client"
+import { GetCategoryAction } from '@/Actions/getCategory.action';
+import { CommunityContext } from '@/app/Providers/FilteringCategoryProvider';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import React from 'react'
+import { Category } from '@/types/post';
+import React, { useContext, useEffect, useState } from 'react'
 
 export default function FilteringCategory() {
+  const context = useContext(CommunityContext);
+  if (!context) throw new Error("Not Exit");
+  const{setSelectedCategory}=context
+    const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    async function getCategories() {
+      const { ok, payload } = await GetCategoryAction();
+      console.log(payload);
+      
+      if (ok) setCategories(payload);
+    }
+    getCategories();
+  }, []);
+
   return (
-    <Select>
+    <Select onValueChange={(value) => setSelectedCategory(value == "all" ? null : Number(value))}>
             <SelectTrigger className="w-45">
               <SelectValue placeholder="All Categories" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectItem value="All Categories">All Categories</SelectItem>
-                <SelectItem value="Questions">Questions</SelectItem>
-                <SelectItem value="Ideas">Ideas</SelectItem>
-                <SelectItem value="Help">Help</SelectItem>
-                <SelectItem value="Advice">Advice</SelectItem>
-                <SelectItem value="Feedback">Feedback</SelectItem>
+                 <SelectItem value="all">All Categories</SelectItem>
+          {categories.map((c) => (
+            <SelectItem key={c.id} value={c.id.toString()}>{c.name}</SelectItem>
+          ))}
               </SelectGroup>
             </SelectContent>
           </Select>
+
   )
 }

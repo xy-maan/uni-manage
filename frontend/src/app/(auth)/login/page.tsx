@@ -1,6 +1,7 @@
 import ButtonAOuth from '@/app/_Components/Auth/ButtonAOuth/ButtonAOuth'
 import RoleSwitcher from '@/app/_Components/Auth/RoleSwitcher/RoleSwitcher'
 import React from 'react'
+import AuthError from '../auth/error/page'
 export type roleType={
     role?:string
 }
@@ -13,6 +14,7 @@ export default function LoginPage({ role = 'student' }:  roleType ) {
             <h4 className="text-foreground ">Sign In</h4>
           </div>
           <div className="px-6 pb-6">
+             <AuthError /> 
                  {/* <RoleSwitcher mode="login" role={role} /> */}
               <div className="mb-4 relative">
               <div className="absolute inset-0 flex items-center ">

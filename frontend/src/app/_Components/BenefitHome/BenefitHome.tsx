@@ -190,7 +190,7 @@ export default function BenefitHome() {
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="lucide lucide-arrow-right ml-2 h-5 w-5"
+              className="lucide lucide-arrow-right ml-2 size-5"
             >
               <path d="M5 12h14"></path>
               <path d="m12 5 7 7-7 7"></path>

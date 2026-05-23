@@ -23,13 +23,17 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
-
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60,
+  },
   callbacks: {
     async signIn({ account, profile, user }) {
       //     if (!user.email?.endsWith(".edu.eg")) {
       //   return "/auth/error?error=invalid_email";
       // }
       if (!account?.access_token) return "/auth/error?error=no_google_token";
+  if (!account?.id_token) return "/auth/error?error=no_id_token";
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/users/login/google/`,
@@ -43,9 +47,8 @@ export const authOptions: NextAuthOptions = {
         },
       );
 
-      if (!response.ok) return "/auth/error?error=login_failed";
-
-      const payload = await response.json();
+if (!response.ok) return "/auth/error?error=login_failed";
+const payload = await response.json();
       account.djangoAccess = payload.access;
       account.djangoRefresh = payload.refresh;
       return true;
@@ -57,15 +60,20 @@ export const authOptions: NextAuthOptions = {
         token.access_token = account.access_token;
         token.id_token = account.id_token;
 
+        token.sessionExpires = Date.now() +  30 * 24 * 60 * 60 * 1000;
+
         if (account.djangoAccess) {
           token.djangoAccessExpires = decodeTokenExpiry(
             account.djangoAccess as string,
           );
         }
-
         return token;
       }
 
+      
+      if (token.sessionExpires && Date.now() > (token.sessionExpires as number)) {
+         return { ...token, error: "SessionExpired" };
+       }
       if (
         token.djangoAccess &&
         token.djangoAccessExpires &&
@@ -78,19 +86,19 @@ export const authOptions: NextAuthOptions = {
         return { ...token, error: "NoRefreshToken" };
       }
 
-
-      const { ok, access } = await refreshTokenAction(
+      const { ok, access,refresh } = await refreshTokenAction(
         token.djangoRefresh as string,
       );
 
       if (!ok || !access) {
+
         return { ...token, error: "RefreshAccessTokenError" };
       }
-
       return {
         ...token,
         djangoAccess: access,
         djangoAccessExpires: decodeTokenExpiry(access),
+        djangoRefresh: refresh ?? token.djangoRefresh,
         error: undefined,
       };
     },
@@ -101,6 +109,8 @@ export const authOptions: NextAuthOptions = {
       session.djangoAccess = token.djangoAccess;
       session.djangoRefresh = token.djangoRefresh;
       session.error = token.error;
+
+
         return session;
     },
   },
@@ -110,3 +120,4 @@ export const authOptions: NextAuthOptions = {
     error: "/auth/error",
   },
 };
+

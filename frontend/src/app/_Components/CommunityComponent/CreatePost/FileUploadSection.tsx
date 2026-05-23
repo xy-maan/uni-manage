@@ -1,7 +1,7 @@
 "use client";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Control, Controller, useForm } from "react-hook-form";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import {
@@ -20,6 +20,8 @@ export default function FileUploadSection({
   control: Control<CreateTextPostValues>;
 }) {
   const [preview, setPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
   return (
     <>
       <div className="my-3">
@@ -68,7 +70,7 @@ export default function FileUploadSection({
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
               <FieldLabel
-                htmlFor="file"
+                onClick={() => fileInputRef.current?.click()}
                 className="flex flex-col items-center justify-center w-full rounded-base cursor-pointer"
               >
                 {field.value ? (
@@ -96,9 +98,9 @@ export default function FileUploadSection({
                           <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
                           <path d="M14 2v4a2 2 0 0 0 2 2h4" />
                         </svg>
-                       <span className="text-sm">
-  {field.value?.name ?? ""}
-</span>
+                        <span className="text-sm">
+                          {field.value?.name ?? ""}
+                        </span>
                       </div>
                     )}
                     <button
@@ -106,6 +108,9 @@ export default function FileUploadSection({
                       onClick={() => {
                         field.onChange(null);
                         setPreview(null);
+                        if (fileInputRef.current) {
+                          fileInputRef.current.value = "";
+                        }
                       }}
                       className="text-xs text-red-500 hover:underline"
                     >
@@ -124,7 +129,7 @@ export default function FileUploadSection({
                         fill="none"
                         stroke="currentColor"
                         strokeWidth={2}
-                        className="lucide lucide-paperclip h-6 w-6 text-muted-foreground"
+                        className="lucide lucide-paperclip size-6 text-muted-foreground"
                       >
                         <path d="M13.234 20.252 21 12.3" />
                         <path d="m16 6-8.414 8.586a2 2 0 0 0 0 2.828 2 2 0 0 0 2.828 0l8.414-8.586a4 4 0 0 0 0-5.656 4 4 0 0 0-5.656 0l-8.415 8.585a6 6 0 1 0 8.486 8.486" />
@@ -144,12 +149,15 @@ export default function FileUploadSection({
                   type="file"
                   id="file"
                   className="hidden"
+                  ref={fileInputRef}
                   onChange={(e) => {
-                     const file = e.target.files?.[0]
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+
                     field.onChange(file);
-                    if (file?.type.startsWith("image/")) {
+
+                    if (file.type.startsWith("image/")) {
                       const url = URL.createObjectURL(file);
-                      console.log(url);
                       setPreview(url);
                     } else {
                       setPreview(null);

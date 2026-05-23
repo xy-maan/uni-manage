@@ -8,14 +8,12 @@ export default function ParentProvider({ children }: { children: React.ReactNode
   const [queryClient] = useState(() => new QueryClient());
   return (
         <QueryClientProvider client={queryClient}>
-          {/* <UserContextProvider> */}
 
-          <Toaster />
-           <SessionProvider>
+
+           {/* <SessionProvider> */}
 
           {children}
-           </SessionProvider>
-          {/* </UserContextProvider> */}
+           {/* </SessionProvider> */}
         </QueryClientProvider>
   );
 }

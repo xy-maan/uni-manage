@@ -5,14 +5,17 @@ import { redirect } from "next/navigation";
 import HomeUi from "./(main)/Home/page";
 import getAuthData from "@/utilities/getAuthData";
 import { refreshTokenAction } from "@/Actions/refresh.action";
-
+import { Metadata } from "next";
+ export const metadata: Metadata = {
+   title: "Home",
+ };
 export default async function BasicPage() {
    const auth = await getAuthData();
 //not login
  if (!auth?.django?.access) {
     return <HomeUi />;
   }
-  if (auth.nextAuth?.error === "RefreshAccessTokenError") {
+  if (auth.nextAuth?.error == "RefreshAccessTokenError") {
     redirect("/login?error=session_expired");
   }
 

@@ -57,7 +57,7 @@ export default function CommunityCard({
     await navigator.clipboard.writeText(postUrl);
     toast.success("Post Shared!", { position: "top-center", duration: 2000 });
   }
-  const category = categories.find((c) => c.id === post.category);
+  const category = categories.find((c) => c.id == post.category);
   return (
     <div className="card bg-card mb-4 text-card-foreground flex flex-col gap-3 rounded-xl border hover:shadow-md transition-shadow">
       <div className="header  gap-1.5 px-6 pt-6  pb-3">
@@ -86,9 +86,12 @@ export default function CommunityCard({
 {post.attachments?.length > 0 && (
   <div className="mt-2 flex flex-col gap-2">
     {post.attachments.map((item) => {
-     const isImage = item.file.match(/\.(png|jpg|jpeg|gif|webp)(\?.*)?$/i);
+   const isImage = /\.(png|jpg|jpeg|gif|webp)$/i.test(item.file);
+   console.log("item.file",item.file,"isImage",isImage);
+   
       return (
         <div key={item.id}>
+          
           {isImage ? (
               <Image
               width={450}
@@ -118,7 +121,7 @@ export default function CommunityCard({
                 </div>
                 
               )}
-              {post.post_type === "POLL" && post.poll_options.length > 0 && (
+              {post.post_type == "POLL" && post.poll_options.length > 0 && (
                 <PollOptions postId={post.id} options={post.poll_options} />
               )}
               <div className="flex flex-wrap gap-1">
@@ -178,7 +181,7 @@ export default function CommunityCard({
                 strokeWidth={2}
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="lucide lucide-trending-up h-4 w-4"
+                className="lucide lucide-trending-up size-4"
               >
                 <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
                 <polyline points="16 7 22 7 22 13" />
@@ -220,7 +223,7 @@ export default function CommunityCard({
                 strokeWidth={2}
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="lucide lucide-share2 lucide-share-2 h-4 w-4"
+                className="lucide lucide-share2 lucide-share-2 size-4"
               >
                 <circle cx={18} cy={5} r={3} />
                 <circle cx={6} cy={12} r={3} />

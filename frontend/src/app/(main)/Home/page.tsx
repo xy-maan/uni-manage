@@ -70,7 +70,7 @@ export default function HomeUi() {
                          strokeWidth="2"
                          strokeLinecap="round"
                          strokeLinejoin="round"
-                         className="lucide lucide-arrow-right ml-2 h-5 w-5"
+                         className="lucide lucide-arrow-right ml-2 size-5"
                        >
                          <path d="M5 12h14"></path>
                          <path d="m12 5 7 7-7 7"></path>
@@ -88,7 +88,7 @@ export default function HomeUi() {
                        strokeWidth="2"
                        strokeLinecap="round"
                        strokeLinejoin="round"
-                       className="lucide lucide-eye mr-2 h-5 w-5"
+                       className="lucide lucide-eye mr-2 size-5"
                      >
                        <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path>
                        <circle cx="12" cy="12" r="3"></circle>
@@ -109,7 +109,7 @@ export default function HomeUi() {
                          strokeWidth="2"
                          strokeLinecap="round"
                          strokeLinejoin="round"
-                         className="lucide lucideGraduation-cap h-5 w-5 text-white"
+                         className="lucide lucideGraduation-cap size-5 text-white"
                        >
                          <path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"></path>
                          <path d="M22 10v6"></path>
@@ -127,7 +127,7 @@ export default function HomeUi() {
                          strokeWidth="2"
                          strokeLinecap="round"
                          strokeLinejoin="round"
-                         className="lucide lucide-users h-5 w-5 text-white"
+                         className="lucide lucide-users size-5 text-white"
                        >
                          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
                          <circle cx="9" cy="7" r="4"></circle>
@@ -146,7 +146,7 @@ export default function HomeUi() {
                          strokeWidth="2"
                          strokeLinecap="round"
                          strokeLinejoin="round"
-                         className="lucide lucide-target h-5 w-5 text-white"
+                         className="lucide lucide-target size-5 text-white"
                        >
                          <circle cx="12" cy="12" r="10"></circle>
                          <circle cx="12" cy="12" r="6"></circle>
@@ -294,12 +294,12 @@ export default function HomeUi() {
       <div className="absolute inset-0 bg-linear-to-r from-primary/50 to-secondary/50 backdrop-blur-sm"></div>
          <div className="content flex flex-col items-center text-center lg:pb-6 pb-6 px-12 pt-12 relative">
              <div className="size-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-6">
-               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"   strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-sparkles h-8 w-8 text-white"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path><path d="M20 3v4"></path><path d="M22 5h-4"></path><path d="M4 17v2"></path><path d="M5 18H3"></path></svg>
+               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"   strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-sparkles size-8 text-white"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path><path d="M20 3v4"></path><path d="M22 5h-4"></path><path d="M4 17v2"></path><path d="M5 18H3"></path></svg>
              </div>
              <h2 className="text-3xl lg:text-5xl font-bold mb-4">Ready to Excel in Your Graduation Project?</h2>
              <p className="text-lg text-white/90 mb-8 max-w-2xl mx-auto">Join UniManage today and experience the easiest way to manage your graduation project from start to finish.</p>
             <Link href="/login"> <Button className="flex h-10 items-center justify-center gap-2  px-7 has-[>svg]:px-4 bg-white text-primary hover:bg-white/90 py-0">Get Started Free
-               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"   strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-right ml-2 h-5 w-5"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"   strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-right ml-2 size-5"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
              </Button></Link>
          </div>
          </div>

@@ -16,8 +16,8 @@ export const   schemaPost = z.object({
       .optional(),
   })
   .superRefine((data, ctx) => {
-    if (data.post_type === "TEXT") {
-      if (!data.content || data.content.trim() === "") {
+    if (data.post_type == "TEXT") {
+      if (!data.content || data.content.trim() == "") {
         ctx.addIssue({
           path: ["content"],
           message: "Content is required",
@@ -26,7 +26,7 @@ export const   schemaPost = z.object({
       }
     }
 
-    if (data.post_type === "POLL") {
+    if (data.post_type == "POLL") {
       if (!data.poll_option_texts || data.poll_option_texts.length <2) {
         ctx.addIssue({
           path: ["poll_option_texts"],

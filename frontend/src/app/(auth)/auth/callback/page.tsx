@@ -19,9 +19,9 @@ const  { setLoading, setUser }=context
 const hasRun = useRef(false);
 
 useEffect(() => {
-    if (status === "loading") return;
+    if (status == "loading") return;
 
-    if (status === "unauthenticated") {
+    if (status == "unauthenticated") {
       router.push("/login");
       return;
     }
@@ -60,7 +60,7 @@ const {payload,ok}=await GetUserStatus(session!.djangoAccess!)
   return null;
 }
 // useEffect(() => {
-  //   if (status === 'loading') return;
+  //   if (status == 'loading') return;
   //   if (!session?.djangoAccess) {
   //     router.push('/login');
   //     return;
@@ -68,7 +68,7 @@ const {payload,ok}=await GetUserStatus(session!.djangoAccess!)
   //   handleCallback();
   // }, [session, status]);
   //  useEffect(() => {
-//   if (status === 'loading') return;
+//   if (status == 'loading') return;
 //   if (!session) { router.push('/login'); return; }
 //   if (!session.djangoAccess) { router.push('/login?error=no_token'); return; }
 //   if (hasRun.current) return;

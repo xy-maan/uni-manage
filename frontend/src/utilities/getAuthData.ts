@@ -11,7 +11,7 @@ export default async function getAuthData() {
       cookieStore.get("next-auth.session-token")?.value ||
       cookieStore.get("__Secure-next-auth.session-token")?.value;
 
-
+if (!nextAuthToken) return null;
    
     const nextAuthData: any = await decode({
         token: nextAuthToken,
@@ -19,8 +19,11 @@ export default async function getAuthData() {
       });
     if (!nextAuthData) return null;
 
-    if (nextAuthData.error) {
-      console.error("Token error:", nextAuthData.error);
+   if (
+      nextAuthData.error === "RefreshAccessTokenError" ||
+      nextAuthData.error === "NoRefreshToken" ||
+      nextAuthData.error === "SessionExpired"
+    ) {
       return null;
     }
          const access = nextAuthData?.djangoAccess || null;
