@@ -1,5 +1,23 @@
 from rest_framework import serializers
-from .models import User, StudentProfile, SupervisorProfile
+from .models import User, StudentProfile, SupervisorProfile, Skill, AcademicLevel, Department
+
+class AcademicLevelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AcademicLevel
+        fields = ['id', 'name']
+
+class DepartmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Department
+        fields = ['id', 'name']
+
+class SkillSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Skill
+        fields = ['id', 'name', 'is_official']
+
+class CustomSkillField(serializers.ListField):
+    child = serializers.ListField(allow_empty=True) # Let's handle it in the serializer's update/create method instead for robustness. Or just parse it in `to_internal_value`.
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -9,42 +27,65 @@ class UserSerializer(serializers.ModelSerializer):
 
 class StudentProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
+    skills = SkillSerializer(many=True, read_only=True)
+    department = DepartmentSerializer(read_only=True)
+    academic_level = AcademicLevelSerializer(read_only=True)
     
     class Meta:
         model = StudentProfile
         fields = [
             'user', 
-            'major', 
+            'student_id',
+            'department', 
             'academic_level', 
             'gpa', 
-            'skills'
+            'skills',
+            'looking_for_course_project_team',
+            'looking_for_grad_project_team',
+            'github_url',
+            'linkedin_url'
         ]
+        read_only_fields = ['skills']
 
 
 class SupervisorProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
-    role_display = serializers.SerializerMethodField()
+    title_display = serializers.SerializerMethodField()
+    expertise = SkillSerializer(many=True, read_only=True)
+    department = DepartmentSerializer(read_only=True)
 
     class Meta:
         model = SupervisorProfile
         fields = [
             'user', 
-            'is_professor', 
-            'role_display', 
+            'title', 
+            'title_display', 
             'department', 
-            'expertise'
+            'expertise',
+            'max_team_capacity',
+            'scholar_url',
+            'linkedin_url'
         ]
+        read_only_fields = ['expertise']
 
-    def get_role_display(self, obj):
-        return "Primary Supervisor (Professor)" if obj.is_professor else "Assistant Supervisor (TA)"
+    def get_title_display(self, obj):
+        return obj.get_title_display()
 
 class CompleteProfileSerializer(serializers.Serializer):
     role = serializers.ChoiceField(choices=User.Role.choices)
     
-    major = serializers.CharField(required=False, allow_blank=True)
-    academic_level = serializers.CharField(required=False, allow_blank=True)
+    student_id = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    department = serializers.IntegerField(required=False, allow_null=True)
+    academic_level = serializers.IntegerField(required=False, allow_null=True)
+    gpa = serializers.FloatField(required=False, allow_null=True)
     skills = serializers.ListField(child=serializers.CharField(), required=False)
+    looking_for_course_project_team = serializers.BooleanField(required=False, default=True)
+    looking_for_grad_project_team = serializers.BooleanField(required=False, default=True)
+    github_url = serializers.URLField(required=False, allow_blank=True, allow_null=True)
+    linkedin_url = serializers.URLField(required=False, allow_blank=True, allow_null=True)
     
+    registration_code = serializers.CharField(required=False, allow_blank=True)
     department = serializers.CharField(required=False, allow_blank=True)
     expertise = serializers.ListField(child=serializers.CharField(), required=False)
-    is_professor = serializers.BooleanField(required=False)
+    max_team_capacity = serializers.IntegerField(required=False, default=5)
+    scholar_url = serializers.URLField(required=False, allow_blank=True, allow_null=True)

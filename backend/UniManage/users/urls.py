@@ -3,7 +3,8 @@ from dj_rest_auth.views import LogoutView
 from rest_framework_simplejwt.views import TokenRefreshView
 from .views import (
     GoogleLogin, GoogleAuthRedirect, GoogleAuthCallback,
-    UserStatusView, CompleteProfileView, StudentProfileDetail, SupervisorProfileDetail
+    UserStatusView, CompleteProfileView, StudentProfileDetail, SupervisorProfileDetail,
+    SkillSearchView, DepartmentListView, AcademicLevelListView
 )
 
 urlpatterns = [
@@ -18,4 +19,7 @@ urlpatterns = [
     path('profile/complete/', CompleteProfileView.as_view(), name='complete_profile'),
     path('profile/student/', StudentProfileDetail.as_view(), name='student_profile'),
     path('profile/supervisor/', SupervisorProfileDetail.as_view(), name='supervisor_profile'),
+    path('skills/search/', SkillSearchView.as_view(), name='skill_search'),
+    path('departments/', DepartmentListView.as_view(), name='department_list'),
+    path('academic-levels/', AcademicLevelListView.as_view(), name='academic_level_list'),
 ]

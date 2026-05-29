@@ -9,6 +9,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
+PROFESSOR_REGISTRATION_CODE = os.getenv('PROFESSOR_REGISTRATION_CODE', 'PROF-1234')
+TA_REGISTRATION_CODE = os.getenv('TA_REGISTRATION_CODE', 'TA-1234')
+
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')

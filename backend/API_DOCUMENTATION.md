@@ -20,6 +20,8 @@
 
 # 1. Authentication & Users
 
+This section governs the user onboarding process. Because the app heavily relies on Google OAuth, the concept of "registration" and "login" are identical.
+
 ## Base URL
 
 ```
@@ -28,12 +30,12 @@ http://localhost:8000/api/users
 
 ## Authentication
 
-This API uses **JWT (JSON Web Tokens)** for authentication. After successful login, you'll receive:
+This API uses **JWT (JSON Web Tokens)** for authentication. After a successful Google OAuth login, you will receive:
 
 - `access`: Valid for 1 day
 - `refresh`: Valid for 7 days
 
-Include the access token in the `Authorization` header for protected endpoints:
+Include the access token in the `Authorization` header for all protected endpoints:
 
 ```
 Authorization: Bearer <access_token>
@@ -41,19 +43,17 @@ Authorization: Bearer <access_token>
 
 ---
 
-## Google OAuth Complete Flow
+## 1.1 The User Story & Frontend Flow
 
 ### Overview
 
-The backend handles the entire OAuth flow. The frontend only needs to:
+When a user visits the site for the very first time, the backend handles the Google OAuth handshake. However, Google only gives us their name and email. We do not know if they are a Student or a Supervisor (Professor/TA).
 
-1. Link users to the auth endpoint
-2. Handle the success/error redirects
-3. Store the received tokens
+Therefore, immediately after OAuth, the frontend must check their `status`. If their profile is incomplete, the frontend must force them onto a "Complete Profile" wizard.
 
-### Step-by-Step Flow
+### Step-by-Step Frontend Implementation
 
-```
+```text
 ┌──────────────┐     ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
 │   Frontend   │     │   Backend    │     │    Google    │     │   Frontend   │
 │  (Next.js)   │     │   (Django)   │     │    OAuth     │     │   Callback   │
@@ -63,24 +63,17 @@ The backend handles the entire OAuth flow. The frontend only needs to:
        │  "Login with       │                    │                    │
        │   Google" link     │                    │                    │
        │ ─────────────────► │                    │                    │
-       │                    │                    │                    │
        │                    │  2. Redirect to    │                    │
        │                    │  Google OAuth      │                    │
        │                    │ ─────────────────► │                    │
-       │                    │                    │                    │
        │                    │                    │  3. User logs in   │
        │                    │                    │  with Google       │
-       │                    │                    │                    │
        │                    │  4. Google sends   │                    │
        │                    │  auth code back    │                    │
        │                    │ ◄───────────────── │                    │
-       │                    │                    │                    │
        │                    │  5. Backend        │                    │
        │                    │  exchanges code    │                    │
-       │                    │  for tokens &      │                    │
-       │                    │  creates/logs in   │                    │
-       │                    │  user              │                    │
-       │                    │                    │                    │
+       │                    │  for JWT tokens    │                    │
        │                    │  6. Redirect to    │                    │
        │                    │  frontend with     │                    │
        │                    │  JWT tokens        │                    │
@@ -88,359 +81,33 @@ The backend handles the entire OAuth flow. The frontend only needs to:
        │                    │                    │                    │
        │                    │                    │    7. Frontend     │
        │                    │                    │    extracts tokens │
-       │                    │                    │    from URL and    │
-       │                    │                    │    stores them     │
+       │                    │                    │    & checks Status │
        │                    │                    │                    │
-```
-
-### Step 1: Initiate Login
-
-Create a login button that links to the backend auth endpoint:
-
-```tsx
-// components/LoginButton.tsx
-export function GoogleLoginButton() {
-	const handleLogin = () => {
-		window.location.href = 'http://localhost:8000/api/users/auth/google/';
-	};
-
-	return <button onClick={handleLogin}>Login with Google</button>;
-}
-```
-
-**What happens:** User is redirected to Google's login page.
-
-### Step 2: Create Success Callback Page
-
-Create a page at `/auth/success` to receive the tokens:
-
-```tsx
-// app/auth/success/page.tsx
-'use client';
-
-import { useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-
-export default function AuthSuccess() {
-	const router = useRouter();
-	const searchParams = useSearchParams();
-
-	useEffect(() => {
-		const accessToken = searchParams.get('access_token');
-		const refreshToken = searchParams.get('refresh_token');
-
-		if (accessToken && refreshToken) {
-			localStorage.setItem('access_token', accessToken);
-			localStorage.setItem('refresh_token', refreshToken);
-
-			checkUserStatus(accessToken);
-		} else {
-			router.push('/login?error=no_tokens');
-		}
-	}, [searchParams, router]);
-
-	const checkUserStatus = async (token: string) => {
-		try {
-			const response = await fetch('http://localhost:8000/api/users/status/', {
-				headers: {
-					Authorization: `Bearer ${token}`,
-				},
-			});
-
-			if (response.ok) {
-				const data = await response.json();
-
-				if (data.is_complete) {
-					if (data.role === 'STUDENT') {
-						router.push('/student/dashboard');
-					} else {
-						router.push('/supervisor/dashboard');
-					}
-				} else {
-					router.push('/complete-profile');
-				}
-			} else {
-				router.push('/login?error=invalid_token');
-			}
-		} catch (error) {
-			router.push('/login?error=network_error');
-		}
-	};
-
-	return (
-		<div>
-			<p>Authenticating...</p>
-		</div>
-	);
-}
-```
-
-### Step 3: Create Error Callback Page
-
-Create a page at `/auth/error` to handle OAuth errors:
-
-```tsx
-// app/auth/error/page.tsx
-'use client';
-
-import { useSearchParams } from 'next/navigation';
-import Link from 'next/link';
-
-export default function AuthError() {
-	const searchParams = useSearchParams();
-	const error = searchParams.get('error');
-
-	const errorMessages: Record<string, string> = {
-		access_denied: 'You denied access to your Google account.',
-		no_code: 'No authorization code received from Google.',
-		network_error: 'Network error occurred. Please try again.',
-		login_failed: 'Failed to create your account. Please try again.',
-		'Use your .edu.eg email.':
-			'You must use a university email (.edu.eg) to register.',
-		default: 'An error occurred during authentication.',
-	};
-
-	const message = errorMessages[error || ''] || errorMessages['default'];
-
-	return (
-		<div>
-			<h1>Authentication Error</h1>
-			<p>{message}</p>
-			<Link href="/login">Try Again</Link>
-		</div>
-	);
-}
-```
-
-### Step 4: Complete Profile Page
-
-After successful authentication, new users need to complete their profile:
-
-```tsx
-// app/complete-profile/page.tsx
-'use client';
-
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-
-export default function CompleteProfile() {
-	const router = useRouter();
-	const [role, setRole] = useState<'STUDENT' | 'SUPERVISOR' | null>(null);
-	const [loading, setLoading] = useState(false);
-	const [error, setError] = useState('');
-
-	const [studentData, setStudentData] = useState({
-		major: '',
-		academic_level: '',
-		skills: [] as string[],
-		gpa: 0,
-	});
-
-	const [supervisorData, setSupervisorData] = useState({
-		department: '',
-		expertise: [] as string[],
-		is_professor: true,
-	});
-
-	const handleSubmit = async () => {
-		const token = localStorage.getItem('access_token');
-		if (!token) {
-			router.push('/login');
-			return;
-		}
-
-		setLoading(true);
-		setError('');
-
-		const body =
-			role === 'STUDENT'
-				? { role, ...studentData }
-				: { role, ...supervisorData };
-
-		try {
-			const response = await fetch(
-				'http://localhost:8000/api/users/profile/complete/',
-				{
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-						Authorization: `Bearer ${token}`,
-					},
-					body: JSON.stringify(body),
-				},
-			);
-
-			if (response.ok) {
-				if (role === 'STUDENT') {
-					router.push('/student/dashboard');
-				} else {
-					router.push('/supervisor/dashboard');
-				}
-			} else {
-				const data = await response.json();
-				setError(data.error || 'Failed to complete profile');
-			}
-		} catch (err) {
-			setError('Network error. Please try again.');
-		} finally {
-			setLoading(false);
-		}
-	};
-
-	return (
-		<div>
-			<h1>Complete Your Profile</h1>
-
-			{!role && (
-				<div>
-					<p>Select your role:</p>
-					<button onClick={() => setRole('STUDENT')}>I am a Student</button>
-					<button onClick={() => setRole('SUPERVISOR')}>
-						I am a Supervisor
-					</button>
-				</div>
-			)}
-
-			{role === 'STUDENT' && (
-				<div>
-					<input
-						placeholder="Major"
-						value={studentData.major}
-						onChange={(e) =>
-							setStudentData({ ...studentData, major: e.target.value })
-						}
-					/>
-					<select
-						value={studentData.academic_level}
-						onChange={(e) =>
-							setStudentData({ ...studentData, academic_level: e.target.value })
-						}
-					>
-						<option value="">Select Level</option>
-						<option value="Freshman">Freshman</option>
-						<option value="Sophomore">Sophomore</option>
-						<option value="Junior">Junior</option>
-						<option value="Senior">Senior</option>
-					</select>
-					<input
-						type="number"
-						placeholder="GPA"
-						step="0.1"
-						min="0"
-						max="4"
-						value={studentData.gpa || ''}
-						onChange={(e) =>
-							setStudentData({
-								...studentData,
-								gpa: parseFloat(e.target.value),
-							})
-						}
-					/>
-					<button onClick={handleSubmit} disabled={loading}>
-						{loading ? 'Saving...' : 'Complete Profile'}
-					</button>
-				</div>
-			)}
-
-			{role === 'SUPERVISOR' && (
-				<div>
-					<input
-						placeholder="Department"
-						value={supervisorData.department}
-						onChange={(e) =>
-							setSupervisorData({
-								...supervisorData,
-								department: e.target.value,
-							})
-						}
-					/>
-					<label>
-						<input
-							type="checkbox"
-							checked={supervisorData.is_professor}
-							onChange={(e) =>
-								setSupervisorData({
-									...supervisorData,
-									is_professor: e.target.checked,
-								})
-							}
-						/>
-						I am a Professor (uncheck if TA)
-					</label>
-					<button onClick={handleSubmit} disabled={loading}>
-						{loading ? 'Saving...' : 'Complete Profile'}
-					</button>
-				</div>
-			)}
-
-			{error && <p style={{ color: 'red' }}>{error}</p>}
-		</div>
-	);
-}
+       │                    │                    │    8. If incomplete│
+       │                    │                    │    redirect to     │
+       │                    │                    │    wizard          │
 ```
 
 ---
 
-## Endpoints
+## 1.2 Auth Initiation
 
-### Authentication Endpoints
-
-#### 1. Google Auth Redirect
+### Google Auth Redirect
 
 **Endpoint:** `GET /auth/google/`
+**Description:** Initiates Google OAuth flow.
+**Usage:** Create a standard anchor link `<a href="http://localhost:8000/api/users/auth/google/">` or a simple `window.location.href`.
 
-**Description:** Initiates Google OAuth flow by redirecting to Google's authorization page.
-
-**Authentication:** None required
-
-**Usage:** Link or redirect users to this URL to start login.
-
-**Response:** HTTP 302 redirect to Google OAuth.
-
----
-
-#### 2. Google Auth Callback
+### Google Auth Callback
 
 **Endpoint:** `GET /auth/google/callback/`
+**Description:** DO NOT CALL THIS MANUALLY! Google calls this. The backend will parse it, create the Base User, and redirect the user back to your Next.js frontend at:
+`http://localhost:3000/auth/success?access_token=<jwt>&refresh_token=<jwt>`
 
-**Description:** Handles the OAuth callback from Google. Exchanges auth code for tokens, creates/authenticates user, and redirects to frontend.
-
-**Authentication:** None required
-
-**Query Parameters (set by Google):**
-
-- `code`: Authorization code from Google
-- `error`: Error message if user denied access
-
-**Success Response:** HTTP 302 redirect to:
-
-```
-http://localhost:3000/auth/success?access_token=<jwt>&refresh_token=<jwt>
-```
-
-**Error Response:** HTTP 302 redirect to:
-
-```
-http://localhost:3000/auth/error?error=<error_message>
-```
-
-**Possible Errors:**
-
-- `access_denied`: User denied Google access
-- `no_code`: No authorization code received
-- `network_error`: Failed to communicate with Google
-- `Use your .edu.eg email.`: User's email is not a university email
-
----
-
-#### 3. Direct Google Login (Alternative)
+### Direct Google Login (Alternative)
 
 **Endpoint:** `POST /login/google/`
-
-**Description:** Authenticate with Google tokens directly (for frontend-initiated OAuth flows).
-
-**Authentication:** None required
-
+**Description:** If the frontend is using a custom React Google OAuth popup library.
 **Request Body:**
 
 ```json
@@ -450,137 +117,93 @@ http://localhost:3000/auth/error?error=<error_message>
 }
 ```
 
-**Success Response (200 OK):**
-
-```json
-{
-	"access": "eyJ0eXAiOiJKV1QiLCJhbGc...",
-	"refresh": "eyJ0eXAiOiJKV1QiLCJhbGc...",
-	"user": {
-		"pk": 1,
-		"email": "student@university.edu.eg",
-		"first_name": "John",
-		"last_name": "Doe"
-	}
-}
-```
-
 ---
 
-#### 4. Logout
+## 1.3 Profile Completion Routing
 
-**Endpoint:** `POST /logout/`
+Once the frontend stores the JWT tokens from the URL params, it must immediately determine where to send the user.
 
-**Description:** Logout user and blacklist their refresh token.
-
-**Authentication:** Required (Bearer Token)
-
-**Request Body:**
-
-```json
-{
-	"refresh": "eyJ0eXAiOiJKV1QiLCJhbGc..."
-}
-```
-
-**Success Response (200 OK):**
-
-```json
-{
-	"detail": "Successfully logged out."
-}
-```
-
----
-
-#### 5. Refresh Token
-
-**Endpoint:** `POST /token/refresh/`
-
-**Description:** Get a new access token using a refresh token.
-
-**Authentication:** None required
-
-**Request Body:**
-
-```json
-{
-	"refresh": "eyJ0eXAiOiJKV1QiLCJhbGc..."
-}
-```
-
-**Success Response (200 OK):**
-
-```json
-{
-	"access": "eyJ0eXAiOiJKV1QiLCJhbGc...",
-	"refresh": "eyJ0eXAiOiJKV1QiLCJhbGc..."
-}
-```
-
----
-
-### User Endpoints
-
-#### 6. User Status
+### Get User Status
 
 **Endpoint:** `GET /status/`
-
-**Description:** Get current user's authentication status and profile completion state.
-
 **Authentication:** Required (Bearer Token)
-
 **Success Response (200 OK):**
 
 ```json
 {
 	"is_complete": false,
-	"role": "",
+	"role": "STUDENT", // Will be empty "" if they haven't completed their profile yet
 	"email": "student@university.edu.eg",
 	"full_name": "John Doe"
 }
 ```
 
-**Notes:**
+**Frontend Routing Logic:**
 
-- `is_complete: false` means user needs to complete their profile
-- `role` will be empty string until profile is completed
-- Use this endpoint after login to determine where to redirect the user
+- If `is_complete == true && role == 'STUDENT'`: Redirect to `/student/dashboard`
+- If `is_complete == true && role == 'SUPERVISOR'`: Redirect to `/supervisor/dashboard`
+- If `is_complete == false`: Redirect to `/complete-profile` wizard.
 
 ---
 
-#### 7. Complete Profile
+## 1.4 The Profile Wizard & Schemas
+
+The Complete Profile wizard determines all the user's specific attributes and assigns their role securely.
+
+### Taxonomy Data Types
+
+Our API manages standardized data objects (Departments, Academic Levels, Skills).
+
+When creating or updating profiles, you **must submit integer IDs** for `department` and `academic_level` mapping to these predefined items.
+
+When you query profile details via `GET /profile/student/` or `GET /profile/supervisor/`, these fields will be returned as full JSON objects:
+
+```json
+"department": {
+    "id": 1,
+    "name": "Computer Science"
+}
+```
+
+### Complete Profile
 
 **Endpoint:** `POST /profile/complete/`
-
-**Description:** Complete user profile by selecting role and providing role-specific information.
-
 **Authentication:** Required (Bearer Token)
 
-##### For Student:
+#### Option A: The User is a Student
 
-**Request Body:**
+If the user selects "Student" in the frontend wizard, submit the following payload:
 
 ```json
 {
 	"role": "STUDENT",
-	"major": "Computer Science",
-	"academic_level": "Senior",
-	"skills": ["React", "Python", "Django"],
-	"gpa": 3.8
+	"student_id": "20241029", // Optional
+	"department": 1, // Optional (Must be integer ID representing standard department)
+	"academic_level": 4, // Optional (Must be integer ID representing standard academic level)
+	"gpa": 3.8, // Optional
+	"looking_for_course_project_team": true, // Defaults to true
+	"looking_for_grad_project_team": true, // Defaults to true
+	"skills": [1, 5, "GraphQL", "Docker"], // Optional: Array of Integer IDs OR Custom Strings!
+	"github_url": "https://github.com/johndoe", // Optional
+	"linkedin_url": "https://linkedin.com/..." // Optional
 }
 ```
 
-##### For Supervisor:
+#### Option B: The User is a Supervisor
 
-**Request Body:**
+If the user selects "Supervisor" in the frontend wizard, the frontend MUST ask them for their secret Registration Code. If they are an actual Professor or an actual TA, they will have been given a code by the admins.
+
+_Note: The frontend does not ask if they are a Professor or a TA. The code they type determines that securely on the backend!_
 
 ```json
 {
 	"role": "SUPERVISOR",
-	"is_professor": true,
-	"department": "Computer Science",
-	"expertise": ["Machine Learning", "Data Science"]
+	"registration_code": "PROF-1234", // REQUIRED! Unlocks the role securely.
+	"department": 1, // Optional (Integer ID)
+	"max_team_capacity": 5, // Optional, defaults to 5
+	"expertise": [2, 10, "Machine Learning"], // Optional: Array of Integer IDs OR Custom Strings!
+	"scholar_url": "https://scholar.google.com/", // Optional
+	"linkedin_url": "https://linkedin.com/..." // Optional
 }
 ```
 
@@ -594,33 +217,66 @@ http://localhost:3000/auth/error?error=<error_message>
 
 **Error Responses:**
 
-Profile already exists (400):
-
-```json
-{
-	"error": "Profile already completed"
-}
-```
-
-Invalid role (400):
-
-```json
-{
-	"error": "Invalid role selected"
-}
-```
+- `400 Bad Request`: `{ "error": "Invalid registration code." }`
+- `400 Bad Request`: `{ "error": "Profile already completed" }`
 
 ---
 
-#### 8. Student Profile
+## 1.5 Taxonomy / Dropdown Endpoints
 
-**Endpoint:** `GET /profile/student/`
+On the Profile Wizard, you may want to prompt the user to select from a list of predefined departments or academic levels (or skills).
 
-**Description:** Get current user's student profile.
+### Get Departments
 
+**Endpoint:** `GET /departments/`
+**Authentication:** None Required
+**Success Response:**
+
+```json
+[
+	{ "id": 1, "name": "Computer Science" },
+	{ "id": 2, "name": "Information Systems" }
+]
+```
+
+### Get Academic Levels
+
+**Endpoint:** `GET /academic-levels/`
+**Authentication:** None Required
+**Success Response:**
+
+```json
+[
+	{ "id": 1, "name": "Freshman (Level 1)" },
+	{ "id": 4, "name": "Senior (Level 4)" }
+]
+```
+
+### Search Skills
+
+**Endpoint:** `GET /skills/search/?q=<query>`
+**Authentication:** None Required
+**Description:** Use this with an Async Creatable Autocomplete component (like `react-select`). It checks aliases (e.g. typing "JS" returns "JavaScript").
+**Success Response:**
+
+```json
+[
+	{ "id": 1, "name": "Python", "is_official": true },
+	{ "id": 5, "name": "JavaScript", "is_official": true }
+]
+```
+
+_Frontend Behavior:_ When the user selects "Python", extract the `id` (1) and add it to the submission array. If the user types a brand new framework that returns empty, add their raw string (e.g., "SvelteKit") to the array. The backend will parse it, create it automatically, and attach it to their profile.
+
+---
+
+## 1.6 Fetching and Updating Profiles (Post-Wizard)
+
+### Get/Update Student Profile
+
+**Endpoint:** `GET` / `PATCH /profile/student/`
 **Authentication:** Required (Bearer Token)
-
-**Success Response (200 OK):**
+**Success Response (GET):**
 
 ```json
 {
@@ -631,75 +287,44 @@ Invalid role (400):
 		"last_name": "Doe",
 		"role": "STUDENT"
 	},
-	"major": "Computer Science",
-	"academic_level": "Senior",
+	"student_id": "20241029",
+	"department": { "id": 1, "name": "Computer Science" },
+	"academic_level": { "id": 4, "name": "Senior (Level 4)" },
 	"gpa": 3.8,
-	"skills": ["React", "Python", "Django"]
+	"looking_for_course_project_team": true,
+	"looking_for_grad_project_team": true,
+	"github_url": "https://github.com/...",
+	"linkedin_url": "https://linkedin.com/...",
+	"skills": [{ "id": 1, "name": "Python", "is_official": true }]
 }
 ```
 
----
+### Get/Update Supervisor Profile
 
-**Endpoint:** `PATCH /profile/student/`
-
-**Description:** Update current user's student profile.
-
+**Endpoint:** `GET` / `PATCH /profile/supervisor/`
 **Authentication:** Required (Bearer Token)
-
-**Request Body (partial update):**
-
-```json
-{
-	"skills": ["React", "Python", "Django", "TypeScript"],
-	"gpa": 3.9
-}
-```
-
----
-
-#### 9. Supervisor Profile
-
-**Endpoint:** `GET /profile/supervisor/`
-
-**Description:** Get current user's supervisor profile.
-
-**Authentication:** Required (Bearer Token)
-
-**Success Response (200 OK):**
+**Success Response (GET):**
 
 ```json
 {
 	"user": {
 		"id": 2,
-		"email": "professor@university.edu.eg",
+		"email": "prof@university.edu.eg",
 		"first_name": "Jane",
-		"last_name": "Smith",
+		"last_name": "Doe",
 		"role": "SUPERVISOR"
 	},
-	"is_professor": true,
-	"role_display": "Primary Supervisor (Professor)",
-	"department": "Computer Science",
-	"expertise": ["Machine Learning", "Data Science"]
+	"title": "DOCTOR",
+	"title_display": "Primary Supervisor (Professor)", // Look at this field for UI rendering
+	"department": { "id": 1, "name": "Computer Science" },
+	"max_team_capacity": 5,
+	"scholar_url": "https://scholar.google.com/...",
+	"linkedin_url": "https://linkedin.com/...",
+	"expertise": [
+		{ "id": 2, "name": "Artificial Intelligence", "is_official": true }
+	]
 }
 ```
-
----
-
-**Endpoint:** `PATCH /profile/supervisor/`
-
-**Description:** Update current user's supervisor profile.
-
-**Authentication:** Required (Bearer Token)
-
-**Request Body (partial update):**
-
-```json
-{
-	"expertise": ["Machine Learning", "Data Science", "NLP"]
-}
-```
-
----
 
 ## Token Management
 
@@ -817,6 +442,8 @@ export const logout = async () => {
 | Update Student Profile    | PATCH  | `/profile/student/`      | Yes  |
 | Get Supervisor Profile    | GET    | `/profile/supervisor/`   | Yes  |
 | Update Supervisor Profile | PATCH  | `/profile/supervisor/`   | Yes  |
+| Get Departments           | GET    | `/departments/`          | No   |
+| Get Academic Levels       | GET    | `/academic-levels/`      | No   |
 
 ---
 
@@ -861,46 +488,51 @@ GOOGLE_CALLBACK_URL=http://localhost:8000/api/users/auth/google/callback/
 ---
 
 # 2. Community APIs
+
 **Base URL:** `/api/community/`  
-*(All endpoints require Bearer Token Authentication)*
+_(All endpoints require Bearer Token Authentication)_
 
 ### 1. Posts & Feed
 
 #### Get Feed
+
 - **Method:** `GET`
 - **Endpoint:** `/posts/`
 - **Description:** Retrieves the community feed. Automatically filters to return public posts and private posts matching the current user's email domain.
 - **Returns:** List of posts including author details (`author_name`, `author_username`, `author_role`), tags, attachments, poll options, and interaction metrics (`views_count`, `upvotes_count`, `downvotes_count`, `comments_count`, `has_upvoted`, `has_downvoted`).
 
 #### Create Post
+
 - **Method:** `POST`
 - **Endpoint:** `/posts/`
 - **Description:** Creates a new post or poll.
 - **Payload (Text Post):**
   ```json
   {
-    "title": "Best practices in React?",
-    "content": "Looking for advice...",
-    "post_type": "TEXT",
-    "tag_names": ["React", "Frontend"] 
+  	"title": "Best practices in React?",
+  	"content": "Looking for advice...",
+  	"post_type": "TEXT",
+  	"tag_names": ["React", "Frontend"]
   }
   ```
 - **Payload (Poll):**
   ```json
   {
-    "title": "Which framework is better?",
-    "post_type": "POLL",
-    "poll_option_texts": ["Next.js", "Vue.js"]
+  	"title": "Which framework is better?",
+  	"post_type": "POLL",
+  	"poll_option_texts": ["Next.js", "Vue.js"]
   }
   ```
 
 #### Get Single Post
+
 - **Method:** `GET`
 - **Endpoint:** `/posts/{id}/`
 - **Description:** Retrieves the details of a single post.
 - **Note:** Successfully calling this endpoint automatically increments the `views_count` for that post (with a 24-hour Redis/cache-based anti-abuse limit).
 
 #### Upload Attachment
+
 - **Method:** `POST`
 - **Endpoint:** `/posts/{id}/upload_attachment/`
 - **Description:** Attaches a file to an existing post. Supports Drag and Drop uploads.
@@ -909,50 +541,56 @@ GOOGLE_CALLBACK_URL=http://localhost:8000/api/users/auth/google/callback/
 ---
 
 ### 2. Interactions
+
 #### Upvote a Post
+
 - **Method:** `POST`
 - **Endpoint:** `/posts/{id}/upvote/`
 - **Description:** Toggles an upvote for the current user. Removes existing downvote if present.
 - **Returns:** Updated upvotes/downvotes metrics:
   ```json
   {
-    "upvotes_count": 25,
-    "downvotes_count": 2,
-    "has_upvoted": true,
-    "has_downvoted": false
+  	"upvotes_count": 25,
+  	"downvotes_count": 2,
+  	"has_upvoted": true,
+  	"has_downvoted": false
   }
   ```
 
 #### Downvote a Post
+
 - **Method:** `POST`
 - **Endpoint:** `/posts/{id}/downvote/`
 - **Description:** Toggles a downvote for the current user. Removes existing upvote if present.
 - **Returns:** Updated upvotes/downvotes metrics.
 
 #### Get Comments
+
 - **Method:** `GET`
 - **Endpoint:** `/posts/{id}/comments/`
 - **Description:** Retrieves all comments for a post, ordered newest first. Includes author name, username, and role.
 
 #### Add Comment
+
 - **Method:** `POST`
 - **Endpoint:** `/posts/{id}/comments/`
 - **Description:** Adds a new comment to a post.
 - **Payload:**
   ```json
   {
-    "content": "Here is my answer..."
+  	"content": "Here is my answer..."
   }
   ```
 
 #### Vote on a Poll
+
 - **Method:** `POST`
 - **Endpoint:** `/posts/{id}/vote-poll/`
 - **Description:** Records a user's vote on a poll. Returns an error if the user has already voted on this specific poll.
 - **Payload:**
   ```json
   {
-    "option_id": 5
+  	"option_id": 5
   }
   ```
 
@@ -961,11 +599,13 @@ GOOGLE_CALLBACK_URL=http://localhost:8000/api/users/auth/google/callback/
 ### 3. Metadata Selectors
 
 #### Get Tags
+
 - **Method:** `GET`
 - **Endpoint:** `/tags/`
 - **Description:** Returns all community tags for multi-select dropdowns. Deduplicates based on lowercase parsing backend logic.
 
 #### Get Categories
+
 - **Method:** `GET`
 - **Endpoint:** `/categories/`
 - **Description:** Returns a list of available categories and their slugs for the category creation dropdown.

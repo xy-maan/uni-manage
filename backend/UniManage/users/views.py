@@ -11,8 +11,53 @@ from django.http import HttpResponseRedirect
 from urllib.parse import urlencode
 import requests
 
-from .models import StudentProfile, SupervisorProfile, User
-from .serializers import StudentProfileSerializer, SupervisorProfileSerializer, UserSerializer
+from .models import StudentProfile, SupervisorProfile, User, Skill, SkillAlias, AcademicLevel, Department
+from .serializers import StudentProfileSerializer, SupervisorProfileSerializer, UserSerializer, SkillSerializer, DepartmentSerializer, AcademicLevelSerializer
+from django.db.models import Q
+
+def resolve_skills(skill_input_list, user=None):
+    """
+    Takes a list of skills from frontend, which could be integer IDs (as strings or ints)
+    or custom brand new strings. Returns a list of Skill objects.
+    """
+    skill_objs = []
+    for item in skill_input_list:
+        try:
+            # If item can be parsed as int, assume it's a Skill ID
+            skill_id = int(item)
+            skill = Skill.objects.filter(id=skill_id).first()
+            if skill:
+                skill_objs.append(skill)
+        except ValueError:
+            # It's a custom string. Get or create with is_official=False
+            item_str = str(item).strip()
+            if item_str:
+                skill, created = Skill.objects.get_or_create(
+                    name__iexact=item_str,
+                    defaults={'name': item_str, 'is_official': False, 'generated_by': user}
+                )
+                skill_objs.append(skill)
+    return skill_objs
+
+class SkillSearchView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        query = request.GET.get('q', '').strip()
+        if not query:
+            return Response([])
+
+        # Check aliases first
+        aliases = SkillAlias.objects.filter(alias__icontains=query)
+        alias_skills = [a.skill for a in aliases]
+
+        # Check official skills and non-official ones
+        skills = Skill.objects.filter(name__icontains=query)
+
+        # Combine, avoiding duplicates
+        result_skills = set(alias_skills) | set(skills)
+        serializer = SkillSerializer(list(result_skills), many=True)
+        return Response(serializer.data)
 
 class GoogleLogin(SocialLoginView):
     adapter_class = GoogleOAuth2Adapter
@@ -120,25 +165,82 @@ class CompleteProfileView(APIView):
         if hasattr(user, 'student_profile') or hasattr(user, 'supervisor_profile'):
             return Response({"error": "Profile already completed"}, status=status.HTTP_400_BAD_REQUEST)
 
-        role = user.role
+        role_input = request.data.get('role')
+        if not role_input or role_input not in [User.Role.STUDENT, User.Role.SUPERVISOR]:
+            return Response({"error": "Valid role is required (STUDENT or SUPERVISOR)"}, status=status.HTTP_400_BAD_REQUEST)
 
-        if role == User.Role.STUDENT:
-            StudentProfile.objects.create(
+        skills_input = request.data.get('skills', [])
+        is_expertise = request.data.get('expertise', request.data.get('skills', []))
+        
+        if role_input == User.Role.STUDENT:
+            department_id = request.data.get('department')
+            academic_level_id = request.data.get('academic_level')
+            
+            dept_obj = None
+            if department_id:
+                try:
+                    dept_obj = Department.objects.get(id=department_id)
+                except (Department.DoesNotExist, ValueError, TypeError):
+                    return Response({"error": "Invalid department ID"}, status=status.HTTP_400_BAD_REQUEST)
+                
+            level_obj = None
+            if academic_level_id:
+                try:
+                    level_obj = AcademicLevel.objects.get(id=academic_level_id)
+                except (AcademicLevel.DoesNotExist, ValueError, TypeError):
+                    return Response({"error": "Invalid academic level ID"}, status=status.HTTP_400_BAD_REQUEST)
+
+            profile = StudentProfile.objects.create(
                 user=user,
-                major=request.data.get('major'),
-                academic_level=request.data.get('academic_level'),
-                skills=request.data.get('skills', []),
-                gpa=request.data.get('gpa', 0.0)
+                student_id=request.data.get('student_id'),
+                department=dept_obj,
+                academic_level=level_obj,
+                gpa=request.data.get('gpa'),
+                looking_for_course_project_team=request.data.get('looking_for_course_project_team', True),
+                looking_for_grad_project_team=request.data.get('looking_for_grad_project_team', True),
+                github_url=request.data.get('github_url'),
+                linkedin_url=request.data.get('linkedin_url')
             )
+            # Resolve and add skills
+            resolved_skills = resolve_skills(skills_input, user=user)
+            profile.skills.set(resolved_skills)
+
+            user.role = User.Role.STUDENT
+            user.save()
+
             return Response({"message": "Student profile created successfully"}, status=status.HTTP_201_CREATED)
 
-        elif role == User.Role.SUPERVISOR:
-            SupervisorProfile.objects.create(
+        elif role_input == User.Role.SUPERVISOR:
+            registration_code = request.data.get('registration_code')
+            if registration_code == settings.PROFESSOR_REGISTRATION_CODE:
+                title = SupervisorProfile.Title.DOCTOR
+            elif registration_code == settings.TA_REGISTRATION_CODE:
+                title = SupervisorProfile.Title.TA
+            else:
+                return Response({"error": "Invalid registration code."}, status=status.HTTP_400_BAD_REQUEST)
+
+            department_id = request.data.get('department')
+            dept_obj = None
+            if department_id:
+                try:
+                    dept_obj = Department.objects.get(id=department_id)
+                except (Department.DoesNotExist, ValueError, TypeError):
+                    return Response({"error": "Invalid department ID"}, status=status.HTTP_400_BAD_REQUEST)
+
+            profile = SupervisorProfile.objects.create(
                 user=user,
-                is_professor=request.data.get('is_professor', True),
-                department=request.data.get('department'),
-                expertise=request.data.get('expertise', [])
+                title=title,
+                department=dept_obj,
+                max_team_capacity=request.data.get('max_team_capacity', 5),
+                scholar_url=request.data.get('scholar_url'),
+                linkedin_url=request.data.get('linkedin_url')
             )
+            resolved_expertise = resolve_skills(is_expertise, user=user)
+            profile.expertise.set(resolved_expertise)
+
+            user.role = User.Role.SUPERVISOR
+            user.save()
+
             return Response({"message": "Supervisor profile created successfully"}, status=status.HTTP_201_CREATED)
 
 class StudentProfileDetail(generics.RetrieveUpdateAPIView):
@@ -147,6 +249,36 @@ class StudentProfileDetail(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         return self.request.user.student_profile
+        
+    def perform_update(self, serializer):
+        profile = serializer.save()
+        data = self.request.data
+        if 'skills' in data:
+            resolved_skills = resolve_skills(data['skills'], user=self.request.user)
+            profile.skills.set(resolved_skills)
+            
+        # Handle custom taxonomy fields
+        if 'department' in data:
+            department_id = data['department']
+            if department_id:
+                try:
+                    profile.department = Department.objects.get(id=department_id)
+                except (Department.DoesNotExist, ValueError, TypeError):
+                    raise serializers.ValidationError({"department": "Invalid department ID"})
+            else:
+                profile.department = None
+                
+        if 'academic_level' in data:
+            level_id = data['academic_level']
+            if level_id:
+                try:
+                    profile.academic_level = AcademicLevel.objects.get(id=level_id)
+                except (AcademicLevel.DoesNotExist, ValueError, TypeError):
+                    raise serializers.ValidationError({"academic_level": "Invalid academic level ID"})
+            else:
+                profile.academic_level = None
+                
+        profile.save()
 
 class SupervisorProfileDetail(generics.RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
@@ -154,3 +286,31 @@ class SupervisorProfileDetail(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         return self.request.user.supervisor_profile
+
+    def perform_update(self, serializer):
+        profile = serializer.save()
+        data = self.request.data
+        if 'expertise' in data:
+            resolved_expertise = resolve_skills(data['expertise'], user=self.request.user)
+            profile.expertise.set(resolved_expertise)
+
+        if 'department' in data:
+            department_id = data['department']
+            if department_id:
+                try:
+                    profile.department = Department.objects.get(id=department_id)
+                except (Department.DoesNotExist, ValueError, TypeError):
+                    raise serializers.ValidationError({"department": "Invalid department ID"})
+            else:
+                profile.department = None
+
+        profile.save()
+class DepartmentListView(generics.ListAPIView):
+    queryset = Department.objects.all().order_by('name')
+    serializer_class = DepartmentSerializer
+    permission_classes = []
+
+class AcademicLevelListView(generics.ListAPIView):
+    queryset = AcademicLevel.objects.all().order_by('id')
+    serializer_class = AcademicLevelSerializer
+    permission_classes = []
