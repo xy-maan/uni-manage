@@ -8,10 +8,17 @@ from django.core.cache import cache
 from .models import Post, Tag, Category, PostAttachment, PollOption, PollVote, Comment
 from .serializers import PostSerializer, TagSerializer, CategorySerializer, PostAttachmentSerializer, CommentSerializer
 
-class TagViewSet(viewsets.ReadOnlyModelViewSet):
+class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search_query = self.request.query_params.get('q', None)
+        if search_query:
+            queryset = queryset.filter(name__icontains=search_query)
+        return queryset
 
 class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Category.objects.all()

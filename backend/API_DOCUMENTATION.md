@@ -489,123 +489,140 @@ GOOGLE_CALLBACK_URL=http://localhost:8000/api/users/auth/google/callback/
 
 # 2. Community APIs
 
-**Base URL:** `/api/community/`  
+**Base URL:** `/api/community`  
 _(All endpoints require Bearer Token Authentication)_
 
-### 1. Posts & Feed
+## 2.1 Posts & Feed
 
-#### Get Feed
+### Get Feed
 
-- **Method:** `GET`
-- **Endpoint:** `/posts/`
-- **Description:** Retrieves the community feed. Automatically filters to return public posts and private posts matching the current user's email domain.
-- **Returns:** List of posts including author details (`author_name`, `author_username`, `author_role`), tags, attachments, poll options, and interaction metrics (`views_count`, `upvotes_count`, `downvotes_count`, `comments_count`, `has_upvoted`, `has_downvoted`).
+**Endpoint:** `GET /posts/`
+**Authentication:** Required (Bearer Token)
+**Description:** Retrieves the community feed. Automatically filters to return public posts and private posts matching the current user's email domain.
+**Success Response:** List of posts including author details (`author_name`, `author_username`, `author_role`), tags, attachments, poll options, and interaction metrics (`views_count`, `upvotes_count`, `downvotes_count`, `comments_count`, `has_upvoted`, `has_downvoted`).
 
-#### Create Post
+### Create Post
 
-- **Method:** `POST`
-- **Endpoint:** `/posts/`
-- **Description:** Creates a new post or poll.
-- **Payload (Text Post):**
-  ```json
-  {
-  	"title": "Best practices in React?",
-  	"content": "Looking for advice...",
-  	"post_type": "TEXT",
-  	"tag_names": ["React", "Frontend"]
-  }
-  ```
-- **Payload (Poll):**
-  ```json
-  {
-  	"title": "Which framework is better?",
-  	"post_type": "POLL",
-  	"poll_option_texts": ["Next.js", "Vue.js"]
-  }
-  ```
+**Endpoint:** `POST /posts/`
+**Authentication:** Required (Bearer Token)
+**Description:** Creates a new post or poll.
 
-#### Get Single Post
+**Payload (Text Post):**
 
-- **Method:** `GET`
-- **Endpoint:** `/posts/{id}/`
-- **Description:** Retrieves the details of a single post.
-- **Note:** Successfully calling this endpoint automatically increments the `views_count` for that post (with a 24-hour Redis/cache-based anti-abuse limit).
+```json
+{
+	"title": "Best practices in React?", // REQUIRED: String
+	"content": "Looking for advice...", // REQUIRED when post_type is TEXT
+	"post_type": "TEXT", // REQUIRED: "TEXT" or "POLL"
+	"category": 1, // REQUIRED: Integer ID representing the category
+	"tag_names": [1, 5, "Frontend"] // REQUIRED (min 1): Array of Integer IDs OR Custom Strings
+}
+```
 
-#### Upload Attachment
+**Payload (Poll):**
 
-- **Method:** `POST`
-- **Endpoint:** `/posts/{id}/upload_attachment/`
-- **Description:** Attaches a file to an existing post. Supports Drag and Drop uploads.
-- **Payload:** Requires `multipart/form-data` with the key named `file`.
+```json
+{
+	"title": "Which framework is better?", // REQUIRED: String
+	"content": "I'm starting a new project and need advice", // Optional for polls
+	"post_type": "POLL", // REQUIRED: "TEXT" or "POLL"
+	"category": 2, // REQUIRED: Integer ID representing the category
+	"tag_names": [3, "Next.js"], // REQUIRED (min 1): Array of Integer IDs OR Custom Strings
+	"poll_option_texts": ["Next.js", "Vue.js", "Angular"] // REQUIRED for POLL: Array of strings (Minimum 2)
+}
+```
 
----
+### Get Single Post
 
-### 2. Interactions
+**Endpoint:** `GET /posts/{id}/`
+**Authentication:** Required (Bearer Token)
+**Description:** Retrieves the details of a single post.
+**Note:** Successfully calling this endpoint automatically increments the `views_count` for that post (with a 24-hour Redis/cache-based anti-abuse limit).
 
-#### Upvote a Post
+### Upload Attachment
 
-- **Method:** `POST`
-- **Endpoint:** `/posts/{id}/upvote/`
-- **Description:** Toggles an upvote for the current user. Removes existing downvote if present.
-- **Returns:** Updated upvotes/downvotes metrics:
-  ```json
-  {
-  	"upvotes_count": 25,
-  	"downvotes_count": 2,
-  	"has_upvoted": true,
-  	"has_downvoted": false
-  }
-  ```
+**Endpoint:** `POST /posts/{id}/upload_attachment/`
+**Authentication:** Required (Bearer Token)
+**Description:** Attaches a file to an existing post. Supports Drag and Drop uploads.
+**Payload (Form-Data):**
 
-#### Downvote a Post
+- `file`: `File Object` (REQUIRED: Image or PDF file)
 
-- **Method:** `POST`
-- **Endpoint:** `/posts/{id}/downvote/`
-- **Description:** Toggles a downvote for the current user. Removes existing upvote if present.
-- **Returns:** Updated upvotes/downvotes metrics.
-
-#### Get Comments
-
-- **Method:** `GET`
-- **Endpoint:** `/posts/{id}/comments/`
-- **Description:** Retrieves all comments for a post, ordered newest first. Includes author name, username, and role.
-
-#### Add Comment
-
-- **Method:** `POST`
-- **Endpoint:** `/posts/{id}/comments/`
-- **Description:** Adds a new comment to a post.
-- **Payload:**
-  ```json
-  {
-  	"content": "Here is my answer..."
-  }
-  ```
-
-#### Vote on a Poll
-
-- **Method:** `POST`
-- **Endpoint:** `/posts/{id}/vote-poll/`
-- **Description:** Records a user's vote on a poll. Returns an error if the user has already voted on this specific poll.
-- **Payload:**
-  ```json
-  {
-  	"option_id": 5
-  }
-  ```
+**Success Response:**
+Returns the file URL (e.g. `/media/community/attachments/diagram.png`). Prepend the base URL (`http://localhost:8000`) before the string to view or display the file on the frontend.
 
 ---
 
-### 3. Metadata Selectors
+## 2.2 Interactions
 
-#### Get Tags
+### Upvote a Post
 
-- **Method:** `GET`
-- **Endpoint:** `/tags/`
-- **Description:** Returns all community tags for multi-select dropdowns. Deduplicates based on lowercase parsing backend logic.
+**Endpoint:** `POST /posts/{id}/upvote/`
+**Authentication:** Required (Bearer Token)
+**Description:** Toggles an upvote for the current user. Removes existing downvote if present.
+**Success Response:**
 
-#### Get Categories
+```json
+{
+	"upvotes_count": 25,
+	"downvotes_count": 2,
+	"has_upvoted": true,
+	"has_downvoted": false
+}
+```
 
-- **Method:** `GET`
-- **Endpoint:** `/categories/`
-- **Description:** Returns a list of available categories and their slugs for the category creation dropdown.
+### Downvote a Post
+
+**Endpoint:** `POST /posts/{id}/downvote/`
+**Authentication:** Required (Bearer Token)
+**Description:** Toggles a downvote for the current user. Removes existing upvote if present.
+**Success Response:** Same structure as Upvote.
+
+### Get Comments
+
+**Endpoint:** `GET /posts/{id}/comments/`
+**Authentication:** Required (Bearer Token)
+**Description:** Retrieves all comments for a post, ordered newest first. Includes author name, username, and role in response.
+
+### Add Comment
+
+**Endpoint:** `POST /posts/{id}/comments/`
+**Authentication:** Required (Bearer Token)
+**Description:** Adds a new comment to a post.
+**Payload:**
+
+```json
+{
+	"content": "Here is my answer..." // REQUIRED: String
+}
+```
+
+### Vote on a Poll
+
+**Endpoint:** `POST /posts/{id}/vote-poll/`
+**Authentication:** Required (Bearer Token)
+**Description:** Records a user's vote on a poll. Returns an error if the user has already voted on this specific poll.
+**Payload:**
+
+```json
+{
+	"option_id": 5 // REQUIRED: Integer ID of the desired PollOption
+}
+```
+
+---
+
+## 2.3 Metadata Selectors
+
+### Get Tags
+
+**Endpoint:** `GET /tags/` or `GET /tags/?q=<query>`
+**Authentication:** Required (Bearer Token)
+**Description:** Returns all community tags for multi-select dropdowns. You can search tags using `?q=`. Deduplicates based on lowercase parsing backend logic. Tags returned contain `is_official` and `generated_by`.
+**Usage:** Similar to skills, you can submit either existing Tag integer IDs or new raw strings when creating a post.
+
+### Get Categories
+
+**Endpoint:** `GET /categories/`
+**Authentication:** Required (Bearer Token)
+**Description:** Returns a list of available categories and their slugs for the category creation dropdown.

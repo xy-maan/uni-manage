@@ -4,7 +4,14 @@ from .models import Tag, Category, Post, PostAttachment, PollOption, PollVote, C
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields = ['id', 'name']
+        fields = ['id', 'name', 'slug', 'is_official', 'generated_by', 'created_at']
+        read_only_fields = ['slug', 'generated_by']
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        if request and hasattr(request, "user") and request.user.is_authenticated:
+            validated_data['generated_by'] = request.user
+        return super().create(validated_data)
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -98,10 +105,24 @@ class PostSerializer(serializers.ModelSerializer):
         post = Post.objects.create(**validated_data)
         
         # Handle tag creation/assignment
-        for name in tag_names:
-            # We enforce lowercase spacing here to avoid "React" vs "react" conflicts
-            tag, _ = Tag.objects.get_or_create(name=name.strip().lower())
-            post.tags.add(tag)
+        request = self.context.get('request')
+        user = request.user if request and hasattr(request, "user") and request.user.is_authenticated else None
+        
+        for item in tag_names:
+            try:
+                tag_id = int(item)
+                tag = Tag.objects.filter(id=tag_id).first()
+                if tag:
+                    post.tags.add(tag)
+            except ValueError:
+                item_str = str(item).strip()
+                if item_str:
+                    # We employ the exact logic as skills, looking up case-insensitively.
+                    tag, created = Tag.objects.get_or_create(
+                        name__iexact=item_str,
+                        defaults={'name': item_str, 'is_official': False, 'generated_by': user}
+                    )
+                    post.tags.add(tag)
             
         # Handle poll options creation
         if post.post_type == Post.PostType.POLL:
