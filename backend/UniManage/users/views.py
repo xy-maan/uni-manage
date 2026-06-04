@@ -164,7 +164,19 @@ class CompleteProfileView(APIView):
         
         if hasattr(user, 'student_profile') or hasattr(user, 'supervisor_profile'):
             return Response({"error": "Profile already completed"}, status=status.HTTP_400_BAD_REQUEST)
+        # Check and update user base fields
+        username = request.data.get('username')
+        if not username:
+            return Response({"error": "Username is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if User.objects.exclude(id=user.id).filter(username=username).exists():
+            return Response({"error": "Username is already taken"}, status=status.HTTP_400_BAD_REQUEST)
 
+        user.username = username
+        user.first_name = request.data.get('first_name', user.first_name)
+        user.last_name = request.data.get('last_name', user.last_name)
+        user.bio = request.data.get('bio', user.bio)
+        
         role_input = request.data.get('role')
         if not role_input or role_input not in [User.Role.STUDENT, User.Role.SUPERVISOR]:
             return Response({"error": "Valid role is required (STUDENT or SUPERVISOR)"}, status=status.HTTP_400_BAD_REQUEST)

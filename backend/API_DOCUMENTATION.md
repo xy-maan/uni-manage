@@ -176,6 +176,10 @@ If the user selects "Student" in the frontend wizard, submit the following paylo
 
 ```json
 {
+	"username": "johndoe", // REQUIRED
+	"first_name": "John", // REQUIRED
+	"last_name": "Doe", // REQUIRED
+	"bio": "I am a computer science student passionate about ML.", // Optional
 	"role": "STUDENT",
 	"student_id": "20241029", // Optional
 	"department": 1, // Optional (Must be integer ID representing standard department)
@@ -197,6 +201,10 @@ _Note: The frontend does not ask if they are a Professor or a TA. The code they 
 
 ```json
 {
+	"username": "janedoe_prof", // REQUIRED
+	"first_name": "Jane", // REQUIRED
+	"last_name": "Doe", // REQUIRED
+	"bio": "AI and Machine Learning Professor with 10 years of experience.", // Optional
 	"role": "SUPERVISOR",
 	"registration_code": "PROF-1234", // REQUIRED! Unlocks the role securely.
 	"department": 1, // Optional (Integer ID)
