@@ -31,6 +31,7 @@ class User(AbstractUser):
     role = models.CharField(max_length=20, choices=Role.choices, blank=True, null=True)
     email = models.EmailField(unique=True) 
     avatar_url = models.URLField(blank=True, null=True)
+    bio = models.TextField(blank=True, null=True)
 
 class AcademicLevel(models.Model):
     name = models.CharField(max_length=50, unique=True)

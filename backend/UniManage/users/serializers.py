@@ -22,7 +22,7 @@ class CustomSkillField(serializers.ListField):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'email', 'first_name', 'last_name', 'role']
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'bio', 'role', 'avatar_url']
         read_only_fields = ['email']
 
 class StudentProfileSerializer(serializers.ModelSerializer):
@@ -72,6 +72,10 @@ class SupervisorProfileSerializer(serializers.ModelSerializer):
         return obj.get_title_display()
 
 class CompleteProfileSerializer(serializers.Serializer):
+    username = serializers.CharField(required=True)
+    first_name = serializers.CharField(required=True)
+    last_name = serializers.CharField(required=True)
+    bio = serializers.CharField(required=False, allow_blank=True, allow_null=True)
     role = serializers.ChoiceField(choices=User.Role.choices)
     
     student_id = serializers.CharField(required=False, allow_blank=True, allow_null=True)
