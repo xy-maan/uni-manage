@@ -250,8 +250,8 @@ if (data.role === "SUPERVISOR") router.push("/supervisor/dashboard");
                       Complete Required Fields
                     </h4>
                     <p className="text-xs text-muted-foreground">
-                      Please fill in all required fields and select at least 3
-                      {selectedRole=="student"?"skills":"expertise"}.
+                      Please fill in all required fields and select at least 3 
+                      {selectedRole=="student"?" skills":" expertise"}.
                       
                     </p>
                   </div>
