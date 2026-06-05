@@ -1,7 +1,6 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label"
 import {
   Form,
   FormControl,
@@ -17,199 +16,301 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Input } from "@/components/ui/input";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { schemaStudent } from "@/schemas/Student.schema";
-import { StudentFormType } from "@/types/schema";
-import z from "zod";
-import { completeProfileAction } from "@/Actions/complete.action";
-import { toast } from "sonner";
+import { Control, Controller, useForm, useWatch } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
-export type RoleDataType={
-   role: string,
-    major: string,
-    academic_level: string,
-    gpa: number, 
-   skills: string[];
-}
-export default function FormStudent() {
-const router=useRouter()
-const formObj = useForm<StudentFormType>({
-  resolver: zodResolver(schemaStudent),
-  defaultValues: {
-    major: "",
-    academic_level: "",
-    skills: "",
-    gpa: 0,
-  },
-});
-  const {
-    control,
-    handleSubmit,
-    formState: { isSubmitting, isValid },
-  } = formObj;
-  async function handleProfile(data: StudentFormType) {
-     const roleData = {
-     role: "STUDENT",
-    major: data.major,
-    academic_level: data.academic_level,
-    gpa: data.gpa, 
-    skills: data.skills
-      .split(",")
-      .map((s:string) => s.trim())
-      .filter((s:string) => s !== ""),
-    };
-const res=await completeProfileAction(roleData)
-if(res.ok)
-{
-  toast.success(res.payload.message,{position:"top-center",duration:2000})
-  router.push("/student/dashboard")
-}
-else{
-  toast.error(res.payload.error,{position:"top-center",duration:2000})
-}
+import { Award, BookOpen, ChevronDown, Code, Github, IdCard, Linkedin, TrendingUp, User } from "lucide-react";
+import { CompleteProfileType } from "@/types/schema";
+import MultiSelect from "../TagsSearch/MultiSelect";
+import { GetDepartmentsAction } from "@/Actions/getAlldepartments.action";
+import { GetAcademicLevelsAction } from "@/Actions/getAllAcademicLevels.action";
+import { Textarea } from "@/components/ui/textarea";
+type Departments = {
+  id: number;
+  name: string;
+};
+type Levels = {
+  id: number;
+  name: string;
+};
+
+export default function FormStudent({
+  control,
+}: {
+  control: Control<CompleteProfileType>;
+}) {
+  const [departments, setDepartments] = useState<Departments[]>([])
+  const [levels, setLevels] = useState<Levels[]>([])
+  async function  handleGetDepartments() {
+    const {payload}=await GetDepartmentsAction() 
+    console.log("Department",payload);
+      setDepartments(payload)
+    
   }
+async function  handleAcademicLevels() {
+  const {payload}=await GetAcademicLevelsAction() 
+  console.log("Levels",payload);
+setLevels(payload)
+  
+}
+
+useEffect(() => {
+  handleGetDepartments();
+  handleAcademicLevels()
+}, [])
+
+  const router = useRouter();
   return (
     <>
-      <Form {...formObj}>
-        <form className="" onSubmit={handleSubmit(handleProfile)}>
-           {/* <RadioGroup defaultValue="comfortable" className="w-fit my-4">
+    <div className="space-y-6">
+             <FormField
+                control={control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem className="">
                     <FormLabel className="text-foreground text-sm font-medium">
-                  Role
-                </FormLabel>
-      <div className="flex items-center gap-3">
-        <RadioGroupItem value="STUDENT" id="r1" />
-        <Label htmlFor="r1">STUDENT</Label>
+                       <User className="size-4 text-primary"/>
+                      User Name *
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="text"
+                        placeholder="johndoe"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+   
+      <div className="grid lg:grid-cols-2 gap-4">
+             <FormField
+                control={control}
+                name="first_name"
+                render={({ field }) => (
+                  <FormItem className="">
+                    <FormLabel className="text-foreground text-sm font-medium gap-2">
+                      <User className="size-4 text-primary"/>
+                     First Name *
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="text"
+                        placeholder="John"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+               <FormField
+                control={control}
+                name="last_name"
+                render={({ field }) => (
+                  <FormItem className="">
+                    <FormLabel className="text-foreground text-sm font-medium gap-2">
+                       <User className="size-4 text-primary"/>
+                     Last Name*
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="text"
+                        placeholder="Doe"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
       </div>
-      <div className="flex items-center gap-3">
-        <RadioGroupItem value="SUPERVISOR" id="r2" />
-        <Label htmlFor="r2">SUPERVISOR</Label>
+         <div className="grid lg:grid-cols-2 gap-4">
+               <FormField
+                control={control}
+                name="student_id"
+                render={({ field }) => (
+                  <FormItem className="">
+                    <FormLabel className="text-foreground text-sm font-medium">
+                      <IdCard className="size-4 text-primary"/>
+                      Student ID *
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="text"
+                        placeholder="30505015864828"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+                <FormField
+                control={control}
+                name="gpa"
+                render={({ field }) => (
+                  <FormItem className="">
+                    <FormLabel className="text-foreground text-sm font-medium ">
+                      <TrendingUp className="text-primary size-4"/>
+                     GPA *
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="number"
+                        value={field.value ?? ""}
+                        step="0.01"
+                        min="1"
+                        max="4"
+                        placeholder="e.g., 3.5"
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
       </div>
-    </RadioGroup> */}
-          <FormField
-            control={control}
-            name="major"
-            render={({ field }) => (
-              <FormItem className="my-4">
-                <FormLabel className="text-foreground text-sm font-medium">
-                  Major
-                </FormLabel>
-                <FormControl>
-                  <Select
-                    name={field.name}
-                    value={field.value}
-                    onValueChange={field.onChange}
-                  >
-                    <SelectTrigger
-                      id="form-rhf-select-language"
-                      // aria-invalid={fieldState.invalid}
-                      className="w-full"
-                    >
-                      <SelectValue placeholder="Select Major" />
-                    </SelectTrigger>
-                    <SelectContent position="item-aligned">
-                      <SelectItem value="Computer Science">
-                        Computer Science
-                      </SelectItem>
-                      <SelectItem value="Software Engineering">
-                        Software Engineering
-                      </SelectItem>
-                      <SelectItem value="Artificial Intelligence">
-                        Artificial Intelligence
-                      </SelectItem>
-                      <SelectItem value="Data Science">Data Science</SelectItem>
-                      <SelectItem value="Engineering">Engineering</SelectItem>
-                      <SelectItem value="Design">Design</SelectItem>
-                      <SelectItem value="Business">Business</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={control}
-            name="academic_level"
-            render={({ field }) => (
-              <FormItem className="my-4">
-                <FormLabel className="text-foreground text-sm font-medium">
-                  Academic Level
-                </FormLabel>
-                <FormControl>
-                  <Select
-                    name={field.name}
-                    value={field.value}
-                    onValueChange={field.onChange}
-                  >
-                    <SelectTrigger
-                      id="form-rhf-select-language"
-                      // aria-invalid={fieldState.invalid}
-                      className="w-full"
-                    >
-                      <SelectValue placeholder="Select Level" />
-                    </SelectTrigger>
-                    <SelectContent position="item-aligned">
-                      <SelectItem value="Freshman">Freshman</SelectItem>
-                      <SelectItem value="Sophomore">sophomore</SelectItem>
-                      <SelectItem value="Junior">Junior</SelectItem>
-                      <SelectItem value="Senior">Senior</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={control}
-            name="gpa"
-            render={({ field }) => (
-              <FormItem className="my-4">
-                <FormLabel className="text-foreground text-sm font-medium">
-                  GPA
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    type="number"
-                    step="0.1"
-                    min="0"
-                    max="4"
-                    placeholder="3.6"
-                   onChange={(e) => field.onChange(Number(e.target.value))}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={control}
-            name="skills"
-            render={({ field }) => (
-              <FormItem className="my-4">
-                <FormLabel className="text-foreground text-sm font-medium">
-                  Skills
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="e.g. React, Python, Django"
-                      {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit" className="my-4 w-full cursor-pointer btn">
-            Create Student Account
-          </Button>
-        </form>
-      </Form>
+             <div className="grid lg:grid-cols-2 gap-4">
+               <FormField
+                control={control}
+                name="department"
+                render={({ field }) => (
+                  <FormItem className="">
+                    <FormLabel className="text-foreground text-sm font-medium">
+                      <Award className="size-4 text-primary"/>
+                      Department *
+                    </FormLabel>
+                    <FormControl>
+                      <Select
+                        name={field.name}
+                    value={field.value ? field.value.toString() : ""}
+                       onValueChange={(v) => field.onChange(Number(v))}
+                      >
+                        <SelectTrigger
+                          id="department"
+                          className="w-full"
+                        >
+                          <SelectValue placeholder="Select department" />
+                        </SelectTrigger>
+                        <SelectContent position="item-aligned">
+                          
+                          {departments.map((department) => (
+                            <SelectItem key={department.id} value={department.id.toString()}>{department.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={control}
+                name="academic_level"
+                render={({ field }) => (
+                  <FormItem className="">
+                    <FormLabel className="text-foreground text-sm font-medium">
+                      <BookOpen className="text-primary size-4"/>
+                      Academic Level *
+                    </FormLabel>
+                    <FormControl>
+                      <Select
+                        name={field.name}
+                      value={field.value ? field.value.toString() : ""}
+                        onValueChange={(v) => field.onChange(Number(v))}>
+                    
+                        <SelectTrigger
+                          id="form-rhf-select-language"
+                          className="w-full"
+                        >
+                          <SelectValue placeholder="Select Level" />
+                        </SelectTrigger>
+                        <SelectContent position="item-aligned">
+                         
+                          {levels.map((level) => (
+                            <SelectItem key={level.id} value={level.id.toString()}>{level.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+             </div>
+            
+<FormField
+  control={control}
+  name="skills"
+  render={({ field, fieldState }) => (
+    <FormItem>
+      <FormLabel className="text-foreground text-sm font-medium">
+        <Code className="text-primary size-4"/>
+        Skills * (Select at least 3)</FormLabel>
+      <FormControl>
+        <MultiSelect
+          variant="student"
+          value={field.value ?? []}
+          onChange={field.onChange}
+          onBlur={field.onBlur}
+          isInvalid={fieldState.invalid}
+        />
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+<FormField control={control} name="github_url" render={({ field }) => (
+  <FormItem className="">
+    <FormLabel className="text-foreground text-sm font-medium">
+      <Github className="text-primary size-4"/>
+      
+      GitHub URL *</FormLabel>
+    <FormControl>
+      <Input {...field} type="url" placeholder="https://github.com/username" />
+    </FormControl>
+    <FormMessage />
+  </FormItem>
+)} />
+<FormField control={control} name="linkedin_url" render={({ field }) => (
+  <FormItem className="">
+    <FormLabel className="text-foreground text-sm font-medium">
+       <Linkedin className="text-primary size-4"/>
+      Linkedin URL *</FormLabel>
+    <FormControl>
+      <Input {...field} type="url" placeholder="https://linkedin.com/username" />
+    </FormControl>
+    <FormMessage />
+  </FormItem>
+)} />
+ <FormField
+          control={control}
+          name="bio"
+          render={({ field }) => (
+            <FormItem className="my-2 w-full">
+              <div className="gap-2">
+                <FormLabel>Bio (Optional) *</FormLabel>
+              </div>
+              <FormControl>
+                <Textarea
+                  {...field}
+                  className="resize-none min-h-[100px]"
+                  placeholder="Tell us about yourself, your goals, and what you're passionate about..."
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+    </div>
+
+
     </>
+   
   );
 }

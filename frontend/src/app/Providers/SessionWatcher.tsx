@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 
 export default function SessionWatcher() {
-  const { data: session,update } = useSession();
+  const { data: session } = useSession();
   useEffect(() => {
       if (
           session?.error === "SessionExpired" ||
@@ -16,7 +16,7 @@ export default function SessionWatcher() {
        window.location.href = "/login";
     });
   }
-}, [session])
+}, [session?.error])
     
     return null;
 }

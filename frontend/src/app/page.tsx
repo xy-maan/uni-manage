@@ -22,11 +22,12 @@ export default async function BasicPage() {
    const accessToken = auth.django.access;
 
   const { payload, ok } = await GetUserStatus(accessToken);
-    console.log("status:", { payload, ok }); // ← شوف إيه اللي بيرجع
+    console.log("status:", { payload, ok }); 
 
   
   if (!ok) {
-    redirect("/login?error=session_expired");
+    // redirect("/login?error=session_expired");
+     return <HomeUi />;
   }
 
   if (payload.is_complete) {
@@ -35,19 +36,3 @@ export default async function BasicPage() {
     redirect("/complete-profile");
   }
 }
-//   if (!session?.djangoAccess) {
-//     return <HomeUi />;
-//   }
-
-//   const { payload, ok } = await GetUserStatus(session.djangoAccess);
-
-//   if (!ok) {
-//     redirect("/login?error=session_expired");
-//   }
-
-//   if (payload.is_complete) {
-//     redirect(`/${payload.role.toLowerCase()}/dashboard`);
-//   } else {
-//     redirect("/complete-profile");
-//   }
-// }

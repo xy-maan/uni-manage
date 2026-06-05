@@ -1,12 +1,13 @@
 'use client';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { useEffect } from 'react';
 export default function AuthError() {
 	const searchParams = useSearchParams();
 	const error = searchParams.get('error');
-
+const router = useRouter();
 	const errorMessages: Record<string, string> = {
 		access_denied: 'You denied access to your Google account.',
 		no_code: 'No authorization code received from Google.',
@@ -19,17 +20,15 @@ export default function AuthError() {
 		session_expired:"Your session has expired. Please login again to continue."
 	};
 
-	// const message = errorMessages[error || ''] || errorMessages['default'];
 	  const message = error ? (errorMessages[error] || errorMessages["default"]) : null;
-	return (
-	<>
-	{message && ( <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3 text-sm text-destructive mb-4">
-      {message}
-    </div>
-)
-}
-</>
-)}	
+	    useEffect(() => {
+    if (!error) return;
+    toast.error(message, { position: "top-center", duration: 4000 });
+    router.replace("/login");
+  }, [error]);
+  
+	return  null
+}	
 		// <div className=' mt-8  max-w-md min-h-[88vh] w-full'>
 	// 		<div className="flex flex-col  lg:w-full  md:w-3/4 w-full p-4 bg-card mx-auto justify-center rounded-xl border border-border"> 
     //             <h1 className=' text-red-400 font-semibold my-3'>Login Error</h1> 

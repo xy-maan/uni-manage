@@ -1,13 +1,5 @@
 "use client";
-import React from "react";
-import {
-  SidebarProvider,
-  Sidebar,
-  SidebarContent,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-} from "@/components/ui/sidebar";
+import React, { useState } from "react";
 import Link from "next/link";
 import {
   FileText,
@@ -15,131 +7,89 @@ import {
   GraduationCap,
   LayoutDashboard,
   MessageSquare,
-  MessagesSquare,
   Settings,
+  Shield,
   UserCheck,
   Users,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { usePathname } from "next/navigation";
-export default function SidebarAdmin() {
+export default function SidebarAdmin({
+  sidebarOpen,
+  setSidebarOpen
+}: {
+  sidebarOpen: boolean
+  setSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
+  const navItems = [
+  { href: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+  { href: "/admin/users", icon: Users, label: "User Management" },
+  { href: "/admin/supervisor-verification", icon: UserCheck, label: "Supervisor Verification", badge: "23" },
+  { href: "/admin/domain-validation", icon: GraduationCap, label: "Domain Validation" },
+  { href: "/admin/project-oversight", icon: FolderOpen, label: "Project Oversight" },
+  { href: "/admin/content-moderation", icon: MessageSquare, label: "Content Moderation", badge: "5" },
+  { href: "/admin/audit-logs", icon: FileText, label: "System Audit Logs" },
+  { href: "/admin/setting", icon: Settings, label: "Settings" },
+];
   const pathname = usePathname();
+
   return (
-    <Sidebar className="top-18.25 h-[calc(100svh-73px)] w-64">
-      <SidebarContent className=" bg-background/95 p-4  h-full flex flex-col ">
-        <SidebarMenu className="">
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              className={`${pathname == "/admin/dashboard" ? "bg-primary text-primary-foreground" : "text-muted-foreground"} gap-3 px-4 py-3 h-full font-medium text-center`}
-            >
-              <Link href="/admin/dashboard" className="flex items-center gap-3">
-                <LayoutDashboard className="size-5" />
-                Dashboard
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              className={`${pathname == "/admin/users" ? "bg-primary text-primary-foreground" : "text-muted-foreground"} gap-3 px-4 py-3 h-full font-medium text-center`}
-            >
-              <Link href="/admin/users" className="flex items-center gap-3">
-                <Users className="size-5" />
-                User Management
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              className={`${pathname == "/admin/supervisor-verification" ? "bg-primary text-primary-foreground" : "text-muted-foreground"} gap-3 px-4 py-3 h-full font-medium text-center`}
-            >
+     <div  className={`
+    fixed lg:sticky
+    top-18.25
+    left-0
+    h-[calc(100vh-73px)]
+    w-64
+    bg-background
+    border-r
+    z-40
+    transition-transform duration-300
+
+    ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
+
+  lg:translate-x-0
+  `}>
+      <div className="p-4 h-full flex flex-col" >          
+<div className="space-y-1 flex-1">
+{navItems.map((item) => {
+            return (
               <Link
-                href="/admin/supervisor-verification"
-                className="flex items-center gap-3"
-              >
-                <UserCheck className="size-5 shrink-0" />
-                Supervisor Verification
-                <Badge className="bg-destructive/10 text-destructive border-destructive/20">
-                  23
-                </Badge>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              className={`${pathname == "/admin/domain-validation" ? "bg-primary text-primary-foreground" : "text-muted-foreground"} gap-3 px-4 py-3 h-full font-medium text-center`}
-            >
-              <Link
-                href="/admin/domain-validation"
-                className="flex items-center gap-3"
-              >
-                <GraduationCap className="size-5 shrink-0" />
-                Domain Validation
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              className={`${pathname == "/admin/project-oversight" ? "bg-primary text-primary-foreground" : "text-muted-foreground"} gap-3 px-4 py-3 h-full font-medium text-center`}
-            >
-              <Link
-                href="/admin/project-oversight"
-                className="flex items-center gap-3"
-              >
-                <FolderOpen className="size-5 shrink-0" />
-                Project Oversight
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              className={`${pathname == "/admin/content-moderation" ? "bg-primary text-primary-foreground" : "text-muted-foreground"} gap-3 px-4 py-3 h-full font-medium text-center`}
-            >
-              <Link
-                href="/admin/content-moderation"
-                className="flex items-center gap-3"
-              >
-                <MessageSquare className="size-5 shrink-0" />
-                Content Moderation
-                <Badge className="bg-destructive/10 text-destructive border-destructive/20">
-                  23
-                </Badge>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              className={`${pathname == "/admin/audit-logs" ? "bg-primary text-primary-foreground" : "text-muted-foreground"} gap-3 px-4 py-3 h-full font-medium text-center`}
-            >
-              <Link
-                href="/admin/audit-logs"
-                className="flex items-center gap-3"
-              >
-                <FileText className="size-5 shrink-0" />
-                System Audit Logs
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              className={`${pathname == "/admin/setting" ? "bg-primary text-primary-foreground" : "text-muted-foreground"} gap-3 px-4 py-3 h-full font-medium text-center`}
-            >
-              <Link href="/admin/setting" className="flex items-center gap-3">
-                <Settings className="size-5 shrink-0" />
-                Settings
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarContent>
-    </Sidebar>
+                key={item.href}
+                href={item.href}
+                  onClick={() => setSidebarOpen(false)}
+                className={`w-full flex items-center text-center text-muted-foreground hover:bg-muted hover:text-foreground gap-3 px-4 py-3 rounded-lg text-sm font-medium
+                  ${pathname === item.href
+                    ? "bg-primary text-primary-foreground shadow-md"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  }`}
+              >  <div className="flex items-center gap-3">
+                  < item.icon className="h-5 w-5 shrink-0" />
+                  <span>{item.label}</span>
+                </div>
+                {item.badge && (
+                  <Badge className={pathname === item.href
+                    ? "bg-primary-foreground/20 text-primary-foreground border-primary-foreground/30"
+                    : "bg-destructive/10 text-destructive border-destructive/20"
+                  }>
+                    {item.badge}
+                  </Badge>
+                )}</Link>)    })}
+           
+</div>
+        <div className="pt-4 border-t mt-4">
+          <div className="flex items-center gap-3 px-4 py-3 bg-muted/30 rounded-lg">
+            <div className="size-10 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center shrink-0">
+              <Shield className="h-5 w-5 text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold truncate">Admin User</p>
+              <p className="text-xs text-muted-foreground truncate">System Administrator</p>
+            </div>
+          </div>
+        </div>
+ </div>
+    </div>
   );
 }

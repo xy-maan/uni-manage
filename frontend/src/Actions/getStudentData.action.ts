@@ -1,5 +1,4 @@
 "use server";
-import { RoleDataType } from "@/app/_Components/Auth/Forms/FormStudent/FormStudent";
 import { StudentData } from "@/types/student";
 import getAuthData from "@/utilities/getAuthData";
 export async function GetStudentDataAction() {

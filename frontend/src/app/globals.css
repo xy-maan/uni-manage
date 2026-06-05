@@ -11,9 +11,7 @@ html {
   --font-sans:
     ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
     "Segoe UI Symbol", "Noto Color Emoji";
-  --font-mono:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-    "Courier New", monospace;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --font-size: 16px;
   --background: #fff;
   --foreground: #0f172a;
@@ -35,8 +33,8 @@ html {
   --accent-foreground: #0f172a;
   --destructive: #ef4444;
   --destructive-foreground: #fff;
-  --border: #e2e8f0;
-  --input: transparent;
+  --border: #9c9c9c80;
+  --input: #9c9c9c80;
   --input-background: #f8fafc;
   --switch-background: #cbd5e1;
   --font-weight-medium: 500;
@@ -214,3 +212,44 @@ color: var(--foreground);
   border: 3px solid;
   border-bottom-color: rgba(128, 128, 128, 0.678);
 }
+.font-mono-system {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+.css-1jqq78o-placeholder{
+    color: var(--muted-foreground) !important;
+}
+.css-1u9des2-indicatorSeparator{
+  background-color:var(--input)  !important;
+}
+.css-1xc3v61-indicatorContainer{
+  background-color: var(--input)/30;
+  color:var(--text-foreground) !important;
+}
+.css-1nmdiq-menu, .css-qr46ko{
+  background-color: var(--background) !important;
+}
+.dark .css-1nmdiq-menu, .dark .css-qr46ko{
+  background-color: var(--input)/30 !important;
+  color:var(--text-foreground) !important;
+}
+
+.css-19bb58m input {
+  color:white
+}
+.react-select__input-container {
+  color: hsl(var(--foreground)) !important;
+}
+.react-select__input-container input {
+  color: hsl(var(--foreground)) !important;
+}
+ .css-9jq23d{
+color:var(--foreground) !important;
+font-size:12px !important;
+font-weight:500 !important;
+}
+.react-select__multi-value__remove{
+  color:var(--foreground);
+  }
+  .react-select__multi-value__remove:hover{
+background-color: transparent !important;
+  }

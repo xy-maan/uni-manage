@@ -1,24 +1,31 @@
+"use client"
+import HeaderAdmin from "@/app/_Components/HeaderAdmin/HeaderAdmin";
 import SidebarAdmin from "@/app/_Components/SidebarAdmin/SidebarAdmin";
-import {
-    SidebarInset,
-  SidebarProvider,
-} from "@/components/ui/sidebar";
-
+import { useState } from "react";
 export default function AdminLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
-  return (
-        // <div className="min-h-screen w-full">
-    <SidebarProvider>
-        <SidebarAdmin/>
-           {/* <SidebarInset> */}
+}) {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-      <main className="p-4">{children}</main>
-           {/* </SidebarInset> */}
-    </SidebarProvider>
-        // {/* </div> */}
-            
+  return (
+    <div className="min-h-screen bg-background w-full">
+      <HeaderAdmin
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+      />
+
+      <div className="flex">
+        <SidebarAdmin
+          sidebarOpen={sidebarOpen}
+          setSidebarOpen={setSidebarOpen}
+        />
+
+        <main className="flex-1">
+          {children}
+        </main>
+      </div>
+    </div>
   );
 }
