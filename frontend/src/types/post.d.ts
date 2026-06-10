@@ -36,11 +36,3 @@ export type Tag = {
   id: number;
   name: string;
 }
-export type CreatePostRequest = {
-  title: string;
-  content?: string;
-  category: number;
-  tag_names: string[];
-  post_type: string;
-  poll_option_texts?: string[];
-};

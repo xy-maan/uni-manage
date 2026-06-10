@@ -86,13 +86,13 @@ export const schemaProfile = z.object({
   bio: z.string().optional(),
   department: z.number().optional(),
   linkedin_url: z.string().optional(),
-  // student
+  // student ده
   student_id: z.string().optional(),
   academic_level: z.number().optional(),
   gpa: z.number().min(0).max(4).optional(),
   skills: z.array(z.union([z.number(), z.string()])).optional(),
   github_url: z.string().optional(),
-  // supervisor
+  // supervisor ده
   registration_code: z.string().optional(),
   max_team_capacity: z.number().default(5).optional(),
   expertise: z.array(z.union([z.number(), z.string()])).optional(),

@@ -2,6 +2,7 @@ import { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { refreshTokenAction } from "@/Actions/refresh.action";
 import { jwtDecode } from "jwt-decode";
+import { GetUserStatus } from "@/Actions/status.action";
 type JwtPayload = {
   exp?: number;
 };
@@ -26,7 +27,6 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60,
-    // maxAge:10,
   },
   callbacks: {
     async signIn({ account, profile, user }) {
@@ -59,26 +59,35 @@ const payload = await response.json();
         token.djangoAccess = account.djangoAccess;
         token.djangoRefresh = account.djangoRefresh;
         token.access_token = account.access_token;
+        // neww
+        token.djangoAccessExpires = decodeTokenExpiry(account.djangoAccess as string);
+        // 
         token.id_token = account.id_token;
 
-        token.sessionExpires = Date.now() +  30 * 24 * 60 * 60 * 1000;
-
-        if (account.djangoAccess) {
-          token.djangoAccessExpires = decodeTokenExpiry(
-            account.djangoAccess as string,
-          );
-        }
+        // بجرب 
+        // token.djangoAccessExpires = Date.now() + 20 * 1000;
+        // 
+        // if (account.djangoAccess) {
+        //   token.djangoAccessExpires = decodeTokenExpiry(
+        //     account.djangoAccess as string,
+        //   );
+        // }
+    const { payload, ok } = await GetUserStatus(account.djangoAccess as string);
+    if (ok) {
+      token.role = payload.role;
+      token.isComplete = payload.is_complete;
+    }
         return token;
       }
 
-      
-      if (token.sessionExpires && Date.now() > (token.sessionExpires as number)) {
-         return { ...token, error: "SessionExpired" };
-       }
+
+      // if (token.sessionExpires && Date.now() > (token.sessionExpires as number)) {
+      //    return { ...token, error: "SessionExpired" };
+      //  }
       if (
         token.djangoAccess &&
         token.djangoAccessExpires &&
-        Date.now() < (token.djangoAccessExpires as number)
+      Date.now() < (token.djangoAccessExpires as number) 
       ) {
         return token;
       }
@@ -95,6 +104,7 @@ const payload = await response.json();
 
         return { ...token, error: "RefreshAccessTokenError" };
       }
+      
       return {
         ...token,
         djangoAccess: access,
@@ -110,7 +120,8 @@ const payload = await response.json();
       session.djangoAccess = token.djangoAccess;
       session.djangoRefresh = token.djangoRefresh;
       session.error = token.error;
-
+  session.role = token.role;           
+  session.isComplete = token.isComplete; 
 
         return session;
     },
