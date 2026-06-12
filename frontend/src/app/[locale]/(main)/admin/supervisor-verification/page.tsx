@@ -162,7 +162,7 @@ export default function SupervisorVerification() {
                         <div className="">
                           <div className="mb-1 flex items-center gap-2 ">
                             <h3 className="font-semibold">Dr. Sarah Johnson</h3>
-                            <Badge className="text-foreground bg-transparent border-border">
+                            <Badge variant="outline" >
                               Primary Supervisor
                             </Badge>
                           </div>
@@ -270,7 +270,7 @@ export default function SupervisorVerification() {
                         <div className="">
                           <div className="mb-1 flex items-center gap-2 ">
                             <h3 className="font-semibold">Dr. Sarah Johnson</h3>
-                            <Badge className="text-foreground bg-transparent border-border">
+                            <Badge variant="outline">
                               Primary Supervisor
                             </Badge>
                           </div>
@@ -372,7 +372,7 @@ export default function SupervisorVerification() {
                         <div className="">
                           <div className="mb-1 flex items-center gap-2 ">
                             <h3 className="font-semibold">Dr. Sarah Johnson</h3>
-                            <Badge className="text-foreground bg-transparent border-border">
+                            <Badge variant="outline">
                               Primary Supervisor
                             </Badge>
                           </div>

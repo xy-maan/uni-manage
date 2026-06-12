@@ -160,7 +160,7 @@ export default function UsersAdmin() {
 <div className="">
   <div className="mb-1 flex items-center gap-2 ">
     <h3 className="font-semibold">Dr. Abdulrahman</h3>
-    <Badge className='text-foreground bg-transparent border-border'>Primary Supervisor
+    <Badge variant="outline">Primary Supervisor
 </Badge>
   </div>
   <div className="text-sm text-muted-foreground flex items-center gap-2">
@@ -239,7 +239,7 @@ export default function UsersAdmin() {
 <div className="">
   <div className="mb-1 flex items-center gap-2 ">
     <h3 className="font-semibold">Dr. Abdulrahman</h3>
-    <Badge className='text-foreground bg-transparent border-border'>Primary Supervisor
+    <Badge variant="outline" className=''>Primary Supervisor
 </Badge>
   </div>
   <div className="text-sm text-muted-foreground flex items-center gap-2">

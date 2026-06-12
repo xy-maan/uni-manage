@@ -1,6 +1,6 @@
 import Marketplace from "@/app/[locale]/_Components/MarketplaceComponents/Marketplace/Marketplace";
 import { getTranslations } from "next-intl/server";
-import FilteringMarketplace from "../../_Components/MarketplaceComponents/FilteringMarketplace";
+import FilteringMarketplace from "../../../../_Components/MarketplaceComponents/FilteringMarketplace";
 export default async function MarketPlaceBasic({
   params,
 }:{
@@ -16,9 +16,7 @@ export default async function MarketPlaceBasic({
     <h1 className="text-3xl! font-bold!">{t("title")}</h1>
     <p className="text-muted-foreground">{t("description")}</p>
   </div>
-  <div className="flex flex-col lg:flex-row gap-4">
     <FilteringMarketplace/>
-  </div>
 </div>
    <Marketplace/>
  </div>

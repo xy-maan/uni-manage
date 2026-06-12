@@ -147,7 +147,7 @@ export default function page() {
                     natural language processing.
                   </p>
                   <div className="flex flex-wrap gap-2 mb-3">
-                    <Badge className="text-foreground bg-transparent hover:bg-transparent border border-border gap-1 ">
+                    <Badge variant="outline" className="text-foreground gap-1 ">
                       {" "}
                       <UserCheck className="size-3 mr-1" />
                       Frontend Developer
@@ -204,7 +204,7 @@ export default function page() {
                       From:{" "}
                     </span>
                     <span className="text-sm font-medium"> Alex Chen</span>
-                    <Badge className="text-foreground bg-transparent hover:bg-transparent border border-border gap-1 ">
+                    <Badge variant="outline" className=" ">
                       Team Lead
                     </Badge>
                   </div>
@@ -292,7 +292,7 @@ export default function page() {
                       From:{" "}
                     </span>
                     <span className="text-sm font-medium"> Dr. James Wilson</span>
-                    <Badge className="text-foreground bg-transparent hover:bg-transparent border border-border gap-1 ">
+                    <Badge variant="outline" className=" gap-1 ">
                       Primary Supervisor
                     </Badge>
                   </div>
@@ -437,7 +437,7 @@ Dr. James Wilson has accepted your supervision request!
                     natural language processing.
                   </p>
                   <div className="flex flex-wrap gap-2 mb-3">
-                    <Badge className="text-foreground bg-transparent hover:bg-transparent border border-border gap-1 ">
+                    <Badge variant="outline" className="text-foreground gap-1 ">
                       {" "}
                       <UserCheck className="size-3 mr-1" />
                       Frontend Developer
@@ -539,7 +539,7 @@ Dr. Michael Chang has declined your supervision request.
                     natural language processing.
                   </p>
                   <div className="flex flex-wrap gap-2 mb-3">
-                    <Badge className="text-foreground bg-transparent hover:bg-transparent border border-border gap-1 ">
+                    <Badge variant="outline" className=" gap-1 ">
                       {" "}
                       <UserCheck className="size-3 mr-1" />
                       Frontend Developer
@@ -596,7 +596,7 @@ Dr. Michael Chang has declined your supervision request.
                       From:{" "}
                     </span>
                     <span className="text-sm font-medium"> Alex Chen</span>
-                    <Badge className="text-foreground bg-transparent hover:bg-transparent border border-border gap-1 ">
+                    <Badge variant="outline" className=" gap-1 ">
                       Team Lead
                     </Badge>
                   </div>
@@ -686,7 +686,7 @@ Dr. Michael Chang has declined your supervision request.
                       From:{" "}
                     </span>
                     <span className="text-sm font-medium"> Alex Chen</span>
-                    <Badge className="text-foreground bg-transparent hover:bg-transparent border border-border gap-1 ">
+                    <Badge variant="outline" className=" gap-1 ">
                       Team Lead
                     </Badge>
                   </div>

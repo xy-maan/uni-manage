@@ -40,7 +40,7 @@ export default function MilestonePage() {
                 <CircleCheck className=" size-5 text-foreground" />
               </div>
               <div className="">
-                <Badge className="text-foreground bg-transparent border-border mb-2">
+                <Badge variant="outline" className=" mb-2">
                   Phase 1
                 </Badge>
                 <h3 className="mb-1">Project Proposal & Requirements</h3>
@@ -102,7 +102,7 @@ export default function MilestonePage() {
                 <CircleCheck className=" size-5 " />
               </div>
               <div className="">
-                <Badge className="text-foreground bg-transparent border-border mb-2">
+                <Badge variant="outline" className="mb-2">
                   Phase 2
                 </Badge>
                 <h3 className="mb-1">System Design & Architecture</h3>
@@ -164,7 +164,7 @@ export default function MilestonePage() {
                 <Clock className=" size-5 text-foreground" />
               </div>
               <div className="">
-                <Badge className="text-foreground bg-transparent border-border mb-2">
+                <Badge variant="outline" className=" mb-2">
                   Phase 3
                 </Badge>
                 <h3 className="mb-1">Implementation & Testing</h3>
@@ -258,7 +258,7 @@ export default function MilestonePage() {
                 <Circle className=" size-5 text-muted-foreground" />
               </div>
               <div className="">
-                <Badge className="text-foreground bg-transparent border-border mb-2">
+                <Badge  variant="outline" className="mb-2">
                   Phase 4
                 </Badge>
                 <h3 className="mb-1">Quality Assurance & Refinement</h3>
@@ -318,7 +318,7 @@ export default function MilestonePage() {
                 <Circle className=" size-5 text-muted-foreground" />
               </div>
               <div className="">
-                <Badge className="text-foreground bg-transparent border-border mb-2">
+                <Badge variant="outline" className=" mb-2">
                   Phase 5
                 </Badge>
                 <h3 className="mb-1">Final Delivery & Documentation</h3>

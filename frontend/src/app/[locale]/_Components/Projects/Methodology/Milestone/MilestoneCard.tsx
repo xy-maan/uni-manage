@@ -9,7 +9,7 @@ export default function MilestoneCard({variant}:{variant:string}) {
     <CircleCheck className=' size-5 text-foreground'/>
     </div>
     <div className="">
-        <Badge className="text-foreground bg-transparent border-border mb-2">
+        <Badge variant="outline" className="mb-2">
              {variant=="phase1"&&"Phase 1"}
              {variant=="phase2"&&"Phase 2"}
              {variant=="phase3"&&"Phase 3"}
