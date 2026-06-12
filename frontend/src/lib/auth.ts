@@ -26,7 +26,7 @@ export const authOptions: NextAuthOptions = {
   ],
   session: {
     strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60,
+    maxAge: 30 * 24 * 60 * 60
   },
   callbacks: {
     async signIn({ account, profile, user }) {
@@ -65,13 +65,8 @@ const payload = await response.json();
         token.id_token = account.id_token;
 
         // بجرب 
-        // token.djangoAccessExpires = Date.now() + 20 * 1000;
-        // 
-        // if (account.djangoAccess) {
-        //   token.djangoAccessExpires = decodeTokenExpiry(
-        //     account.djangoAccess as string,
-        //   );
-        // }
+        //  token.djangoAccessExpires = Date.now() +5*1000;
+
     const { payload, ok } = await GetUserStatus(account.djangoAccess as string);
     if (ok) {
       token.role = payload.role;
@@ -79,11 +74,10 @@ const payload = await response.json();
     }
         return token;
       }
-
-
-      // if (token.sessionExpires && Date.now() > (token.sessionExpires as number)) {
-      //    return { ...token, error: "SessionExpired" };
-      //  }
+ console.log("time left:", 
+    Math.round(((token.djangoAccessExpires as number) - Date.now()) / 1000), 
+    "seconds"
+  );
       if (
         token.djangoAccess &&
         token.djangoAccessExpires &&
@@ -95,13 +89,12 @@ const payload = await response.json();
       if (!token.djangoRefresh) {
         return { ...token, error: "NoRefreshToken" };
       }
-
       const { ok, access,refresh } = await refreshTokenAction(
         token.djangoRefresh as string,
       );
 
-      if (!ok || !access) {
 
+      if (!ok || !access) {
         return { ...token, error: "RefreshAccessTokenError" };
       }
       
@@ -115,6 +108,7 @@ const payload = await response.json();
     },
 
     async session({ session, token }) {
+
      session.access_token = token.access_token;
       session.id_token = token.id_token;
       session.djangoAccess = token.djangoAccess;

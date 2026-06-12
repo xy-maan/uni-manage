@@ -5,5 +5,9 @@
  "login": {
     "title": "Sign In",
     "button": "Continue with Google"
+  },
+  "marketplace":{
+    "title":"Project Marketplace",
+    "description":"Explore innovative student projects from top universities"
   }
 }
