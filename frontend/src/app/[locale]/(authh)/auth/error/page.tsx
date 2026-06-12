@@ -30,20 +30,4 @@ const router = useRouter();
   
 	return  null
 }	
-		// <div className=' mt-8  max-w-md min-h-[88vh] w-full'>
-	// 		<div className="flex flex-col  lg:w-full  md:w-3/4 w-full p-4 bg-card mx-auto justify-center rounded-xl border border-border"> 
-    //             <h1 className=' text-red-400 font-semibold my-3'>Login Error</h1> 
-	// 	      {message && (
-    // //     <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3 text-sm text-destructive mb-4">
-    // //       {message}
-    // //     </div>
-    //    )}
-	// 		<p className='text-muted-foreground text-sm'>{message}</p> 
-	// 	<Link href="/login" className=''>
-    //     <Button className="mt-5 bg-transparent text-foreground cursor-pointer font-medium hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 w-1/2 items-center justify-start ">	
-    //     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"   strokeWidth="2"   strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-left size-4"><path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path></svg>
-    //     Try again</Button>
-    //     </Link> 
-    //         </div> 
-	// 	 </div>
 

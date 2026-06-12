@@ -1,5 +1,5 @@
 import CreateTeam from "@/app/[locale]/_Components/Projects/CreateTeam";
-import StudentProjects from "@/app/[locale]/_Components/StudentProjects/StudentProjects";
+import StudentProjects from "@/app/[locale]/_Components/Projects/StudentProjects/StudentProjects";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users } from "lucide-react";

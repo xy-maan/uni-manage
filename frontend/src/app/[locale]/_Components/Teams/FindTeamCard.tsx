@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import React from "react";
 import HeaderContent from "../CommunityComponent/HeaderContent";
+import { Mail, UserPlus } from "lucide-react";
 
 export default function FindTeamCard({ variant }: { variant: string }) {
   return (
@@ -51,39 +52,11 @@ export default function FindTeamCard({ variant }: { variant: string }) {
           </div>
           <Button className="w-full text-center">
             {variant == "teams" ? (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width={24}
-                height={24}
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="lucide lucide-mail mr-2 size-4"
-              >
-                <rect width={20} height={16} x={2} y={4} rx={2} />
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-              </svg>
+                <Mail className=' mr-2 size-4'/>
+           
             ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width={24}
-                height={24}
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="lucide lucide-user-plus mr-2 size-4"
-              >
-                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                <circle cx={9} cy={7} r={4} />
-                <line x1={19} x2={19} y1={8} y2={14} />
-                <line x1={22} x2={16} y1={11} y2={11} />
-              </svg>
+                 <UserPlus className=' mr-2 size-4'/>
+         
             )}
 
             {variant == "teams" ? "Request to Join" : "Invite to My Team"}
@@ -136,39 +109,11 @@ export default function FindTeamCard({ variant }: { variant: string }) {
           </div>
           <Button className="w-full text-center">
             {variant == "teams" ? (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width={24}
-                height={24}
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="lucide lucide-mail mr-2 size-4"
-              >
-                <rect width={20} height={16} x={2} y={4} rx={2} />
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-              </svg>
+                 <Mail className=' mr-2 size-4'/>
+          
             ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width={24}
-                height={24}
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="lucide lucide-user-plus mr-2 size-4"
-              >
-                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                <circle cx={9} cy={7} r={4} />
-                <line x1={19} x2={19} y1={8} y2={14} />
-                <line x1={22} x2={16} y1={11} y2={11} />
-              </svg>
+                 <UserPlus className=' mr-2 size-4'/>
+           
             )}
 
             {variant == "teams" ? "Request to Join" : "Invite to My Team"}

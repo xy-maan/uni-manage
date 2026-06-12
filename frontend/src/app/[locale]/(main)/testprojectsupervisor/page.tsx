@@ -2,9 +2,9 @@ import { Badge } from '@/components/ui/badge'
 import React from 'react'
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import CardsInfoDashboard from '@/app/[locale]/_Components/Dashboard/CardsInfoDashboard';
+import CardsInfoDashboard from '@/app/[locale]/_Components/DashboardComponents/CardsInfoDashboard';
 import { Filter, Search } from 'lucide-react';
-import ProjectCardSupervisor from '@/app/[locale]/_Components/Dashboard/SupervisorDashboard/ProjectCardSupervisor';
+import ProjectCardSupervisor from '@/app/[locale]/_Components/DashboardComponents/SupervisorDashboard/ProjectCardSupervisor';
 export default function page() {
   return (
        <div className="container mx-auto px-4 lg:px-8 py-8">

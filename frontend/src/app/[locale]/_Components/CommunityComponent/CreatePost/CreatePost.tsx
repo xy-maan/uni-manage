@@ -45,7 +45,7 @@ import {   schemaPost } from "@/schemas/CreatePost.schema";
 import {  useQueryClient } from "@tanstack/react-query";
 import { GetTagsAction } from "@/Actions/getTags.action";
 import { Textarea } from "@/components/ui/textarea";
-import { AtSign, Plus, Send } from "lucide-react";
+import { AtSign, ChartColumn, FileText, Plus, Send } from "lucide-react";
 import MultiSelect from "../../Auth/Forms/TagsSearch/MultiSelect";
 
 export default function CreatePost() {
@@ -175,24 +175,8 @@ useEffect(() => {
                     value="text"
                     className="!text-primary-foreground flex items-center justify-center gap-1.5  data-[state=active]:!bg-primary data-[state=active]:!text-primary-foreground px-3  h-8.5 text-sm font-medium  has-[>svg]:px-2.5 "
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="lucide lucide-file-text size-4 mr-2"
-                    >
-                      <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path>
-                      <path d="M14 2v4a2 2 0 0 0 2 2h4"></path>
-                      <path d="M10 9H8"></path>
-                      <path d="M16 13H8"></path>
-                      <path d="M16 17H8"></path>
-                    </svg>{" "}
+                    <FileText className="size-4 mr-2"/>
+                 
                     Text Post
                   </TabsTrigger>
                   <TabsTrigger
@@ -200,23 +184,8 @@ useEffect(() => {
                     className="!text-primary-foreground flex items-center justify-center gap-1.5  data-[state=active]:!bg-primary data-[state=active]:!text-primary-foreground px-3  h-8.5 text-sm font-medium  has-[>svg]:px-2.5"
                   >
                     {" "}
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="lucide lucide-chart-column size-4 mr-2"
-                    >
-                      <path d="M3 3v16a2 2 0 0 0 2 2h16"></path>
-                      <path d="M18 17V9"></path>
-                      <path d="M13 17V5"></path>
-                      <path d="M8 17v-3"></path>
-                    </svg>{" "}
+                    <ChartColumn className="size-4 mr-2"/>
+               
                     Poll
                   </TabsTrigger>
                 </TabsList>
@@ -330,21 +299,7 @@ useEffect(() => {
 
 >
   <Send className=" size-4"/>
-                  {/* <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width={24}
-                    height={24}
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="lucide lucide-send size-4"
-                  >
-                    <path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z" />
-                    <path d="m21.854 2.147-10.94 10.939" />
-                  </svg> */}
+                
                   Post to Community
                 </Button>
                 <DialogClose asChild>

@@ -8,6 +8,7 @@ export default function Footer() {
             <div className="footer-item ">
               <div className="flex items-center gap-2 font-semibold mb-4">
                <div className="flex size-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-secondary">
+                
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="white"   strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path><path d="M2 17L12 22L22 17" stroke="white"   strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path><path d="M2 12L12 17L22 12" stroke="white"   strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path></svg>
 
                </div>

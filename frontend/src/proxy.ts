@@ -15,6 +15,7 @@ const locale = (locales as readonly string[]).includes(firstSegment)
 : routing.defaultLocale;
 const isHomePage =
   pathname === `/${locale}` ||
+  pathname === `/${locale}/marketplace` ||
   pathname === `/${locale}/`;
   const token = await getToken({
     req: request,

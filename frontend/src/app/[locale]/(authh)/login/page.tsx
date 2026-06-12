@@ -2,7 +2,7 @@
 // import RoleSwitcher from '@/app/_Components/Auth/RoleSwitcher/RoleSwitcher'
 import React from 'react'
 import AuthError from '../auth/error/page'
-import ButtonAOuth from '../../_Components/Auth/ButtonAOuth/ButtonAOuth'
+import ButtonAOuth from '../../_Components/Btns/ButtonAOuth/ButtonAOuth'
 import { useTranslations } from "next-intl";
 export type roleType={
     role?:string

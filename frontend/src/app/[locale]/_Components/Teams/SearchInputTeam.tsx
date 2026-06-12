@@ -1,4 +1,5 @@
 import { Label } from '@/components/ui/label'
+import { Search } from 'lucide-react'
 import React from 'react'
 
 export default function SearchInputTeam() {
@@ -14,21 +15,8 @@ export default function SearchInputTeam() {
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width={24}
-                  height={24}
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="lucide lucide-search absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground"
-                >
-                  <circle cx={11} cy={11} r={8} />
-                  <path d="m21 21-4.3-4.3" />
-                </svg>
+                  <Search className='absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground'/>
+             
               </div>
               <input
                 type="search"

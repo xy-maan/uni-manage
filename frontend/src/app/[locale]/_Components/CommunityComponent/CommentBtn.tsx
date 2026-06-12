@@ -29,6 +29,7 @@ import { Comments } from "@/types/comments";
 import { commentSchema, CommentValues } from "@/schemas/Comment.schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@/i18n/navigation";
+import { MessageSquare } from "lucide-react";
 export default function CommentBtn({
   postId,
   comments_count,
@@ -82,21 +83,8 @@ export default function CommentBtn({
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button className="bg-transparent p-0 text-muted-foreground has-[>svg]:px-0 hover:bg-transparent">
+          <MessageSquare className="size-4"/>
           
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width={24}
-              height={24}
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="lucide lucide-message-square size-4"
-            >
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-            </svg>
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-sm">

@@ -14,11 +14,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { usePathname, useRouter,Link } from "@/i18n/navigation";
 import { signOut, useSession } from "next-auth/react";
-import StatusData from "../StatusData/StatusData";
-import NotificationBtn from "../Notifications/NotificationBtn/NotificationBtn";
-import ChatBtn from "../ChatBtn/ChatBtn";
-import SearchNavbarBtn from "../SearchNavbarBtn/SearchNavbarBtn";
-import LanguageSelector from "../LanguageSelector/LanguageSelector";
+import StatusData from "./StatusData/StatusData";
+import NotificationBtn from "../Btns/NotificationBtn/NotificationBtn";
+import ChatBtn from "../Btns/ChatBtn/ChatBtn";
+import SearchNavbarBtn from "./SearchNavbarBtn/SearchNavbarBtn";
+import LanguageSelector from "../UtilitiesComponents/LanguageSelector/LanguageSelector";
 
 export default function Navbar() {
 

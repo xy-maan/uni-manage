@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import getAuthData from "@/utilities/getAuthData";
 import { Metadata } from "next";
-import HomeUi from "./(main)/Home/page";
+import HomeUi from "./_Components/HomeComponents/page";
 import { redirect } from "@/i18n/navigation";
  export const metadata: Metadata = {
    title: "Home",
@@ -17,7 +17,7 @@ export default async function BasicPage({
   const session = await getServerSession(authOptions);
 
   if (session?.error||!session?.djangoAccess) {
-     redirect({ href: "/login?error=session_expired", locale });
+    //  redirect({ href: "/login?error=session_expired", locale });
      return <HomeUi />;
   }
 

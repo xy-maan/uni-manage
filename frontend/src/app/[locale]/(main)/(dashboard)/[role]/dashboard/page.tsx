@@ -1,13 +1,13 @@
-import StudentDashboard from "@/app/[locale]/_Components/Dashboard/StudentDashboard/StudentDashboard";
+import StudentDashboard from "@/app/[locale]/_Components/DashboardComponents/StudentDashboard/StudentDashboard";
 import { Metadata } from "next";
-import ProjectCard from '../../../../_Components/ProjectCard/ProjectCard';
+import ProjectCard from '../../../../_Components/Projects/ProjectCard/ProjectCard';
 import { Calendar, CircleAlert, CircleCheck, Clock, FileText, MessageSquare, Users } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from '@/i18n/navigation';
-import TasksDashboardStudent from "@/app/[locale]/_Components/Dashboard/StudentDashboard/TasksDashboardStudent";
-import SupervisorDashboard from "@/app/[locale]/_Components/Dashboard/SupervisorDashboard/SupervisorDashboard";
+import TasksDashboardStudent from "@/app/[locale]/_Components/DashboardComponents/StudentDashboard/TasksDashboardStudent";
+import SupervisorDashboard from "@/app/[locale]/_Components/DashboardComponents/SupervisorDashboard/SupervisorDashboard";
  export const metadata: Metadata = {
    title: "Dashboard",
  };

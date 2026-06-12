@@ -7,7 +7,6 @@ import { useEffect, useState } from "react";
 export default function SessionWatcher() {
   const { data: session } = useSession();
   const [show, setShow] = useState(false);
-console.log(session?.error);
   useEffect(() => {
     if (
       session?.error === "RefreshAccessTokenError" ||

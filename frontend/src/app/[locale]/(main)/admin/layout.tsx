@@ -1,6 +1,6 @@
 "use client"
 import HeaderAdmin from "@/app/[locale]/_Components/HeaderAdmin/HeaderAdmin";
-import SidebarAdmin from "@/app/[locale]/_Components/SidebarAdmin/SidebarAdmin";
+import SidebarAdmin from "@/app/[locale]/_Components/AdminComponents/SidebarAdmin/SidebarAdmin";
 import { useState } from "react";
 export default function AdminLayout({
   children,
