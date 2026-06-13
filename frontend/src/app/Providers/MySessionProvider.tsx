@@ -4,8 +4,8 @@ import React, { ReactNode } from 'react'
 import SessionWatcher from './SessionWatcher'
 export default function MySessionProvider({children}:{children:ReactNode}) {
   return <>
-  <SessionProvider   refetchInterval={0}
-      refetchOnWindowFocus={false}>
+  <SessionProvider   refetchInterval={5*60}
+      refetchOnWindowFocus={true}>
          <SessionWatcher/>
 {children}
   </SessionProvider>

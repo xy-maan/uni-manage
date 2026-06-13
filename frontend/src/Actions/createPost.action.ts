@@ -1,8 +1,9 @@
 "use server"
 import { Logout } from "@/types/logout";
-import {  CreatePostRequest, Post } from "@/types/post";
+import { Post } from "@/types/post";
+import { CreateTextPostValues } from "@/types/schema";
 import getAuthData from "@/utilities/getAuthData";
-export async function CreatePostAction(data:CreatePostRequest){
+export async function CreatePostAction(data:Record<string, unknown>){
   const session = await getAuthData();
  if( !session?.django.access){
     return {ok:false,payload:null}

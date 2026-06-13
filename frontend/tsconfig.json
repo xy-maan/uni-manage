@@ -31,6 +31,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-, "src/app/not-found.js", "src/app/_Components/Auth/Forms/FormStudent/RegisterStudent.tsx"  ],
+, "src/app/[locale]/not-found.js", "src/app/[locale]/_Components/Auth/Forms/FormStudent/RegisterStudent.tsx"  ],
   "exclude": ["node_modules"]
 }

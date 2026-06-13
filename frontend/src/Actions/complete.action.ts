@@ -1,8 +1,7 @@
 "use server";
-import { RoleDataType } from "@/app/_Components/Auth/Forms/FormStudent/FormStudent";
+import { CompleteProfileType } from "@/types/schema";
 import getAuthData from "@/utilities/getAuthData";
-// import { ProfileFormType } from "@/types/auth";
-export async function completeProfileAction(data: RoleDataType) {
+export async function completeProfileAction(data: CompleteProfileType) {
   const session = await getAuthData();
 
   if (!session?.django.access) {

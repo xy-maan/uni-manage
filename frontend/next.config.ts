@@ -1,8 +1,9 @@
 import type { NextConfig } from "next";
-
+import createNextIntlPlugin from 'next-intl/plugin';
 const nextConfig: NextConfig = {
   /* config options here */
     images:{
+      unoptimized: true, 
     remotePatterns:[
   {
     protocol: 'https',
@@ -10,13 +11,15 @@ const nextConfig: NextConfig = {
         pathname: '/**',
     },
       {
-      protocol: "http",
-      hostname: "localhost",
-      port: "8000",
-      pathname: "/community/attachments/**",
+        protocol: "http",
+        hostname: "localhost",
+        port: "8000",
+        pathname: "/media/**",
       },
   ],
 
   },
 };
-export default nextConfig;
+const withNextIntl = createNextIntlPlugin();
+export default withNextIntl(nextConfig);
+// export default nextConfig;
