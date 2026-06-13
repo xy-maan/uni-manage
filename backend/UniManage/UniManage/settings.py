@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
+    'django_filters',
     'dj_rest_auth',
     'dj_rest_auth.registration',
 
@@ -40,6 +41,9 @@ INSTALLED_APPS = [
 
     'users',
     'community',
+    'projects',
+    'notifications',
+    'simple_history',
 ]
 
 MIDDLEWARE = [
@@ -99,6 +103,11 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 20,
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
     ),
 }
 
