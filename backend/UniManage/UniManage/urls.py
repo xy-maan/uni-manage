@@ -8,6 +8,9 @@ urlpatterns = [
     path('users/', include('allauth.urls')),
     path('api/users/', include('users.urls')),
     path('api/community/', include('community.urls')), 
+    path('api/projects/', include('projects.urls')),
+    path('api/tasks/', include('tasks.urls')),
+    path('api/notifications/', include('notifications.urls')),
 ]
 
 if settings.DEBUG:

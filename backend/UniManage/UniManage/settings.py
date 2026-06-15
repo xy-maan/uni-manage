@@ -40,6 +40,9 @@ INSTALLED_APPS = [
 
     'users',
     'community',
+    'projects',
+    'tasks',
+    'notifications',
 ]
 
 MIDDLEWARE = [
@@ -72,6 +75,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'UniManage.wsgi.application'
+ASGI_APPLICATION = 'UniManage.asgi.application'
 
 
 DATABASES = {
@@ -88,6 +92,12 @@ DATABASES = {
             'trusted_connection': os.getenv('DB_TRUSTED_CONNECTION', 'yes'),
         },
     }
+}
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
 }
 
 
