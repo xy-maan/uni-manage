@@ -500,7 +500,7 @@ GOOGLE_CALLBACK_URL=http://localhost:8000/api/users/auth/google/callback/
 
 ---
 
-**Last Updated:** April 7, 2026
+**Last Updated:** June 15, 2026
 
 ---
 
@@ -682,8 +682,8 @@ This section reflects the implementation currently present in `projects`, `tasks
 | Feature | Status | Notes for Frontend |
 | ------- | ------ | ------------------ |
 | Project CRUD | Implemented | DRF CRUD exists at `/api/projects/`. Create automatically adds the creator as `leader`. |
-| Project marketplace | Partially Implemented | `GET /api/projects/` returns public projects plus projects connected to the current user. Category, department, technologies, and archive tags are stored, but there is no search or explicit marketplace filter. |
-| Project fields from product flow | Implemented | Project records now include creation wizard fields: `name`, `description`, `category`, `semester`, `academic_year`, `technologies`, `department`, `project_type`, `methodology`, `min_members`, `max_members`, `is_public`, proposal fields, repository/docs URLs, and archive metadata. |
+| Project marketplace | Partially Implemented | `GET /api/projects/` returns public projects plus projects connected to the current user. Category, semester, academic_year, technologies are taxonomy models. Archive tags are stored. There is no search or explicit marketplace filter. |
+| Project fields from product flow | Implemented | Project records now include creation wizard fields: `name`, `description`, `category` (FK), `semester` (FK), `academic_year` (FK), `technologies` (M2M), `project_type`, `methodology`, `min_members`, `max_members`, `is_public`, proposal fields, repository/docs URLs, and archive metadata. |
 | Project status transitions | Implemented | `activate`, `submit`, `approve-submission`, and `archive` actions exist. `submit` moves an active project to `under_review`; `approve-submission` moves it to `submitted`. Status is read-only on normal create/update. |
 | Membership management | Partially Implemented | Leaders can create/update/delete memberships with `leader`, `co_leader`, and `member` roles. Leader membership cannot be deleted. There is no self-service "leave team" endpoint. |
 | Leadership transfer | Missing | There is no atomic transfer-leadership endpoint. Do not build a frontend flow that relies on this yet. |
@@ -741,9 +741,9 @@ These field lists reflect the active serializers in `projects`, `tasks`, and `no
 
 | Serializer | Returned Fields |
 | ---------- | --------------- |
-| `Project` | `id`, `creator_detail`, `memberships`, `supervisors`, `name`, `description`, `category`, `semester`, `academic_year`, `technologies`, `department`, `project_type`, `methodology`, `status`, `min_members`, `max_members`, `is_public`, `proposal`, `abstract`, `expected_scope`, `repository_url`, `documentation_url`, `archive_year`, `archive_tags`, `deleted_at`, `created_at`, `updated_at`, `creator` |
+| `Project` | `id`, `creator_detail`, `memberships`, `supervisors`, `name`, `description`, `category` (nested `{id, name}`), `semester` (nested `{id, name}`), `academic_year` (nested `{id, name}`), `technologies` (array of `{id, name, is_official}`), `project_type`, `methodology`, `status`, `min_members`, `max_members`, `is_public`, `proposal`, `abstract`, `expected_scope`, `repository_url`, `documentation_url`, `archive_year`, `archive_tags`, `deleted_at`, `created_at`, `updated_at`, `creator` |
 | `ProjectMembership` | `id`, `user_detail`, `project`, `user`, `role`, `joined_at`, `created_at`, `updated_at` |
-| `SupervisorRequest` | `id`, `requested_by_detail`, `supervisor_detail`, `project`, `requested_by`, `supervisor`, `role`, `message`, `proposal`, `abstract`, `technology_stack`, `expected_scope`, `modification_note`, `status`, `responded_at`, `created_at`, `updated_at` |
+| `SupervisorRequest` | `id`, `requested_by_detail`, `supervisor_detail`, `project`, `requested_by`, `supervisor`, `role`, `message`, `proposal`, `abstract`, `technology_stack` (array of `{id, name, is_official}`), `expected_scope`, `modification_note`, `status`, `responded_at`, `created_at`, `updated_at` |
 | `ProjectSupervisor` | `id`, `supervisor_detail`, `project`, `supervisor`, `role`, `created_at`, `updated_at` |
 | `Task` | `id`, `creator_detail`, `assignee_detail`, `comments`, `attachments`, `checklists`, `activity`, `project`, `title`, `description`, `status`, `priority`, `creator`, `assignee`, `labels`, `board_column`, `due_at`, `estimated_hours`, `actual_hours`, `story_points`, `completed_at`, `position`, `deleted_at`, `created_at`, `updated_at` |
 | `TaskLabel` | `id`, `project`, `name`, `color`, `created_at`, `updated_at` |
@@ -768,8 +768,8 @@ Student opens Create Project
   -> selects project type: course or graduation
   -> selects methodology: sprint, milestone, or kanban
   -> enters implemented project fields
-       name, description, category, semester, academic_year, technologies,
-       department, min_members, max_members, is_public, proposal,
+       name, description, category_id, semester_id, academic_year_id,
+       technology_names, min_members, max_members, is_public, proposal,
        abstract, expected_scope
   -> project is created with status "forming"
   -> creator becomes the project leader
@@ -838,11 +838,14 @@ Frontend routing should treat `GET /api/projects/` as the source for both public
 		"project_type": "course",
 		"methodology": "kanban",
 		"status": "forming",
-		"category": "Computer Vision",
-		"semester": "Fall",
-		"academic_year": "2026/2027",
-		"technologies": ["Python", "Django", "OpenCV"],
-		"department": 1,
+		"category": {"id": 1, "name": "Computer Vision"},
+		"semester": {"id": 1, "name": "Fall"},
+		"academic_year": {"id": 1, "name": "2026/2027"},
+		"technologies": [
+			{"id": 1, "name": "Python", "is_official": true},
+			{"id": 2, "name": "Django", "is_official": true},
+			{"id": 3, "name": "OpenCV", "is_official": true}
+		],
 		"min_members": 3,
 		"max_members": 5,
 		"is_public": true,
@@ -870,6 +873,61 @@ Frontend routing should treat `GET /api/projects/` as the source for both public
 - `400 Bad Request`: Duplicate pending join request.
 - `404 Not Found`: Project is private or outside the authenticated user's visible queryset.
 
+### Project Taxonomy / Dropdown Endpoints
+
+These endpoints provide data for dropdown selectors on the project creation/edit forms.
+
+**Get Categories**
+
+**Endpoint:** `GET /api/projects/categories/`
+**Authentication:** None Required
+**Success Response:**
+```json
+[
+	{ "id": 1, "name": "Computer Vision" },
+	{ "id": 2, "name": "Web Development" }
+]
+```
+
+**Get Semesters**
+
+**Endpoint:** `GET /api/projects/semesters/`
+**Authentication:** None Required
+**Success Response:**
+```json
+[
+	{ "id": 1, "name": "Fall" },
+	{ "id": 2, "name": "Spring" }
+]
+```
+
+**Get Academic Years**
+
+**Endpoint:** `GET /api/projects/academic-years/`
+**Authentication:** None Required
+**Success Response:**
+```json
+[
+	{ "id": 1, "name": "2025/2026" },
+	{ "id": 2, "name": "2026/2027" }
+]
+```
+
+**Search Technologies**
+
+**Endpoint:** `GET /api/projects/technologies/search/?q=<query>`
+**Authentication:** None Required
+**Description:** Use with an Async Creatable Autocomplete component. It checks aliases (e.g. typing "Py" returns "Python").
+**Success Response:**
+```json
+[
+	{ "id": 1, "name": "Python", "is_official": true },
+	{ "id": 2, "name": "PyTorch", "is_official": false }
+]
+```
+
+_Frontend Behavior:_ When the user selects an existing technology, extract the `id` and add it to the `technology_names` array. If the user types a brand new technology that returns empty results, add their raw string (e.g., "SvelteKit") to the array. The backend will create it automatically and attach it to the project.
+
 ### Create Project Screen
 
 **Purpose:** Create a course or graduation project and choose the task methodology.
@@ -884,11 +942,10 @@ Frontend routing should treat `GET /api/projects/` as the source for both public
 {
 	"name": "Smart Attendance",
 	"description": "Face recognition attendance system for course rooms.",
-	"category": "Computer Vision",
-	"semester": "Fall",
-	"academic_year": "2026/2027",
-	"technologies": ["Python", "Django", "OpenCV"],
-	"department": 1,
+	"category_id": 1,
+	"semester_id": 1,
+	"academic_year_id": 1,
+	"technology_names": [1, "PyTorch", "OpenCV"],
 	"project_type": "course",
 	"methodology": "kanban",
 	"min_members": 3,
@@ -907,11 +964,14 @@ Frontend routing should treat `GET /api/projects/` as the source for both public
 	"id": 101,
 	"name": "Smart Attendance",
 	"description": "Face recognition attendance system for course rooms.",
-	"category": "Computer Vision",
-	"semester": "Fall",
-	"academic_year": "2026/2027",
-	"technologies": ["Python", "Django", "OpenCV"],
-	"department": 1,
+	"category": {"id": 1, "name": "Computer Vision"},
+	"semester": {"id": 1, "name": "Fall"},
+	"academic_year": {"id": 1, "name": "2026/2027"},
+	"technologies": [
+		{"id": 1, "name": "Python", "is_official": true},
+		{"id": 4, "name": "PyTorch", "is_official": false},
+		{"id": 3, "name": "OpenCV", "is_official": true}
+	],
 	"project_type": "course",
 	"methodology": "kanban",
 	"status": "forming",
@@ -1118,7 +1178,7 @@ Frontend routing should treat `GET /api/projects/` as the source for both public
 	"message": "Would you supervise our graduation project?",
 	"proposal": "Full project proposal text.",
 	"abstract": "Short project abstract.",
-	"technology_stack": ["Django", "React", "SQL Server"],
+	"technology_names": [1, "React", "SQL Server"],
 	"expected_scope": "Authentication, project workspace, reports, and demo."
 }
 ```
@@ -1133,6 +1193,8 @@ Frontend routing should treat `GET /api/projects/` as the source for both public
 	"message": "Can you support the weekly implementation follow-up?"
 }
 ```
+
+_Note:_ If `technology_names` is omitted on a supervisor request, the backend defaults to the project's currently set technologies.
 
 **Response Example:**
 
@@ -1162,7 +1224,11 @@ Frontend routing should treat `GET /api/projects/` as the source for both public
 	"message": "Would you supervise our graduation project?",
 	"proposal": "Full project proposal text.",
 	"abstract": "Short project abstract.",
-	"technology_stack": ["Django", "React", "SQL Server"],
+	"technology_stack": [
+		{"id": 1, "name": "Django", "is_official": true},
+		{"id": 5, "name": "React", "is_official": true},
+		{"id": 6, "name": "SQL Server", "is_official": true}
+	],
 	"expected_scope": "Authentication, project workspace, reports, and demo.",
 	"modification_note": "",
 	"status": "pending",
@@ -1212,6 +1278,7 @@ Frontend routing should treat `GET /api/projects/` as the source for both public
 - Accepting a request creates a `ProjectSupervisor` record.
 - Requesting modification sets supervisor request status to `needs_modification`, stores `modification_note`, and sends a feedback notification to the requester.
 - Manually creating a `ProjectSupervisor` requires a matching accepted supervisor request with the same `project`, `supervisor`, and `role`.
+- `technology_names` accepts a mixed array of integer IDs and raw strings, identical to the `technology_names` field on Project. If omitted, the project's current technologies are used.
 - There is no supervisor search endpoint in these apps.
 - Successful supervisor-request and supervisor-record creates return `201 Created`; accept/reject/update responses return `200 OK`; delete responses return `204 No Content`.
 
@@ -1784,7 +1851,6 @@ Meetings are records/notes only. This is not a video-conferencing system.
 	"starts_at": "2026-07-05T10:00:00Z",
 	"ends_at": "2026-07-05T10:30:00Z",
 	"location": "Room 302",
-	"meeting_url": "",
 	"attendees": [12, 34, 8]
 }
 ```
@@ -2168,6 +2234,15 @@ Read-state changes from `mark-read` and `mark-all-read` do not emit websocket ev
 | GET/PATCH/PUT/DELETE | `/api/projects/meeting-attendance/{id}/` |
 | GET/POST | `/api/projects/meeting-notes/` |
 | GET/PATCH/PUT/DELETE | `/api/projects/meeting-notes/{id}/` |
+
+### Project Taxonomy / Selectors
+
+| Method | Endpoint |
+| ------ | -------- |
+| GET | `/api/projects/categories/` |
+| GET | `/api/projects/semesters/` |
+| GET | `/api/projects/academic-years/` |
+| GET | `/api/projects/technologies/search/?q={query}` |
 
 ### Feedback
 

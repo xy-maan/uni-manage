@@ -3,12 +3,37 @@ from rest_framework import serializers
 
 from . import services
 from .models import (
-    Deliverable, DeliverableFile, Feedback, JoinRequest, Meeting, MeetingAttendance,
-    MeetingNote, Project,
-    ProjectInvitation, ProjectMembership, ProjectSupervisor, SupervisorRequest,
+    AcademicYear, Category, Deliverable, DeliverableFile, Feedback, JoinRequest,
+    Meeting, MeetingAttendance, MeetingNote, Project,
+    ProjectInvitation, ProjectMembership, ProjectSupervisor, Semester,
+    SupervisorRequest, Technology,
 )
 
 User = get_user_model()
+
+
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ['id', 'name']
+
+
+class SemesterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Semester
+        fields = ['id', 'name']
+
+
+class AcademicYearSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AcademicYear
+        fields = ['id', 'name']
+
+
+class TechnologySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Technology
+        fields = ['id', 'name', 'is_official']
 
 
 class UserSummarySerializer(serializers.ModelSerializer):
@@ -51,10 +76,25 @@ class ProjectSerializer(serializers.ModelSerializer):
     creator_detail = UserSummarySerializer(source='creator', read_only=True)
     memberships = ProjectMembershipSerializer(many=True, read_only=True)
     supervisors = ProjectSupervisorSerializer(many=True, read_only=True)
+    category = CategorySerializer(read_only=True)
+    semester = SemesterSerializer(read_only=True)
+    academic_year = AcademicYearSerializer(read_only=True)
+    technologies = TechnologySerializer(many=True, read_only=True)
+    technology_names = serializers.ListField(
+        child=serializers.CharField(), write_only=True, required=False,
+    )
 
     class Meta:
         model = Project
-        fields = '__all__'
+        fields = [
+            'id', 'name', 'description', 'category', 'semester', 'academic_year',
+            'technologies', 'project_type', 'methodology', 'status', 'creator',
+            'creator_detail', 'memberships', 'supervisors',
+            'min_members', 'max_members', 'is_public', 'proposal', 'abstract',
+            'expected_scope', 'repository_url', 'documentation_url',
+            'archive_year', 'archive_tags', 'deleted_at', 'created_at', 'updated_at',
+            'technology_names',
+        ]
         read_only_fields = ['creator', 'status', 'deleted_at', 'created_at', 'updated_at']
 
     def validate(self, attrs):
@@ -65,7 +105,22 @@ class ProjectSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        return services.create_project(creator=self.context['request'].user, **validated_data)
+        technology_names = validated_data.pop('technology_names', [])
+        project = services.create_project(creator=self.context['request'].user, **validated_data)
+        if technology_names:
+            resolved = services.resolve_technologies(technology_names, user=self.context['request'].user)
+            project.technologies.set(resolved)
+        return project
+
+    def update(self, instance, validated_data):
+        technology_names = validated_data.pop('technology_names', None)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        if technology_names is not None:
+            resolved = services.resolve_technologies(technology_names, user=self.context['request'].user)
+            instance.technologies.set(resolved)
+        return instance
 
 
 class ProjectInvitationSerializer(serializers.ModelSerializer):
@@ -96,14 +151,29 @@ class JoinRequestSerializer(serializers.ModelSerializer):
 class SupervisorRequestSerializer(serializers.ModelSerializer):
     requested_by_detail = UserSummarySerializer(source='requested_by', read_only=True)
     supervisor_detail = UserSummarySerializer(source='supervisor', read_only=True)
+    technology_stack = TechnologySerializer(many=True, read_only=True)
+    technology_names = serializers.ListField(
+        child=serializers.CharField(), write_only=True, required=False,
+    )
 
     class Meta:
         model = SupervisorRequest
-        fields = '__all__'
+        fields = [
+            'id', 'project', 'requested_by', 'supervisor', 'role',
+            'message', 'proposal', 'abstract', 'technology_stack',
+            'expected_scope', 'modification_note', 'status',
+            'responded_at', 'created_at', 'updated_at',
+            'requested_by_detail', 'supervisor_detail', 'technology_names',
+        ]
         read_only_fields = ['requested_by', 'status', 'responded_at', 'modification_note', 'created_at', 'updated_at']
 
     def create(self, validated_data):
-        return services.create_supervisor_request(requested_by=self.context['request'].user, **validated_data)
+        technology_names = validated_data.pop('technology_names', None)
+        return services.create_supervisor_request(
+            requested_by=self.context['request'].user,
+            _technology_names=technology_names,
+            **validated_data,
+        )
 
 
 class DeliverableFileSerializer(serializers.ModelSerializer):

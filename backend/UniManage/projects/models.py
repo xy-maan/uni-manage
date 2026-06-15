@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
+from django.utils.text import slugify
 
 
 class ActiveManager(models.Manager):
@@ -32,6 +33,53 @@ class SoftDeleteModel(TimeStampedModel):
         return super().delete()
 
 
+class Category(models.Model):
+    name = models.CharField(max_length=120, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
+class Semester(models.Model):
+    name = models.CharField(max_length=40, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
+class AcademicYear(models.Model):
+    name = models.CharField(max_length=20, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
+class Technology(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    slug = models.SlugField(max_length=100, unique=True, blank=True)
+    is_official = models.BooleanField(default=False)
+    generated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+        null=True, blank=True, related_name='generated_technologies',
+    )
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
+
+
+class TechnologyAlias(models.Model):
+    technology = models.ForeignKey(Technology, on_delete=models.CASCADE, related_name='aliases')
+    alias = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.alias
+
+
 class Project(SoftDeleteModel):
     class Type(models.TextChoices):
         COURSE = 'course', 'Course'
@@ -51,11 +99,10 @@ class Project(SoftDeleteModel):
 
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
-    category = models.CharField(max_length=120, blank=True)
-    semester = models.CharField(max_length=40, blank=True)
-    academic_year = models.CharField(max_length=20, blank=True)
-    technologies = models.JSONField(default=list, blank=True)
-    department = models.ForeignKey('users.Department', on_delete=models.SET_NULL, null=True, blank=True, related_name='projects')
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='projects')
+    semester = models.ForeignKey(Semester, on_delete=models.SET_NULL, null=True, blank=True, related_name='projects')
+    academic_year = models.ForeignKey(AcademicYear, on_delete=models.SET_NULL, null=True, blank=True, related_name='projects')
+    technologies = models.ManyToManyField(Technology, related_name='projects', blank=True)
     project_type = models.CharField(max_length=20, choices=Type.choices)
     methodology = models.CharField(max_length=20, choices=Methodology.choices)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.FORMING)
@@ -140,7 +187,7 @@ class SupervisorRequest(TimeStampedModel):
     message = models.TextField(blank=True)
     proposal = models.TextField(blank=True)
     abstract = models.TextField(blank=True)
-    technology_stack = models.JSONField(default=list, blank=True)
+    technology_stack = models.ManyToManyField(Technology, related_name='supervisor_requests', blank=True)
     expected_scope = models.TextField(blank=True)
     modification_note = models.TextField(blank=True)
     status = models.CharField(max_length=20, choices=RequestStatus.choices, default=RequestStatus.PENDING)
@@ -198,7 +245,6 @@ class Meeting(SoftDeleteModel):
     starts_at = models.DateTimeField()
     ends_at = models.DateTimeField(null=True, blank=True)
     location = models.CharField(max_length=255, blank=True)
-    meeting_url = models.URLField(blank=True)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name='created_meetings')
     attendees = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name='project_meetings')
 

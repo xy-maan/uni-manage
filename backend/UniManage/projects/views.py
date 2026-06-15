@@ -1,20 +1,24 @@
 from django.db.models import Q
-from rest_framework import permissions, status, viewsets
+from rest_framework import generics, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.parsers import FormParser, MultiPartParser
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from . import services
 from .models import (
-    Deliverable, DeliverableFile, Feedback, JoinRequest, Meeting, MeetingAttendance,
-    MeetingNote, Project,
-    ProjectInvitation, ProjectMembership, ProjectSupervisor, SupervisorRequest,
+    AcademicYear, Category, Deliverable, DeliverableFile, Feedback, JoinRequest,
+    Meeting, MeetingAttendance, MeetingNote, Project,
+    ProjectInvitation, ProjectMembership, ProjectSupervisor, Semester,
+    SupervisorRequest, Technology, TechnologyAlias,
 )
 from .serializers import (
-    DeliverableFileSerializer, DeliverableSerializer, FeedbackSerializer,
+    AcademicYearSerializer, CategorySerializer, DeliverableFileSerializer,
+    DeliverableSerializer, FeedbackSerializer,
     JoinRequestSerializer, MeetingAttendanceSerializer, MeetingNoteSerializer,
     MeetingSerializer, ProjectInvitationSerializer, ProjectMembershipSerializer,
-    ProjectSerializer, ProjectSupervisorSerializer, SupervisorRequestSerializer,
+    ProjectSerializer, ProjectSupervisorSerializer, SemesterSerializer,
+    SupervisorRequestSerializer, TechnologySerializer,
 )
 
 
@@ -364,3 +368,36 @@ class FeedbackViewSet(viewsets.ModelViewSet):
             from rest_framework.exceptions import PermissionDenied
             raise PermissionDenied('Only the feedback author may delete it.')
         instance.delete()
+
+
+class CategoryListView(generics.ListAPIView):
+    queryset = Category.objects.all().order_by('name')
+    serializer_class = CategorySerializer
+    permission_classes = []
+
+
+class SemesterListView(generics.ListAPIView):
+    queryset = Semester.objects.all().order_by('name')
+    serializer_class = SemesterSerializer
+    permission_classes = []
+
+
+class AcademicYearListView(generics.ListAPIView):
+    queryset = AcademicYear.objects.all().order_by('-name')
+    serializer_class = AcademicYearSerializer
+    permission_classes = []
+
+
+class TechnologySearchView(generics.ListAPIView):
+    serializer_class = TechnologySerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        query = self.request.GET.get('q', '').strip()
+        if not query:
+            return Technology.objects.none()
+        aliases = TechnologyAlias.objects.filter(alias__icontains=query)
+        alias_techs = [a.technology_id for a in aliases]
+        return Technology.objects.filter(
+            Q(name__icontains=query) | Q(id__in=alias_techs)
+        ).distinct()

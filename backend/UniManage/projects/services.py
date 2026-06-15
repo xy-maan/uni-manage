@@ -6,8 +6,27 @@ from users.models import SupervisorProfile, User
 
 from .models import (
     Deliverable, Feedback, JoinRequest, Project, ProjectInvitation, ProjectMembership,
-    ProjectSupervisor, RequestStatus, SupervisorRequest,
+    ProjectSupervisor, RequestStatus, SupervisorRequest, Technology,
 )
+
+
+def resolve_technologies(technology_input_list, user=None):
+    technology_objs = []
+    for item in technology_input_list:
+        try:
+            tech_id = int(item)
+            tech = Technology.objects.filter(id=tech_id).first()
+            if tech:
+                technology_objs.append(tech)
+        except ValueError:
+            item_str = str(item).strip()
+            if item_str:
+                tech, created = Technology.objects.get_or_create(
+                    name__iexact=item_str,
+                    defaults={'name': item_str, 'is_official': False, 'generated_by': user},
+                )
+                technology_objs.append(tech)
+    return technology_objs
 
 
 def is_project_leader(user, project):
@@ -118,7 +137,7 @@ def create_supervisor_request(
     message='',
     proposal='',
     abstract='',
-    technology_stack=None,
+    _technology_names=None,
     expected_scope='',
     modification_note='',
 ):
@@ -138,10 +157,15 @@ def create_supervisor_request(
         message=message,
         proposal=proposal or project.proposal,
         abstract=abstract or project.abstract,
-        technology_stack=technology_stack or project.technologies,
         expected_scope=expected_scope or project.expected_scope,
         modification_note=modification_note,
     )
+    if _technology_names is None:
+        resolved = list(project.technologies.all())
+    else:
+        resolved = resolve_technologies(_technology_names, user=requested_by)
+    if resolved:
+        request.technology_stack.set(resolved)
     if project.project_type == Project.Type.GRADUATION:
         project.status = Project.Status.UNDER_REVIEW
         project.save(update_fields=['status', 'updated_at'])

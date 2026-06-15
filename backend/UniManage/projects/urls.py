@@ -2,10 +2,11 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from .views import (
-    DeliverableFileViewSet, DeliverableViewSet, FeedbackViewSet, JoinRequestViewSet,
-    MeetingAttendanceViewSet, MeetingNoteViewSet, MeetingViewSet,
-    ProjectInvitationViewSet, ProjectMembershipViewSet, ProjectSupervisorViewSet,
-    ProjectViewSet, SupervisorRequestViewSet,
+    AcademicYearListView, CategoryListView, DeliverableFileViewSet, DeliverableViewSet,
+    FeedbackViewSet, JoinRequestViewSet, MeetingAttendanceViewSet, MeetingNoteViewSet,
+    MeetingViewSet, ProjectInvitationViewSet, ProjectMembershipViewSet,
+    ProjectSupervisorViewSet, ProjectViewSet, SemesterListView,
+    SupervisorRequestViewSet, TechnologySearchView,
 )
 
 router = DefaultRouter()
@@ -22,4 +23,10 @@ router.register('meeting-attendance', MeetingAttendanceViewSet, basename='meetin
 router.register('meeting-notes', MeetingNoteViewSet, basename='meeting-note')
 router.register('feedback', FeedbackViewSet, basename='feedback')
 
-urlpatterns = [path('', include(router.urls))]
+urlpatterns = [
+    path('', include(router.urls)),
+    path('categories/', CategoryListView.as_view(), name='category-list'),
+    path('semesters/', SemesterListView.as_view(), name='semester-list'),
+    path('academic-years/', AcademicYearListView.as_view(), name='academic-year-list'),
+    path('technologies/search/', TechnologySearchView.as_view(), name='technology-search'),
+]
