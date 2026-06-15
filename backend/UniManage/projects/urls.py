@@ -5,7 +5,7 @@ from .views import (
     AcademicYearListView, CategoryListView, DeliverableFileViewSet, DeliverableViewSet,
     FeedbackViewSet, JoinRequestViewSet, MeetingAttendanceViewSet, MeetingNoteViewSet,
     MeetingViewSet, ProjectInvitationViewSet, ProjectMembershipViewSet,
-    ProjectSupervisorViewSet, ProjectViewSet, SemesterListView,
+    ProjectSupervisorViewSet, ProjectViewSet, SemesterListView, SubjectListView,
     SupervisorRequestViewSet, TechnologySearchView,
 )
 
@@ -29,4 +29,5 @@ urlpatterns = [
     path('semesters/', SemesterListView.as_view(), name='semester-list'),
     path('academic-years/', AcademicYearListView.as_view(), name='academic-year-list'),
     path('technologies/search/', TechnologySearchView.as_view(), name='technology-search'),
+    path('subjects/', SubjectListView.as_view(), name='subject-list'),
 ]

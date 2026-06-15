@@ -6,10 +6,16 @@ from .models import (
     AcademicYear, Category, Deliverable, DeliverableFile, Feedback, JoinRequest,
     Meeting, MeetingAttendance, MeetingNote, Project,
     ProjectInvitation, ProjectMembership, ProjectSupervisor, Semester,
-    SupervisorRequest, Technology,
+    Subject, SupervisorRequest, Technology,
 )
 
 User = get_user_model()
+
+
+class SubjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Subject
+        fields = ['id', 'name', 'code', 'credit_hours', 'description']
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -76,6 +82,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     creator_detail = UserSummarySerializer(source='creator', read_only=True)
     memberships = ProjectMembershipSerializer(many=True, read_only=True)
     supervisors = ProjectSupervisorSerializer(many=True, read_only=True)
+    subject = SubjectSerializer(read_only=True)
     category = CategorySerializer(read_only=True)
     semester = SemesterSerializer(read_only=True)
     academic_year = AcademicYearSerializer(read_only=True)
@@ -87,9 +94,9 @@ class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = [
-            'id', 'name', 'description', 'category', 'semester', 'academic_year',
-            'technologies', 'project_type', 'methodology', 'status', 'creator',
-            'creator_detail', 'memberships', 'supervisors',
+            'id', 'name', 'description', 'subject', 'category', 'semester',
+            'academic_year', 'technologies', 'project_type', 'methodology',
+            'status', 'creator', 'creator_detail', 'memberships', 'supervisors',
             'min_members', 'max_members', 'is_public', 'proposal', 'abstract',
             'expected_scope', 'repository_url', 'documentation_url',
             'archive_year', 'archive_tags', 'deleted_at', 'created_at', 'updated_at',

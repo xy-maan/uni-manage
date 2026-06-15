@@ -33,6 +33,21 @@ class SoftDeleteModel(TimeStampedModel):
         return super().delete()
 
 
+class Subject(models.Model):
+    name = models.CharField(max_length=255)
+    code = models.CharField(max_length=50, unique=True)
+    credit_hours = models.PositiveSmallIntegerField()
+    description = models.TextField(blank=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['code']),
+        ]
+
+    def __str__(self):
+        return f'{self.code} - {self.name}'
+
+
 class Category(models.Model):
     name = models.CharField(max_length=120, unique=True)
 
@@ -99,6 +114,7 @@ class Project(SoftDeleteModel):
 
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
+    subject = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True, blank=True, related_name='projects')
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='projects')
     semester = models.ForeignKey(Semester, on_delete=models.SET_NULL, null=True, blank=True, related_name='projects')
     academic_year = models.ForeignKey(AcademicYear, on_delete=models.SET_NULL, null=True, blank=True, related_name='projects')

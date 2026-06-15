@@ -741,6 +741,7 @@ These field lists reflect the active serializers in `projects`, `tasks`, and `no
 
 | Serializer | Returned Fields |
 | ---------- | --------------- |
+| `Subject` | `id`, `name`, `code`, `credit_hours`, `description` |
 | `Project` | `id`, `creator_detail`, `memberships`, `supervisors`, `name`, `description`, `category` (nested `{id, name}`), `semester` (nested `{id, name}`), `academic_year` (nested `{id, name}`), `technologies` (array of `{id, name, is_official}`), `project_type`, `methodology`, `status`, `min_members`, `max_members`, `is_public`, `proposal`, `abstract`, `expected_scope`, `repository_url`, `documentation_url`, `archive_year`, `archive_tags`, `deleted_at`, `created_at`, `updated_at`, `creator` |
 | `ProjectMembership` | `id`, `user_detail`, `project`, `user`, `role`, `joined_at`, `created_at`, `updated_at` |
 | `SupervisorRequest` | `id`, `requested_by_detail`, `supervisor_detail`, `project`, `requested_by`, `supervisor`, `role`, `message`, `proposal`, `abstract`, `technology_stack` (array of `{id, name, is_official}`), `expected_scope`, `modification_note`, `status`, `responded_at`, `created_at`, `updated_at` |
@@ -927,6 +928,19 @@ These endpoints provide data for dropdown selectors on the project creation/edit
 ```
 
 _Frontend Behavior:_ When the user selects an existing technology, extract the `id` and add it to the `technology_names` array. If the user types a brand new technology that returns empty results, add their raw string (e.g., "SvelteKit") to the array. The backend will create it automatically and attach it to the project.
+
+**Get Subjects**
+
+**Endpoint:** `GET /api/projects/subjects/`
+**Authentication:** None Required
+**Description:** Returns a list of all academic subjects. Ordered by `code`.
+**Success Response:**
+```json
+[
+	{ "id": 1, "name": "Data Structures", "code": "CS201", "credit_hours": 3, "description": "Fundamental data structures and algorithms." },
+	{ "id": 2, "name": "Database Systems", "code": "CS301", "credit_hours": 3, "description": "Relational databases and SQL." }
+]
+```
 
 ### Create Project Screen
 
@@ -2242,6 +2256,7 @@ Read-state changes from `mark-read` and `mark-all-read` do not emit websocket ev
 | GET | `/api/projects/categories/` |
 | GET | `/api/projects/semesters/` |
 | GET | `/api/projects/academic-years/` |
+| GET | `/api/projects/subjects/` |
 | GET | `/api/projects/technologies/search/?q={query}` |
 
 ### Feedback

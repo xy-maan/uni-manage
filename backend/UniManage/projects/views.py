@@ -10,7 +10,7 @@ from .models import (
     AcademicYear, Category, Deliverable, DeliverableFile, Feedback, JoinRequest,
     Meeting, MeetingAttendance, MeetingNote, Project,
     ProjectInvitation, ProjectMembership, ProjectSupervisor, Semester,
-    SupervisorRequest, Technology, TechnologyAlias,
+    Subject, SupervisorRequest, Technology, TechnologyAlias,
 )
 from .serializers import (
     AcademicYearSerializer, CategorySerializer, DeliverableFileSerializer,
@@ -18,7 +18,7 @@ from .serializers import (
     JoinRequestSerializer, MeetingAttendanceSerializer, MeetingNoteSerializer,
     MeetingSerializer, ProjectInvitationSerializer, ProjectMembershipSerializer,
     ProjectSerializer, ProjectSupervisorSerializer, SemesterSerializer,
-    SupervisorRequestSerializer, TechnologySerializer,
+    SubjectSerializer, SupervisorRequestSerializer, TechnologySerializer,
 )
 
 
@@ -401,3 +401,9 @@ class TechnologySearchView(generics.ListAPIView):
         return Technology.objects.filter(
             Q(name__icontains=query) | Q(id__in=alias_techs)
         ).distinct()
+
+
+class SubjectListView(generics.ListAPIView):
+    queryset = Subject.objects.all().order_by('code')
+    serializer_class = SubjectSerializer
+    permission_classes = []
