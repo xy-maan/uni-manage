@@ -24,10 +24,10 @@ router.register('meeting-notes', MeetingNoteViewSet, basename='meeting-note')
 router.register('feedback', FeedbackViewSet, basename='feedback')
 
 urlpatterns = [
-    path('', include(router.urls)),
     path('categories/', CategoryListView.as_view(), name='category-list'),
     path('semesters/', SemesterListView.as_view(), name='semester-list'),
     path('academic-years/', AcademicYearListView.as_view(), name='academic-year-list'),
     path('technologies/search/', TechnologySearchView.as_view(), name='technology-search'),
     path('subjects/', SubjectListView.as_view(), name='subject-list'),
+    path('', include(router.urls)),
 ]
