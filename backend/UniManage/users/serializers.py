@@ -71,6 +71,14 @@ class SupervisorProfileSerializer(serializers.ModelSerializer):
     def get_title_display(self, obj):
         return obj.get_title_display()
 
+class StudentListSerializer(serializers.ModelSerializer):
+    full_name = serializers.CharField(source='get_full_name', read_only=True)
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'full_name', 'email', 'role', 'avatar_url']
+
+
 class CompleteProfileSerializer(serializers.Serializer):
     username = serializers.CharField(required=True)
     first_name = serializers.CharField(required=True)

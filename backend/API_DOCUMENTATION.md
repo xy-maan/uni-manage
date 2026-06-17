@@ -285,6 +285,34 @@ On the Profile Wizard, you may want to prompt the user to select from a list of 
 
 _Frontend Behavior:_ When the user selects "Python", extract the `id` (1) and add it to the submission array. If the user types a brand new framework that returns empty, add their raw string (e.g., "SvelteKit") to the array. The backend will parse it, create it automatically, and attach it to their profile.
 
+### Get Students (for invitations)
+
+**Endpoint:** `GET /students/`
+**Authentication:** Required (Bearer Token)
+**Description:** Returns a list of users with `role = STUDENT`. Use this to populate the invitee selector when sending project invitations.
+**Success Response:**
+
+```json
+[
+	{
+		"id": 34,
+		"username": "omar",
+		"full_name": "Omar Ali",
+		"email": "omar@uni.edu.eg",
+		"role": "STUDENT",
+		"avatar_url": null
+	},
+	{
+		"id": 12,
+		"username": "mona",
+		"full_name": "Mona Hassan",
+		"email": "mona@uni.edu.eg",
+		"role": "STUDENT",
+		"avatar_url": null
+	}
+]
+```
+
 ---
 
 ## 1.6 Fetching and Updating Profiles (Post-Wizard)
@@ -461,6 +489,7 @@ export const logout = async () => {
 | Update Supervisor Profile | PATCH  | `/profile/supervisor/`   | Yes  |
 | Get Departments           | GET    | `/departments/`          | No   |
 | Get Academic Levels       | GET    | `/academic-levels/`      | No   |
+| Get Students              | GET    | `/students/`             | Yes  |
 
 ---
 
@@ -1107,6 +1136,8 @@ _Frontend Behavior:_ When the user selects an existing technology, extract the `
 | Delete join request | DELETE | `/api/projects/join-requests/{join_request_id}/` | Requester or project leader if visible in queryset |
 | Accept join request | POST | `/api/projects/join-requests/{join_request_id}/accept/` | Project leader |
 | Reject join request | POST | `/api/projects/join-requests/{join_request_id}/reject/` | Project leader |
+
+**Note on invitee selection:** Populate the invitee dropdown by calling `GET /api/users/students/` which returns all users with `role = STUDENT`.
 
 **Create Invitation Request:**
 

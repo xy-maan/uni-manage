@@ -12,7 +12,7 @@ from urllib.parse import urlencode
 import requests
 
 from .models import StudentProfile, SupervisorProfile, User, Skill, SkillAlias, AcademicLevel, Department
-from .serializers import StudentProfileSerializer, SupervisorProfileSerializer, UserSerializer, SkillSerializer, DepartmentSerializer, AcademicLevelSerializer
+from .serializers import StudentProfileSerializer, SupervisorProfileSerializer, UserSerializer, SkillSerializer, DepartmentSerializer, AcademicLevelSerializer, StudentListSerializer
 from django.db.models import Q
 
 def resolve_skills(skill_input_list, user=None):
@@ -326,3 +326,9 @@ class AcademicLevelListView(generics.ListAPIView):
     queryset = AcademicLevel.objects.all().order_by('id')
     serializer_class = AcademicLevelSerializer
     permission_classes = []
+
+
+class StudentListView(generics.ListAPIView):
+    queryset = User.objects.filter(role=User.Role.STUDENT).order_by('username')
+    serializer_class = StudentListSerializer
+    permission_classes = [IsAuthenticated]
