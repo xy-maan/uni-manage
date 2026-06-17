@@ -73,10 +73,15 @@ class SupervisorProfileSerializer(serializers.ModelSerializer):
 
 class StudentListSerializer(serializers.ModelSerializer):
     full_name = serializers.CharField(source='get_full_name', read_only=True)
+    department = DepartmentSerializer(source='student_profile.department', read_only=True)
+    academic_level = AcademicLevelSerializer(source='student_profile.academic_level', read_only=True)
+    gpa = serializers.FloatField(source='student_profile.gpa', read_only=True)
+    tags = SkillSerializer(source='student_profile.skills', many=True, read_only=True)
+    description = serializers.CharField(source='bio', read_only=True)
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'full_name', 'email', 'role', 'avatar_url']
+        fields = ['id', 'username', 'full_name', 'email', 'role', 'avatar_url', 'department', 'academic_level', 'gpa', 'tags', 'description']
 
 
 class CompleteProfileSerializer(serializers.Serializer):

@@ -132,7 +132,7 @@ class Project(SoftDeleteModel):
     repository_url = models.URLField(blank=True)
     documentation_url = models.URLField(blank=True)
     archive_year = models.PositiveSmallIntegerField(null=True, blank=True)
-    archive_tags = models.JSONField(default=list, blank=True)
+    archive_tags = models.ManyToManyField('users.Skill', related_name='archive_tagged_projects', blank=True)
 
     def __str__(self):
         return self.name

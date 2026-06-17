@@ -300,7 +300,15 @@ _Frontend Behavior:_ When the user selects "Python", extract the `id` (1) and ad
 		"full_name": "Omar Ali",
 		"email": "omar@uni.edu.eg",
 		"role": "STUDENT",
-		"avatar_url": null
+		"avatar_url": null,
+		"department": { "id": 1, "name": "Computer Science" },
+		"academic_level": { "id": 4, "name": "Senior (Level 4)" },
+		"gpa": 3.8,
+		"tags": [
+			{ "id": 1, "name": "Python", "is_official": true },
+			{ "id": 5, "name": "JavaScript", "is_official": true }
+		],
+		"description": "Passionate about ML and full-stack development."
 	},
 	{
 		"id": 12,
@@ -308,7 +316,14 @@ _Frontend Behavior:_ When the user selects "Python", extract the `id` (1) and ad
 		"full_name": "Mona Hassan",
 		"email": "mona@uni.edu.eg",
 		"role": "STUDENT",
-		"avatar_url": null
+		"avatar_url": null,
+		"department": { "id": 2, "name": "Information Systems" },
+		"academic_level": { "id": 2, "name": "Sophomore (Level 2)" },
+		"gpa": 3.5,
+		"tags": [
+			{ "id": 2, "name": "Django", "is_official": true }
+		],
+		"description": "Interested in backend development and databases."
 	}
 ]
 ```
@@ -771,7 +786,7 @@ These field lists reflect the active serializers in `projects`, `tasks`, and `no
 | Serializer | Returned Fields |
 | ---------- | --------------- |
 | `Subject` | `id`, `name`, `code`, `credit_hours`, `description` |
-| `Project` | `id`, `creator_detail`, `memberships`, `supervisors`, `name`, `description`, `category` (nested `{id, name}`), `semester` (nested `{id, name}`), `academic_year` (nested `{id, name}`), `technologies` (array of `{id, name, is_official}`), `project_type`, `methodology`, `status`, `min_members`, `max_members`, `is_public`, `proposal`, `abstract`, `expected_scope`, `repository_url`, `documentation_url`, `archive_year`, `archive_tags`, `deleted_at`, `created_at`, `updated_at`, `creator` |
+| `Project` | `id`, `creator_detail`, `memberships`, `supervisors`, `name`, `description`, `category` (nested `{id, name}`), `semester` (nested `{id, name}`), `academic_year` (nested `{id, name}`), `technologies` (array of `{id, name, is_official}`), `project_type`, `methodology`, `status`, `min_members`, `max_members`, `is_public`, `proposal`, `abstract`, `expected_scope`, `repository_url`, `documentation_url`, `archive_year`, `archive_tags` (array of `{id, name, is_official}`), `archive_tag_ids` (write-only, array of skill IDs), `deleted_at`, `created_at`, `updated_at`, `creator` |
 | `ProjectMembership` | `id`, `user_detail`, `project`, `user`, `role`, `joined_at`, `created_at`, `updated_at` |
 | `SupervisorRequest` | `id`, `requested_by_detail`, `supervisor_detail`, `project`, `requested_by`, `supervisor`, `role`, `message`, `proposal`, `abstract`, `technology_stack` (array of `{id, name, is_official}`), `expected_scope`, `modification_note`, `status`, `responded_at`, `created_at`, `updated_at` |
 | `ProjectSupervisor` | `id`, `supervisor_detail`, `project`, `supervisor`, `role`, `created_at`, `updated_at` |
@@ -996,7 +1011,8 @@ _Frontend Behavior:_ When the user selects an existing technology, extract the `
 	"is_public": true,
 	"proposal": "Build a camera-assisted attendance workflow.",
 	"abstract": "A system that detects students and exports attendance reports.",
-	"expected_scope": "Authentication, face matching, attendance exports, and dashboard."
+	"expected_scope": "Authentication, face matching, attendance exports, and dashboard.",
+	"archive_tag_ids": [1, 5]
 }
 ```
 
@@ -1095,7 +1111,7 @@ _Frontend Behavior:_ When the user selects an existing technology, extract the `
 	"max_members": 6,
 	"is_public": false,
 	"repository_url": "https://github.com/team/smart-attendance",
-	"archive_tags": ["vision", "attendance"]
+	"archive_tag_ids": [1, 5]
 }
 ```
 
