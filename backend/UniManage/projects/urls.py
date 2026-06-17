@@ -10,7 +10,6 @@ from .views import (
 )
 
 router = DefaultRouter()
-router.register('', ProjectViewSet, basename='project')
 router.register('memberships', ProjectMembershipViewSet, basename='project-membership')
 router.register('invitations', ProjectInvitationViewSet, basename='project-invitation')
 router.register('join-requests', JoinRequestViewSet, basename='join-request')
@@ -22,6 +21,7 @@ router.register('meetings', MeetingViewSet, basename='meeting')
 router.register('meeting-attendance', MeetingAttendanceViewSet, basename='meeting-attendance')
 router.register('meeting-notes', MeetingNoteViewSet, basename='meeting-note')
 router.register('feedback', FeedbackViewSet, basename='feedback')
+router.register('', ProjectViewSet, basename='project')
 
 urlpatterns = [
     path('categories/', CategoryListView.as_view(), name='category-list'),
