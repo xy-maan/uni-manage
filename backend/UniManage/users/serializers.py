@@ -84,6 +84,26 @@ class StudentListSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'full_name', 'email', 'role', 'avatar_url', 'department', 'academic_level', 'gpa', 'tags', 'description']
 
 
+class SupervisorListSerializer(serializers.ModelSerializer):
+    full_name = serializers.CharField(source='get_full_name', read_only=True)
+    title = serializers.CharField(source='supervisor_profile.title', read_only=True)
+    title_display = serializers.SerializerMethodField()
+    department = DepartmentSerializer(source='supervisor_profile.department', read_only=True)
+    expertise = SkillSerializer(source='supervisor_profile.expertise', many=True, read_only=True)
+    max_team_capacity = serializers.IntegerField(source='supervisor_profile.max_team_capacity', read_only=True)
+    scholar_url = serializers.URLField(source='supervisor_profile.scholar_url', read_only=True)
+    linkedin_url = serializers.URLField(source='supervisor_profile.linkedin_url', read_only=True)
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'full_name', 'email', 'role', 'avatar_url', 'title', 'title_display', 'department', 'expertise', 'max_team_capacity', 'scholar_url', 'linkedin_url']
+
+    def get_title_display(self, obj):
+        if hasattr(obj, 'supervisor_profile') and obj.supervisor_profile:
+            return obj.supervisor_profile.get_title_display()
+        return None
+
+
 class CompleteProfileSerializer(serializers.Serializer):
     username = serializers.CharField(required=True)
     first_name = serializers.CharField(required=True)

@@ -4,7 +4,8 @@ from rest_framework_simplejwt.views import TokenRefreshView
 from .views import (
     GoogleLogin, GoogleAuthRedirect, GoogleAuthCallback,
     UserStatusView, CompleteProfileView, StudentProfileDetail, SupervisorProfileDetail,
-    SkillSearchView, DepartmentListView, AcademicLevelListView, StudentListView
+    SkillSearchView, DepartmentListView, AcademicLevelListView, StudentListView,
+    SupervisorListView
 )
 
 urlpatterns = [
@@ -23,4 +24,5 @@ urlpatterns = [
     path('departments/', DepartmentListView.as_view(), name='department_list'),
     path('academic-levels/', AcademicLevelListView.as_view(), name='academic_level_list'),
     path('students/', StudentListView.as_view(), name='student_list'),
+    path('supervisors/', SupervisorListView.as_view(), name='supervisor_list'),
 ]

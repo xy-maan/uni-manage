@@ -1592,6 +1592,43 @@ Used by the **project leader** to remove a supervisor assignment from the projec
 
 ---
 
+#### List Available Supervisors
+
+**Endpoint:** `GET /api/users/supervisors/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **students** to browse all available supervisors (doctors/TAs) before sending a supervision request.
+
+**Success Response (200 OK):**
+
+```json
+[
+    {
+        "id": 8,
+        "username": "dr.samir",
+        "full_name": "Samir Ali",
+        "email": "samir@uni.edu.eg",
+        "role": "SUPERVISOR",
+        "avatar_url": null,
+        "title": "DOCTOR",
+        "title_display": "Doctor",
+        "department": {
+            "id": 1,
+            "name": "Computer Science"
+        },
+        "expertise": [
+            {"id": 3, "name": "Artificial Intelligence", "is_official": true}
+        ],
+        "max_team_capacity": 5,
+        "scholar_url": null,
+        "linkedin_url": null
+    }
+]
+```
+
+---
+
 #### Supervision Rules
 
 - `primary` role requires a supervisor profile with title `DOCTOR`.
@@ -1600,7 +1637,7 @@ Used by the **project leader** to remove a supervisor assignment from the projec
 - Sending a request for a graduation project sets the project status to `under_review`.
 - Accepting a request automatically creates a `ProjectSupervisor` record and sets the request status to `accepted`.
 - Requesting modification sets the request status to `needs_modification`.
-- There is no supervisor search endpoint. Use `GET /api/users/students/` to find supervisors.
+- Use `GET /api/users/supervisors/` to browse available supervisors.
 
 ---
 

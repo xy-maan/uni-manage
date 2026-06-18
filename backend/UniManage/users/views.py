@@ -332,3 +332,9 @@ class StudentListView(generics.ListAPIView):
     queryset = User.objects.filter(role=User.Role.STUDENT).order_by('username')
     serializer_class = StudentListSerializer
     permission_classes = [IsAuthenticated]
+
+
+class SupervisorListView(generics.ListAPIView):
+    queryset = User.objects.filter(role=User.Role.SUPERVISOR).order_by('username')
+    serializer_class = SupervisorListSerializer
+    permission_classes = [IsAuthenticated]
