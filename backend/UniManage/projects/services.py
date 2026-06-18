@@ -3,7 +3,7 @@ from django.db.models import Count, Prefetch, Q
 from django.utils import timezone
 from rest_framework.exceptions import PermissionDenied, ValidationError
 
-from users.models import SupervisorProfile, User
+from users.models import Skill, SupervisorProfile, User
 
 from .models import (
     Deliverable, Feedback, JoinRequest, Project, ProjectInvitation, ProjectMembership,
@@ -28,6 +28,25 @@ def resolve_technologies(technology_input_list, user=None):
                 )
                 technology_objs.append(tech)
     return technology_objs
+
+
+def resolve_skills(skill_input_list, user=None):
+    skill_objs = []
+    for item in skill_input_list:
+        try:
+            skill_id = int(item)
+            skill = Skill.objects.filter(id=skill_id).first()
+            if skill:
+                skill_objs.append(skill)
+        except ValueError:
+            item_str = str(item).strip()
+            if item_str:
+                skill, created = Skill.objects.get_or_create(
+                    name__iexact=item_str,
+                    defaults={'name': item_str, 'is_official': False, 'generated_by': user},
+                )
+                skill_objs.append(skill)
+    return skill_objs
 
 
 def is_project_leader(user, project):

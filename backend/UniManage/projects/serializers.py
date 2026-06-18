@@ -80,6 +80,16 @@ class ProjectSupervisorSerializer(serializers.ModelSerializer):
         return attrs
 
 
+class ArchiveTagsField(serializers.Field):
+    def to_representation(self, value):
+        return SkillSerializer(value.all(), many=True).data
+
+    def to_internal_value(self, data):
+        if not isinstance(data, list):
+            raise serializers.ValidationError('Expected a list of skill IDs or names.')
+        return data
+
+
 class ProjectSerializer(serializers.ModelSerializer):
     creator_detail = UserSummarySerializer(source='creator', read_only=True)
     memberships = ProjectMembershipSerializer(many=True, read_only=True)
@@ -89,10 +99,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     semester = SemesterSerializer(read_only=True)
     academic_year = AcademicYearSerializer(read_only=True)
     technologies = TechnologySerializer(many=True, read_only=True)
-    archive_tags = SkillSerializer(many=True, read_only=True)
-    archive_tag_ids = serializers.ListField(
-        child=serializers.IntegerField(), write_only=True, required=False,
-    )
+    archive_tags = ArchiveTagsField()
     technology_names = serializers.ListField(
         child=serializers.CharField(), write_only=True, required=False,
     )
@@ -106,7 +113,7 @@ class ProjectSerializer(serializers.ModelSerializer):
             'min_members', 'max_members', 'is_public', 'proposal', 'abstract',
             'expected_scope', 'repository_url', 'documentation_url',
             'archive_year', 'archive_tags', 'deleted_at', 'created_at', 'updated_at',
-            'technology_names', 'archive_tag_ids',
+            'technology_names',
         ]
         read_only_fields = ['creator', 'status', 'deleted_at', 'created_at', 'updated_at']
 
@@ -119,26 +126,28 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         technology_names = validated_data.pop('technology_names', [])
-        archive_tag_ids = validated_data.pop('archive_tag_ids', [])
+        archive_tags = validated_data.pop('archive_tags', [])
         project = services.create_project(creator=self.context['request'].user, **validated_data)
         if technology_names:
             resolved = services.resolve_technologies(technology_names, user=self.context['request'].user)
             project.technologies.set(resolved)
-        if archive_tag_ids:
-            project.archive_tags.set(Skill.objects.filter(id__in=archive_tag_ids))
+        if archive_tags:
+            resolved = services.resolve_skills(archive_tags, user=self.context['request'].user)
+            project.archive_tags.set(resolved)
         return project
 
     def update(self, instance, validated_data):
         technology_names = validated_data.pop('technology_names', None)
-        archive_tag_ids = validated_data.pop('archive_tag_ids', None)
+        archive_tags = validated_data.pop('archive_tags', None)
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
         if technology_names is not None:
             resolved = services.resolve_technologies(technology_names, user=self.context['request'].user)
             instance.technologies.set(resolved)
-        if archive_tag_ids is not None:
-            instance.archive_tags.set(Skill.objects.filter(id__in=archive_tag_ids))
+        if archive_tags is not None:
+            resolved = services.resolve_skills(archive_tags, user=self.context['request'].user)
+            instance.archive_tags.set(resolved)
         return instance
 
 

@@ -804,7 +804,7 @@ These field lists reflect the active serializers in `projects`, `tasks`, and `no
 | Serializer | Returned Fields |
 | ---------- | --------------- |
 | `Subject` | `id`, `name`, `code`, `credit_hours`, `description` |
-| `Project` | `id`, `creator_detail`, `memberships`, `supervisors`, `name`, `description`, `category` (nested `{id, name}`), `semester` (nested `{id, name}`), `academic_year` (nested `{id, name}`), `technologies` (array of `{id, name, is_official}`), `project_type`, `methodology`, `status`, `min_members`, `max_members`, `is_public`, `proposal`, `abstract`, `expected_scope`, `repository_url`, `documentation_url`, `archive_year`, `archive_tags` (array of `{id, name, is_official}`), `archive_tag_ids` (write-only, array of skill IDs), `deleted_at`, `created_at`, `updated_at`, `creator` |
+| `Project` | `id`, `creator_detail`, `memberships`, `supervisors`, `name`, `description`, `category` (nested `{id, name}`), `semester` (nested `{id, name}`), `academic_year` (nested `{id, name}`), `technologies` (array of `{id, name, is_official}`), `project_type`, `methodology`, `status`, `min_members`, `max_members`, `is_public`, `proposal`, `abstract`, `expected_scope`, `repository_url`, `documentation_url`, `archive_year`, `archive_tags` (response: array of `{id, name, is_official}`; write: mixed array of integer IDs or raw strings), `deleted_at`, `created_at`, `updated_at`, `creator` |
 | `ProjectMembership` | `id`, `user_detail`, `project`, `user`, `role`, `joined_at`, `created_at`, `updated_at` |
 | `SupervisorRequest` | `id`, `requested_by_detail`, `supervisor_detail`, `project`, `requested_by`, `supervisor`, `role`, `message`, `proposal`, `abstract`, `technology_stack` (array of `{id, name, is_official}`), `expected_scope`, `modification_note`, `status`, `responded_at`, `created_at`, `updated_at` |
 | `ProjectSupervisor` | `id`, `supervisor_detail`, `project`, `supervisor`, `role`, `created_at`, `updated_at` |
@@ -1030,7 +1030,7 @@ _Frontend Behavior:_ When the user selects an existing technology, extract the `
 	"proposal": "Build a camera-assisted attendance workflow.",
 	"abstract": "A system that detects students and exports attendance reports.",
 	"expected_scope": "Authentication, face matching, attendance exports, and dashboard.",
-	"archive_tag_ids": [1, 5]
+	"archive_tags": [1, "Machine Learning"]                                // Optional: Mixed array of integer IDs and raw strings
 }
 ```
 
@@ -1129,7 +1129,7 @@ _Frontend Behavior:_ When the user selects an existing technology, extract the `
 	"max_members": 6,
 	"is_public": false,
 	"repository_url": "https://github.com/team/smart-attendance",
-	"archive_tag_ids": [1, 5]
+	"archive_tags": [1, "Machine Learning"]
 }
 ```
 
