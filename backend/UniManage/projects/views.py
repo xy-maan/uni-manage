@@ -17,6 +17,8 @@ from .serializers import (
     DeliverableSerializer, FeedbackSerializer,
     JoinRequestSerializer, MeetingAttendanceSerializer, MeetingNoteSerializer,
     MeetingSerializer, ProjectInvitationSerializer, ProjectMembershipSerializer,
+    MarketplaceProjectDetailSerializer, MarketplaceProjectListSerializer,
+    MarketplaceMemberSerializer, MarketplaceSupervisorSerializer,
     ProjectSerializer, ProjectSupervisorSerializer, SemesterSerializer,
     SubjectSerializer, SupervisorRequestSerializer, TechnologySerializer,
 )
@@ -406,4 +408,56 @@ class TechnologySearchView(generics.ListAPIView):
 class SubjectListView(generics.ListAPIView):
     queryset = Subject.objects.all().order_by('code')
     serializer_class = SubjectSerializer
+    permission_classes = []
+
+
+from rest_framework.pagination import PageNumberPagination
+
+
+class MarketplacePagination(PageNumberPagination):
+    page_size = 12
+    page_size_query_param = 'page_size'
+    max_page_size = 50
+
+
+class MarketplaceProjectListView(generics.ListAPIView):
+    serializer_class = MarketplaceProjectListSerializer
+    permission_classes = []
+    pagination_class = MarketplacePagination
+
+    def get_queryset(self):
+        search = self.request.GET.get('search', '')
+        category = self.request.GET.get('category')
+        technology = self.request.GET.get('technology')
+        project_type = self.request.GET.get('project_type')
+        academic_year = self.request.GET.get('academic_year')
+        ordering = self.request.GET.get('ordering', '-created_at')
+
+        return services.get_marketplace_projects(
+            search=search,
+            category=category,
+            technology=technology,
+            project_type=project_type,
+            academic_year=academic_year,
+            ordering=ordering,
+        )
+
+
+class MarketplaceProjectDetailView(generics.RetrieveAPIView):
+    serializer_class = MarketplaceProjectDetailSerializer
+    permission_classes = []
+
+    def get_object(self):
+        project = services.get_marketplace_project_details(
+            project_id=self.kwargs['project_id'],
+        )
+        if project is None:
+            from rest_framework.exceptions import Http404
+            raise Http404
+        return project
+
+
+class MarketplaceTechnologyListView(generics.ListAPIView):
+    queryset = Technology.objects.filter(is_official=True).order_by('name')
+    serializer_class = TechnologySerializer
     permission_classes = []

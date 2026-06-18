@@ -19,11 +19,29 @@
   - [Implementation Gaps / Missing Features](#31-implementation-gaps--missing-features)
   - [Project Types, Methodologies, and Statuses](#32-project-types-methodologies-and-statuses)
   - [Complete User Flow](#33-complete-user-flow)
-  - [Screen-Based API Documentation](#34-screen-based-api-documentation)
-  - [Notification Websocket Behavior](#35-notification-websocket-behavior)
-  - [Permissions Matrix](#36-permissions-matrix)
-  - [Common Error Patterns](#37-common-error-patterns)
-  - [Quick Endpoint Reference](#38-quick-endpoint-reference)
+  - [Supervision](#supervision)
+  - [Tasks](#tasks)
+  - [Task Labels](#task-labels)
+  - [Task Comments](#task-comments)
+  - [Task Attachments](#task-attachments)
+  - [Task Checklists](#task-checklists)
+  - [Checklist Items](#checklist-items)
+  - [Task Activity](#task-activity)
+  - [Sprints](#sprints)
+  - [Sprint-Task Assignments](#sprint-task-assignments)
+  - [Milestones](#milestones)
+  - [Milestone-Task Assignments](#milestone-task-assignments)
+  - [Kanban Board Columns](#kanban-board-columns)
+  - [Deliverables](#deliverables)
+  - [Deliverable Files](#deliverable-files)
+  - [Meetings](#meetings)
+  - [Meeting Attendance](#meeting-attendance)
+  - [Meeting Notes](#meeting-notes)
+  - [Feedback](#feedback)
+  - [Notifications](#notifications-1)
+  - [Notification Websocket](#notification-websocket)
+  - [Common Status Codes](#common-status-codes)
+  - [Permissions Summary](#permissions-summary)
 
 ---
 
@@ -1205,871 +1223,2560 @@ _Frontend Behavior:_ When the user selects an existing technology, extract the `
 - The leader membership cannot be deleted.
 - Successful create responses return `201 Created`; accept/reject/update responses return `200 OK`; delete responses return `204 No Content`.
 
+---
+
 ### Supervision Screen
+
+**Base URL:** `/api/projects`
 
 **Purpose:** Graduation leaders request doctors/TAs, and supervisors review incoming requests.
 
-**Used APIs:**
+---
 
-| Action | Method | URL | Permission |
-| ------ | ------ | --- | ---------- |
-| Send supervisor request | POST | `/api/projects/supervisor-requests/` | Project leader |
-| View relevant supervisor requests | GET | `/api/projects/supervisor-requests/` | Requested supervisor, requester, or project member |
-| Get supervisor request | GET | `/api/projects/supervisor-requests/{request_id}/` | Requested supervisor, requester, or project member |
-| Replace supervisor request | PUT | `/api/projects/supervisor-requests/{request_id}/` | Project leader |
-| Update supervisor request | PATCH | `/api/projects/supervisor-requests/{request_id}/` | Project leader |
-| Delete supervisor request | DELETE | `/api/projects/supervisor-requests/{request_id}/` | Authenticated user if visible in queryset |
-| Doctor/TA accept request | POST | `/api/projects/supervisor-requests/{request_id}/accept/` | Requested doctor/TA only |
-| Doctor/TA reject request | POST | `/api/projects/supervisor-requests/{request_id}/reject/` | Requested doctor/TA only |
-| Doctor/TA request modification | POST | `/api/projects/supervisor-requests/{request_id}/request-modification/` | Requested doctor/TA only |
-| View current supervisors | GET | `/api/projects/supervisors/` | Project member or assigned supervisor |
-| Get project supervisor | GET | `/api/projects/supervisors/{supervisor_record_id}/` | Project member or assigned supervisor |
-| Create project supervisor | POST | `/api/projects/supervisors/` | Project leader; requires matching accepted supervisor request |
-| Replace project supervisor | PUT | `/api/projects/supervisors/{supervisor_record_id}/` | Project leader |
-| Update project supervisor | PATCH | `/api/projects/supervisors/{supervisor_record_id}/` | Project leader |
-| Delete project supervisor | DELETE | `/api/projects/supervisors/{supervisor_record_id}/` | Project leader |
+#### Send Supervisor Request
 
-**Send Primary Doctor Request:**
+**Endpoint:** `POST /api/projects/supervisor-requests/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by the **project leader** to send a supervision request to a doctor (`role: "primary"`) or TA (`role: "secondary"`). If the project is a graduation project, its status is automatically set to `under_review`.
+
+**Request Body:**
 
 ```json
 {
-	"project": 101,
-	"supervisor": 8,
-	"role": "primary",
-	"message": "Would you supervise our graduation project?",
-	"proposal": "Full project proposal text.",
-	"abstract": "Short project abstract.",
-	"technology_names": [1, "React", "SQL Server"],
-	"expected_scope": "Authentication, project workspace, reports, and demo."
+    "project": 101,                                              // REQUIRED: Integer ID of the project
+    "supervisor": 8,                                             // REQUIRED: Integer ID of the doctor/TA
+    "role": "primary",                                           // Optional, defaults to "primary". Values: "primary" | "secondary"
+    "message": "Would you supervise our graduation project?",    // Optional: Custom message to the supervisor
+    "proposal": "Full project proposal text.",                   // Optional: Detailed proposal
+    "abstract": "Short project abstract.",                       // Optional: Brief project summary
+    "technology_names": [1, "React", "SQL Server"],              // Optional: Mixed array of integer IDs and raw strings. Defaults to project's current technologies
+    "expected_scope": "Authentication, project workspace..."     // Optional: Expected project scope
 }
 ```
 
-**Send Secondary TA Request:**
+**Success Response (201 Created):**
 
 ```json
 {
-	"project": 101,
-	"supervisor": 15,
-	"role": "secondary",
-	"message": "Can you support the weekly implementation follow-up?"
+    "id": 701,
+    "project": 101,
+    "requested_by": 12,
+    "supervisor": 8,
+    "requested_by_detail": {
+        "id": 12,
+        "username": "mona",
+        "full_name": "Mona Hassan",
+        "email": "mona@uni.edu.eg",
+        "role": "STUDENT",
+        "avatar_url": null
+    },
+    "supervisor_detail": {
+        "id": 8,
+        "username": "dr.samir",
+        "full_name": "Samir Nabil",
+        "email": "samir@uni.edu.eg",
+        "role": "SUPERVISOR",
+        "avatar_url": null
+    },
+    "role": "primary",
+    "message": "Would you supervise our graduation project?",
+    "proposal": "Full project proposal text.",
+    "abstract": "Short project abstract.",
+    "technology_stack": [
+        {"id": 1, "name": "Django", "is_official": true},
+        {"id": 5, "name": "React", "is_official": true},
+        {"id": 6, "name": "SQL Server", "is_official": true}
+    ],
+    "expected_scope": "Authentication, project workspace, reports, and demo.",
+    "modification_note": "",
+    "status": "pending",
+    "responded_at": null,
+    "created_at": "2026-06-15T08:10:00Z",
+    "updated_at": "2026-06-15T08:10:00Z"
 }
 ```
 
-_Note:_ If `technology_names` is omitted on a supervisor request, the backend defaults to the project's currently set technologies.
+**Common Errors:**
+- `400 Bad Request`: Invalid `project`, `supervisor`, or `role` value.
+- `400 Bad Request`: Primary supervisor must be a DOCTOR; secondary must be a TA.
+- `403 Forbidden`: Only the project leader can send supervisor requests.
 
-**Response Example:**
+---
+
+#### List Supervisor Requests
+
+**Endpoint:** `GET /api/projects/supervisor-requests/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by the **requested supervisor**, **requester**, or **project member** to view all supervisor requests they have access to. Ordered newest first.
+
+**Success Response (200 OK):**
+
+```json
+[
+    {
+        "id": 701,
+        "project": 101,
+        "requested_by": 12,
+        "supervisor": 8,
+        "requested_by_detail": {
+            "id": 12,
+            "username": "mona",
+            "full_name": "Mona Hassan",
+            "email": "mona@uni.edu.eg",
+            "role": "STUDENT",
+            "avatar_url": null
+        },
+        "supervisor_detail": {
+            "id": 8,
+            "username": "dr.samir",
+            "full_name": "Samir Nabil",
+            "email": "samir@uni.edu.eg",
+            "role": "SUPERVISOR",
+            "avatar_url": null
+        },
+        "role": "primary",
+        "message": "Would you supervise our graduation project?",
+        "proposal": "Full project proposal text.",
+        "abstract": "Short project abstract.",
+        "technology_stack": [
+            {"id": 1, "name": "Django", "is_official": true}
+        ],
+        "expected_scope": "Authentication, project workspace, reports, and demo.",
+        "modification_note": "",
+        "status": "pending",
+        "responded_at": null,
+        "created_at": "2026-06-15T08:10:00Z",
+        "updated_at": "2026-06-15T08:10:00Z"
+    }
+]
+```
+
+---
+
+#### Get Supervisor Request
+
+**Endpoint:** `GET /api/projects/supervisor-requests/{request_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by the **requested supervisor**, **requester**, or **project member** to view a single supervisor request's details.
+
+**Success Response (200 OK):** Same shape as a single object in the List response above.
+
+---
+
+#### Replace Supervisor Request
+
+**Endpoint:** `PUT /api/projects/supervisor-requests/{request_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by the **project leader** to fully replace a supervisor request. All required fields must be provided.
+
+**Request Body:** Same shape as the Send Supervisor Request body.
+
+**Success Response (200 OK):** Same shape as the Send Supervisor Request response (with updated values).
+
+---
+
+#### Update Supervisor Request
+
+**Endpoint:** `PATCH /api/projects/supervisor-requests/{request_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by the **project leader** to partially update a supervisor request. Only provided fields are changed.
+
+**Request Body:** Any subset of the Send Supervisor Request fields.
+
+**Success Response (200 OK):** Same shape as the Send Supervisor Request response (with updated values).
+
+---
+
+#### Delete Supervisor Request
+
+**Endpoint:** `DELETE /api/projects/supervisor-requests/{request_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by any **authenticated user** who has visibility of the request to delete it.
+
+**Request Body:** None
+
+**Success Response:** `204 No Content`
+
+---
+
+#### Accept Supervisor Request
+
+**Endpoint:** `POST /api/projects/supervisor-requests/{request_id}/accept/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by the **requested doctor/TA** to accept the supervision request. Automatically creates a `ProjectSupervisor` record linking them to the project.
+
+**Request Body:** None
+
+**Success Response (200 OK):** Same shape as the Send Supervisor Request response with `status: "accepted"`.
+
+---
+
+#### Reject Supervisor Request
+
+**Endpoint:** `POST /api/projects/supervisor-requests/{request_id}/reject/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by the **requested doctor/TA** to reject the supervision request. No `ProjectSupervisor` record is created.
+
+**Request Body:** None
+
+**Success Response (200 OK):** Same shape as the Send Supervisor Request response with `status: "rejected"`.
+
+---
+
+#### Request Modification
+
+**Endpoint:** `POST /api/projects/supervisor-requests/{request_id}/request-modification/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by the **requested doctor/TA** to request changes to the supervision request. Sets `status` to `needs_modification` and stores the modification note. Sends a feedback notification to the requester.
+
+**Request Body:**
 
 ```json
 {
-	"id": 701,
-	"project": 101,
-	"requested_by": 12,
-	"supervisor": 8,
-	"requested_by_detail": {
-		"id": 12,
-		"username": "mona",
-		"full_name": "Mona Hassan",
-		"email": "mona@uni.edu.eg",
-		"role": "STUDENT",
-		"avatar_url": null
-	},
-	"supervisor_detail": {
-		"id": 8,
-		"username": "dr.samir",
-		"full_name": "Samir Nabil",
-		"email": "samir@uni.edu.eg",
-		"role": "SUPERVISOR",
-		"avatar_url": null
-	},
-	"role": "primary",
-	"message": "Would you supervise our graduation project?",
-	"proposal": "Full project proposal text.",
-	"abstract": "Short project abstract.",
-	"technology_stack": [
-		{"id": 1, "name": "Django", "is_official": true},
-		{"id": 5, "name": "React", "is_official": true},
-		{"id": 6, "name": "SQL Server", "is_official": true}
-	],
-	"expected_scope": "Authentication, project workspace, reports, and demo.",
-	"modification_note": "",
-	"status": "pending",
-	"responded_at": null,
-	"created_at": "2026-06-15T08:10:00Z",
-	"updated_at": "2026-06-15T08:10:00Z"
+    "note": "Please update the proposal with more technical details."    // REQUIRED: Explanation of what needs to change
 }
 ```
 
-**Create ProjectSupervisor Request:**
+**Success Response (200 OK):** Same shape as the Send Supervisor Request response with `status: "needs_modification"` and `modification_note` populated.
+
+---
+
+#### List Project Supervisors
+
+**Endpoint:** `GET /api/projects/supervisors/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project members** or **assigned supervisors** to view all supervisor assignment records for their projects.
+
+**Success Response (200 OK):**
+
+```json
+[
+    {
+        "id": 711,
+        "project": 101,
+        "supervisor": 8,
+        "supervisor_detail": {
+            "id": 8,
+            "username": "dr.samir",
+            "full_name": "Samir Nabil",
+            "email": "samir@uni.edu.eg",
+            "role": "SUPERVISOR",
+            "avatar_url": null
+        },
+        "role": "primary",
+        "created_at": "2026-06-15T08:12:00Z",
+        "updated_at": "2026-06-15T08:12:00Z"
+    }
+]
+```
+
+---
+
+#### Get Project Supervisor
+
+**Endpoint:** `GET /api/projects/supervisors/{supervisor_record_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project members** or **assigned supervisors** to view a single supervisor assignment record.
+
+**Success Response (200 OK):** Same shape as a single object in the List response above.
+
+---
+
+#### Create Project Supervisor
+
+**Endpoint:** `POST /api/projects/supervisors/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by the **project leader** to manually create a supervisor assignment record. Requires a matching accepted `SupervisorRequest` with the same `project`, `supervisor`, and `role`. The normal flow creates this automatically when a supervisor accepts a request; this endpoint is a fallback.
+
+**Request Body:**
 
 ```json
 {
-	"project": 101,
-	"supervisor": 8,
-	"role": "primary"
+    "project": 101,              // REQUIRED: Integer ID of the project
+    "supervisor": 8,             // REQUIRED: Integer ID of the doctor/TA
+    "role": "primary"            // REQUIRED: "primary" | "secondary"
 }
 ```
 
-**ProjectSupervisor Response Example:**
+**Success Response (201 Created):**
 
 ```json
 {
-	"id": 711,
-	"project": 101,
-	"supervisor": 8,
-	"supervisor_detail": {
-		"id": 8,
-		"username": "dr.samir",
-		"full_name": "Samir Nabil",
-		"email": "samir@uni.edu.eg",
-		"role": "SUPERVISOR",
-		"avatar_url": null
-	},
-	"role": "primary",
-	"created_at": "2026-06-15T08:12:00Z",
-	"updated_at": "2026-06-15T08:12:00Z"
+    "id": 711,
+    "project": 101,
+    "supervisor": 8,
+    "supervisor_detail": {
+        "id": 8,
+        "username": "dr.samir",
+        "full_name": "Samir Nabil",
+        "email": "samir@uni.edu.eg",
+        "role": "SUPERVISOR",
+        "avatar_url": null
+    },
+    "role": "primary",
+    "created_at": "2026-06-15T08:12:00Z",
+    "updated_at": "2026-06-15T08:12:00Z"
 }
 ```
 
-**Permissions and Rules:**
+**Common Errors:**
+- `400 Bad Request`: "A matching accepted supervisor request is required."
+- `400 Bad Request`: Primary supervisor must be a DOCTOR; secondary must be a TA.
+- `403 Forbidden`: Only the project leader can perform this action.
 
-- Only project leaders can send supervisor requests.
-- `primary` requires a supervisor profile with title `DOCTOR`.
-- `secondary` requires a supervisor profile with title `TA`.
-- Sending a request for a graduation project sets project status to `under_review`.
-- Accepting a request creates a `ProjectSupervisor` record.
-- Requesting modification sets supervisor request status to `needs_modification`, stores `modification_note`, and sends a feedback notification to the requester.
-- Manually creating a `ProjectSupervisor` requires a matching accepted supervisor request with the same `project`, `supervisor`, and `role`.
-- `technology_names` accepts a mixed array of integer IDs and raw strings, identical to the `technology_names` field on Project. If omitted, the project's current technologies are used.
-- There is no supervisor search endpoint in these apps.
-- Successful supervisor-request and supervisor-record creates return `201 Created`; accept/reject/update responses return `200 OK`; delete responses return `204 No Content`.
+---
 
-### Task Board / Task List Screen
+#### Replace Project Supervisor
 
-**Purpose:** Show tasks for a project, create/edit tasks, and support drag-and-drop through PATCH updates.
+**Endpoint:** `PUT /api/projects/supervisors/{supervisor_record_id}/`
+**Authentication:** Required (Bearer Token)
 
-**Used APIs:**
+**Description:**
+Used by the **project leader** to fully replace a supervisor assignment record.
 
-| Action | Method | URL | Permission |
-| ------ | ------ | --- | ---------- |
-| List tasks | GET | `/api/tasks/?project={project_id}` | Project participant |
-| Filter by assignee | GET | `/api/tasks/?project={project_id}&assignee={user_id}` | Project participant |
-| Filter by status | GET | `/api/tasks/?project={project_id}&status=todo` | Project participant |
-| Create task | POST | `/api/tasks/` | Project participant |
-| Task details | GET | `/api/tasks/{task_id}/` | Project participant |
-| Replace task | PUT | `/api/tasks/{task_id}/` | Project participant |
-| Update or move task | PATCH | `/api/tasks/{task_id}/` | Project participant |
-| Delete task | DELETE | `/api/tasks/{task_id}/` | Project participant; soft delete |
-| List labels | GET | `/api/tasks/labels/` | Project participant |
-| Create label | POST | `/api/tasks/labels/` | Project participant |
-| Get label | GET | `/api/tasks/labels/{label_id}/` | Project participant |
-| Replace label | PUT | `/api/tasks/labels/{label_id}/` | Project participant |
-| Update label | PATCH | `/api/tasks/labels/{label_id}/` | Project participant |
-| Delete label | DELETE | `/api/tasks/labels/{label_id}/` | Project participant |
-| List task activity | GET | `/api/tasks/activity/` | Project participant |
+**Request Body:** Same shape as the Create Project Supervisor body.
 
-**Create Task Request:**
+**Success Response (200 OK):** Same shape as the Create Project Supervisor response (with updated values).
+
+---
+
+#### Update Project Supervisor
+
+**Endpoint:** `PATCH /api/projects/supervisors/{supervisor_record_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by the **project leader** to partially update a supervisor assignment record.
+
+**Request Body:** Any subset of the Create Project Supervisor fields.
+
+**Success Response (200 OK):** Same shape as the Create Project Supervisor response (with updated values).
+
+---
+
+#### Delete Project Supervisor
+
+**Endpoint:** `DELETE /api/projects/supervisors/{supervisor_record_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by the **project leader** to remove a supervisor assignment from the project.
+
+**Request Body:** None
+
+**Success Response:** `204 No Content`
+
+---
+
+#### Supervision Rules
+
+- `primary` role requires a supervisor profile with title `DOCTOR`.
+- `secondary` role requires a supervisor profile with title `TA`.
+- Only project leaders can send supervisor requests or create/update/delete supervisor records.
+- Sending a request for a graduation project sets the project status to `under_review`.
+- Accepting a request automatically creates a `ProjectSupervisor` record and sets the request status to `accepted`.
+- Requesting modification sets the request status to `needs_modification`.
+- There is no supervisor search endpoint. Use `GET /api/users/students/` to find supervisors.
+
+---
+
+### Base URL: `/api/tasks`
+
+---
+
+## Tasks
+
+### List Tasks
+
+**Endpoint:** `GET /api/tasks/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** (members or supervisors) to list tasks. Supports filtering by `project`, `assignee`, and `status` via query parameters.
+
+**Query Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `project` | Integer | Optional | Filter by project ID |
+| `assignee` | Integer | Optional | Filter by assignee user ID |
+| `status` | String | Optional | Filter by status (`todo`, `in_progress`, `review`, `done`) |
+
+**Success Response (200 OK):**
+
+```json
+[
+    {
+        "id": 401,
+        "project": 101,
+        "title": "Build attendance API",
+        "description": "Create endpoints for session check-in.",
+        "status": "in_progress",
+        "priority": "high",
+        "creator": 12,
+        "assignee": 34,
+        "creator_detail": {
+            "id": 12,
+            "username": "mona",
+            "full_name": "Mona Hassan",
+            "email": "mona@uni.edu.eg",
+            "role": "STUDENT",
+            "avatar_url": null
+        },
+        "assignee_detail": {
+            "id": 34,
+            "username": "omar",
+            "full_name": "Omar Ali",
+            "email": "omar@uni.edu.eg",
+            "role": "STUDENT",
+            "avatar_url": null
+        },
+        "labels": [901],
+        "board_column": 302,
+        "due_at": "2026-06-30T18:00:00Z",
+        "estimated_hours": "12.50",
+        "actual_hours": null,
+        "story_points": 5,
+        "completed_at": null,
+        "position": 20,
+        "deleted_at": null,
+        "created_at": "2026-06-15T08:20:00Z",
+        "updated_at": "2026-06-15T08:25:00Z",
+        "comments": [],
+        "attachments": [],
+        "checklists": [],
+        "activity": []
+    }
+]
+```
+
+---
+
+### Create Task
+
+**Endpoint:** `POST /api/tasks/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to create a new task.
+
+**Request Body:**
 
 ```json
 {
-	"project": 101,
-	"title": "Build attendance API",
-	"description": "Create endpoints for session check-in.",
-	"status": "todo",
-	"priority": "high",
-	"assignee": 34,
-	"labels": [901],
-	"board_column": 301,
-	"due_at": "2026-06-30T18:00:00Z",
-	"estimated_hours": "12.50",
-	"actual_hours": null,
-	"story_points": 5,
-	"position": 10
+    "project": 101,                                                           // REQUIRED: Integer ID of the project
+    "title": "Build attendance API",                                          // REQUIRED: Max 255 characters
+    "description": "Create endpoints for session check-in.",                  // Optional
+    "status": "todo",                                                         // Optional, defaults to "todo". Values: "todo" | "in_progress" | "review" | "done"
+    "priority": "high",                                                       // Optional, defaults to "medium". Values: "low" | "medium" | "high" | "urgent"
+    "assignee": 34,                                                           // Optional: Integer ID of a project member
+    "labels": [901],                                                          // Optional: Array of label IDs that belong to the same project
+    "board_column": 301,                                                      // Optional: Integer ID of a board column in the same project
+    "due_at": "2026-06-30T18:00:00Z",                                         // Optional: ISO 8601 datetime
+    "estimated_hours": "12.50",                                               // Optional: Decimal up to 9999.99
+    "actual_hours": null,                                                     // Optional: Decimal up to 9999.99
+    "story_points": 5,                                                        // Optional: Positive integer
+    "position": 10                                                            // Optional: Positive integer for ordering, defaults to 0
 }
 ```
 
-**Move Task Request:**
+**Success Response (201 Created):** Same shape as a single object in List Tasks.
+
+---
+
+### Get Task
+
+**Endpoint:** `GET /api/tasks/{task_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to view a single task's details, including comments, attachments, checklists, and activity.
+
+**Success Response (200 OK):** Same shape as a single object in List Tasks.
+
+---
+
+### Replace Task
+
+**Endpoint:** `PUT /api/tasks/{task_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to fully replace a task. All required fields must be provided.
+
+**Request Body:** Same shape as Create Task.
+
+**Success Response (200 OK):** The updated Task object.
+
+---
+
+### Update Task / Move Task
+
+**Endpoint:** `PATCH /api/tasks/{task_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to partially update a task. Use this endpoint for drag-and-drop moves (changing `board_column`, `status`, and `position`).
+
+**Request Body (partial update):**
 
 ```json
 {
-	"status": "in_progress",
-	"board_column": 302,
-	"position": 20
+    "status": "in_progress",         // Optional: Change status
+    "board_column": 302,             // Optional: Move to a different column
+    "position": 20                   // Optional: Reorder within column
 }
 ```
 
-**Response Example:**
+**Success Response (200 OK):** The updated Task object.
+
+**Auto-behaviors:**
+- Setting `status` to `"done"` automatically sets `completed_at`.
+- Changing `status` away from `"done"` clears `completed_at`.
+- Creating or updating a task generates a `TaskActivity` record and emits `task_update` notifications to other participants.
+
+---
+
+### Delete Task
+
+**Endpoint:** `DELETE /api/tasks/{task_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to soft-delete a task.
+
+**Request Body:** None
+
+**Success Response:** `204 No Content`
+
+---
+
+## Task Labels
+
+### List Labels
+
+**Endpoint:** `GET /api/tasks/labels/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to list all task labels.
+
+**Success Response (200 OK):**
+
+```json
+[
+    {
+        "id": 901,
+        "project": 101,
+        "name": "Backend",
+        "color": "#2563eb",
+        "created_at": "2026-06-15T08:18:00Z",
+        "updated_at": "2026-06-15T08:18:00Z"
+    }
+]
+```
+
+---
+
+### Create Label
+
+**Endpoint:** `POST /api/tasks/labels/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to create a new task label.
+
+**Request Body:**
 
 ```json
 {
-	"id": 401,
-	"project": 101,
-	"title": "Build attendance API",
-	"description": "Create endpoints for session check-in.",
-	"status": "in_progress",
-	"priority": "high",
-	"creator": 12,
-	"assignee": 34,
-	"creator_detail": {
-		"id": 12,
-		"username": "mona",
-		"full_name": "Mona Hassan",
-		"email": "mona@uni.edu.eg",
-		"role": "STUDENT",
-		"avatar_url": null
-	},
-	"assignee_detail": {
-		"id": 34,
-		"username": "omar",
-		"full_name": "Omar Ali",
-		"email": "omar@uni.edu.eg",
-		"role": "STUDENT",
-		"avatar_url": null
-	},
-	"labels": [901],
-	"board_column": 302,
-	"due_at": "2026-06-30T18:00:00Z",
-	"estimated_hours": "12.50",
-	"actual_hours": null,
-	"story_points": 5,
-	"completed_at": null,
-	"position": 20,
-	"deleted_at": null,
-	"created_at": "2026-06-15T08:20:00Z",
-	"updated_at": "2026-06-15T08:25:00Z",
-	"comments": [],
-	"attachments": [],
-	"checklists": [],
-	"activity": []
+    "project": 101,              // REQUIRED: Integer ID of the project
+    "name": "Backend",           // REQUIRED: Max 100 characters
+    "color": "#2563eb"           // REQUIRED: Hex color code
 }
 ```
 
-**Create TaskLabel Request:**
+**Success Response (201 Created):** Same shape as a single object in List Labels.
+
+---
+
+### Get Label
+
+**Endpoint:** `GET /api/tasks/labels/{label_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to view a single label.
+
+**Success Response (200 OK):** Same shape as a single object in List Labels.
+
+---
+
+### Replace Label
+
+**Endpoint:** `PUT /api/tasks/labels/{label_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to fully replace a label.
+
+**Request Body:** Same shape as Create Label.
+
+**Success Response (200 OK):** The updated Label object.
+
+---
+
+### Update Label
+
+**Endpoint:** `PATCH /api/tasks/labels/{label_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to partially update a label.
+
+**Request Body:** Any subset of Create Label fields.
+
+**Success Response (200 OK):** The updated Label object.
+
+---
+
+### Delete Label
+
+**Endpoint:** `DELETE /api/tasks/labels/{label_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to delete a label.
+
+**Request Body:** None
+
+**Success Response:** `204 No Content`
+
+---
+
+## Task Comments
+
+### List Comments
+
+**Endpoint:** `GET /api/tasks/comments/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to list all task comments.
+
+**Success Response (200 OK):**
+
+```json
+[
+    {
+        "id": 1101,
+        "task": 401,
+        "author": 34,
+        "author_detail": {
+            "id": 34,
+            "username": "omar",
+            "full_name": "Omar Ali",
+            "email": "omar@uni.edu.eg",
+            "role": "STUDENT",
+            "avatar_url": null
+        },
+        "content": "API routes are ready for frontend integration.",
+        "created_at": "2026-06-15T08:30:00Z",
+        "updated_at": "2026-06-15T08:30:00Z"
+    }
+]
+```
+
+---
+
+### Create Comment
+
+**Endpoint:** `POST /api/tasks/comments/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to add a comment to a task.
+
+**Request Body:**
 
 ```json
 {
-	"project": 101,
-	"name": "Backend",
-	"color": "#2563eb"
+    "task": 401,                  // REQUIRED: Integer ID of the task
+    "content": "API routes are ready for frontend integration."    // REQUIRED: Comment text
 }
 ```
 
-**TaskLabel Response Example:**
+**Success Response (201 Created):** Same shape as a single object in List Comments.
+
+---
+
+### Get Comment
+
+**Endpoint:** `GET /api/tasks/comments/{comment_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to view a single comment.
+
+**Success Response (200 OK):** Same shape as a single object in List Comments.
+
+---
+
+### Replace Comment
+
+**Endpoint:** `PUT /api/tasks/comments/{comment_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by the **comment author** only to fully replace a comment.
+
+**Request Body:** Same shape as Create Comment.
+
+**Success Response (200 OK):** The updated Comment object.
+
+---
+
+### Update Comment
+
+**Endpoint:** `PATCH /api/tasks/comments/{comment_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by the **comment author** only to partially update a comment.
+
+**Request Body:** Any subset of Create Comment fields.
+
+**Success Response (200 OK):** The updated Comment object.
+
+---
+
+### Delete Comment
+
+**Endpoint:** `DELETE /api/tasks/comments/{comment_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by the **comment author** only to delete a comment.
+
+**Request Body:** None
+
+**Success Response:** `204 No Content`
+
+---
+
+## Task Attachments
+
+### List Attachments
+
+**Endpoint:** `GET /api/tasks/attachments/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to list all task attachments.
+
+**Success Response (200 OK):**
+
+```json
+[
+    {
+        "id": 1201,
+        "task": 401,
+        "file": "/media/tasks/attachments/spec.pdf",
+        "uploaded_by": 34,
+        "created_at": "2026-06-15T08:35:00Z",
+        "updated_at": "2026-06-15T08:35:00Z"
+    }
+]
+```
+
+---
+
+### Upload Attachment
+
+**Endpoint:** `POST /api/tasks/attachments/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to upload a file attachment to a task. Uses multipart form-data.
+
+**Request Body (multipart/form-data):**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `task` | Integer | REQUIRED | ID of the task to attach to |
+| `file` | File | REQUIRED | The file to upload |
+
+**Success Response (201 Created):** Same shape as a single object in List Attachments.
+
+---
+
+### Get Attachment
+
+**Endpoint:** `GET /api/tasks/attachments/{attachment_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to view a single attachment record.
+
+**Success Response (200 OK):** Same shape as a single object in List Attachments.
+
+---
+
+### Replace Attachment
+
+**Endpoint:** `PUT /api/tasks/attachments/{attachment_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to fully replace an attachment.
+
+**Request Body:** Same shape as Upload Attachment (multipart/form-data).
+
+**Success Response (200 OK):** The updated Attachment object.
+
+---
+
+### Update Attachment
+
+**Endpoint:** `PATCH /api/tasks/attachments/{attachment_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to partially update an attachment.
+
+**Request Body (multipart/form-data):** Any subset of Upload Attachment fields.
+
+**Success Response (200 OK):** The updated Attachment object.
+
+---
+
+### Delete Attachment
+
+**Endpoint:** `DELETE /api/tasks/attachments/{attachment_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to delete an attachment.
+
+**Request Body:** None
+
+**Success Response:** `204 No Content`
+
+---
+
+## Task Checklists
+
+### List Checklists
+
+**Endpoint:** `GET /api/tasks/checklists/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to list all checklists for their tasks.
+
+**Success Response (200 OK):**
+
+```json
+[
+    {
+        "id": 1701,
+        "task": 401,
+        "title": "API acceptance checklist",
+        "position": 1,
+        "items": [],
+        "created_at": "2026-06-15T08:40:00Z",
+        "updated_at": "2026-06-15T08:40:00Z"
+    }
+]
+```
+
+---
+
+### Create Checklist
+
+**Endpoint:** `POST /api/tasks/checklists/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to create a new checklist group on a task.
+
+**Request Body:**
 
 ```json
 {
-	"id": 901,
-	"project": 101,
-	"name": "Backend",
-	"color": "#2563eb",
-	"created_at": "2026-06-15T08:18:00Z",
-	"updated_at": "2026-06-15T08:18:00Z"
+    "task": 401,                  // REQUIRED: Integer ID of the task
+    "title": "API acceptance checklist",  // REQUIRED: Max 255 characters
+    "position": 1                 // Optional: Positive integer for ordering, defaults to 0
 }
 ```
 
-**Permissions and Rules:**
+**Success Response (201 Created):** Same shape as a single object in List Checklists.
 
-- Any project participant, member or supervisor, can create/update/delete tasks.
-- Assignee must be a project member.
-- Labels and board column must belong to the same project.
-- Setting status to `done` automatically sets `completed_at`.
-- Moving back from `done` clears `completed_at`.
-- Creating or updating through the task serializer writes a read-only `TaskActivity` record and emits `task_update` notifications to other participants.
-- Supported task query parameters are only `project`, `assignee`, and `status`.
-- Search, ordering query parameters, generic filtering, and filter backends are unsupported.
-- Successful task and label creates return `201 Created`; updates return `200 OK`; deletes return `204 No Content`.
+---
 
-### Task Comments and Attachments Panel
+### Get Checklist
 
-**Purpose:** Allow task discussion and file sharing.
+**Endpoint:** `GET /api/tasks/checklists/{checklist_id}/`
+**Authentication:** Required (Bearer Token)
 
-**Used APIs:**
+**Description:**
+Used by **project participants** to view a single checklist with its items.
 
-| Action | Method | URL | Permission |
-| ------ | ------ | --- | ---------- |
-| List comments | GET | `/api/tasks/comments/` | Project participant |
-| Create comment | POST | `/api/tasks/comments/` | Project participant |
-| Get comment | GET | `/api/tasks/comments/{comment_id}/` | Project participant |
-| Replace comment | PUT | `/api/tasks/comments/{comment_id}/` | Comment author |
-| Update comment | PATCH | `/api/tasks/comments/{comment_id}/` | Comment author |
-| Delete comment | DELETE | `/api/tasks/comments/{comment_id}/` | Comment author |
-| List attachments | GET | `/api/tasks/attachments/` | Project participant |
-| Upload attachment | POST | `/api/tasks/attachments/` | Project participant |
-| Get attachment | GET | `/api/tasks/attachments/{attachment_id}/` | Project participant |
-| Replace attachment | PUT | `/api/tasks/attachments/{attachment_id}/` | Project participant if visible in queryset |
-| Update attachment | PATCH | `/api/tasks/attachments/{attachment_id}/` | Project participant if visible in queryset |
-| Delete attachment | DELETE | `/api/tasks/attachments/{attachment_id}/` | Project participant if visible in queryset |
+**Success Response (200 OK):** Same shape as a single object in List Checklists.
 
-**Create Comment Request:**
+---
+
+### Update Checklist
+
+**Endpoint:** `PATCH /api/tasks/checklists/{checklist_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to partially update a checklist.
+
+**Request Body:** Any subset of Create Checklist fields.
+
+**Success Response (200 OK):** The updated Checklist object.
+
+---
+
+### Delete Checklist
+
+**Endpoint:** `DELETE /api/tasks/checklists/{checklist_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to delete a checklist and all its items.
+
+**Request Body:** None
+
+**Success Response:** `204 No Content`
+
+---
+
+## Checklist Items
+
+### List Checklist Items
+
+**Endpoint:** `GET /api/tasks/checklist-items/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to list all checklist items.
+
+**Success Response (200 OK):**
+
+```json
+[
+    {
+        "id": 1751,
+        "checklist": 1701,
+        "content": "Document response schema",
+        "is_completed": false,
+        "completed_by": null,
+        "completed_at": null,
+        "completed_by_detail": null,
+        "position": 1,
+        "created_at": "2026-06-15T08:41:00Z",
+        "updated_at": "2026-06-15T08:41:00Z"
+    }
+]
+```
+
+---
+
+### Create Checklist Item
+
+**Endpoint:** `POST /api/tasks/checklist-items/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to add an item to a checklist.
+
+**Request Body:**
 
 ```json
 {
-	"task": 401,
-	"content": "API routes are ready for frontend integration."
+    "checklist": 1701,                                                       // REQUIRED: Integer ID of the checklist
+    "content": "Document response schema",                                    // REQUIRED: Max 255 characters
+    "is_completed": false,                                                    // Optional: defaults to false
+    "position": 1                                                             // Optional: Positive integer for ordering, defaults to 0
 }
 ```
 
-**Upload Attachment Request:** multipart form-data
+**Success Response (201 Created):** Same shape as a single object in List Checklist Items.
 
-- `task`: task ID
-- `file`: selected file
+---
 
-**TaskAttachment Upload Response:**
+### Update Checklist Item
+
+**Endpoint:** `PATCH /api/tasks/checklist-items/{item_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to update a checklist item (e.g., mark as complete).
+
+**Request Body (Complete Item):**
 
 ```json
 {
-	"id": 1201,
-	"task": 401,
-	"file": "/media/tasks/attachments/spec.pdf",
-	"uploaded_by": 34,
-	"created_at": "2026-06-15T08:35:00Z",
-	"updated_at": "2026-06-15T08:35:00Z"
+    "is_completed": true       // Optional: Setting to true auto-sets completed_by and completed_at
 }
 ```
 
-**Rules:**
+**Success Response (200 OK):** The updated Checklist Item object.
 
-- Any participant can comment or upload attachments.
-- Only the comment author can edit/delete that comment.
-- Attachment upload uses multipart form-data.
-- Attachment upload returns `201 Created`; comment/attachment updates return `200 OK`; deletes return `204 No Content`.
+**Auto-behaviors:**
+- Setting `is_completed` from `false` to `true`: stores `completed_by` (current user) and `completed_at`.
+- Setting `is_completed` from `true` to `false`: clears `completed_by` and `completed_at`.
 
-### Task Checklists and Activity
+---
 
-**Purpose:** Track per-task checklist groups, checklist items, completion state, and task activity.
+### Delete Checklist Item
 
-**Used APIs:**
+**Endpoint:** `DELETE /api/tasks/checklist-items/{item_id}/`
+**Authentication:** Required (Bearer Token)
 
-| Action | Method | URL | Permission |
-| ------ | ------ | --- | ---------- |
-| List checklists | GET | `/api/tasks/checklists/` | Project participant |
-| Create checklist | POST | `/api/tasks/checklists/` | Project participant |
-| Get checklist | GET | `/api/tasks/checklists/{checklist_id}/` | Project participant |
-| Update checklist | PATCH | `/api/tasks/checklists/{checklist_id}/` | Project participant |
-| Delete checklist | DELETE | `/api/tasks/checklists/{checklist_id}/` | Project participant |
-| List checklist items | GET | `/api/tasks/checklist-items/` | Project participant |
-| Create checklist item | POST | `/api/tasks/checklist-items/` | Project participant |
-| Update checklist item | PATCH | `/api/tasks/checklist-items/{item_id}/` | Project participant |
-| Delete checklist item | DELETE | `/api/tasks/checklist-items/{item_id}/` | Project participant |
-| List activity | GET | `/api/tasks/activity/` | Project participant; read-only |
-| Get activity record | GET | `/api/tasks/activity/{activity_id}/` | Project participant; read-only |
+**Description:**
+Used by **project participants** to delete a checklist item.
 
-**Create Checklist Request:**
+**Request Body:** None
+
+**Success Response:** `204 No Content`
+
+---
+
+## Task Activity
+
+### List Activity
+
+**Endpoint:** `GET /api/tasks/activity/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to view read-only activity history for their tasks. Activity records are auto-generated on task create/update and cannot be created via API.
+
+**Success Response (200 OK):**
+
+```json
+[
+    {
+        "id": 1801,
+        "task": 401,
+        "actor": 12,
+        "actor_detail": {
+            "id": 12,
+            "username": "mona",
+            "full_name": "Mona Hassan",
+            "email": "mona@uni.edu.eg",
+            "role": "STUDENT",
+            "avatar_url": null
+        },
+        "action": "created",
+        "message": "Task created",
+        "data": {},
+        "created_at": "2026-06-15T08:20:00Z",
+        "updated_at": "2026-06-15T08:20:00Z"
+    }
+]
+```
+
+---
+
+### Get Activity Record
+
+**Endpoint:** `GET /api/tasks/activity/{activity_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to view a single activity record.
+
+**Success Response (200 OK):** Same shape as a single object in List Activity.
+
+---
+
+## Sprints
+
+### List Sprints
+
+**Endpoint:** `GET /api/tasks/sprints/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to list all sprints (only valid for sprint-methodology projects).
+
+**Success Response (200 OK):**
+
+```json
+[
+    {
+        "id": 601,
+        "project": 101,
+        "name": "Sprint 1",
+        "goal": "Deliver task CRUD and kanban UI.",
+        "starts_at": "2026-07-01T09:00:00Z",
+        "ends_at": "2026-07-14T17:00:00Z",
+        "status": "planned",
+        "deleted_at": null,
+        "created_at": "2026-06-15T08:40:00Z",
+        "updated_at": "2026-06-15T08:40:00Z"
+    }
+]
+```
+
+---
+
+### Create Sprint
+
+**Endpoint:** `POST /api/tasks/sprints/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to create a sprint for a sprint-methodology project.
+
+**Request Body:**
 
 ```json
 {
-	"task": 401,
-	"title": "API acceptance checklist",
-	"position": 1
+    "project": 101,                                              // REQUIRED: Integer ID of the project
+    "name": "Sprint 1",                                          // REQUIRED: Max 255 characters
+    "goal": "Deliver task CRUD and kanban UI.",                  // Optional
+    "starts_at": "2026-07-01T09:00:00Z",                         // REQUIRED: ISO 8601 datetime
+    "ends_at": "2026-07-14T17:00:00Z",                           // REQUIRED: ISO 8601 datetime, must be after starts_at
+    "status": "planned"                                          // Optional, defaults to "planned". Values: "planned" | "active" | "completed"
 }
 ```
 
-**Create Checklist Item Request:**
+**Success Response (201 Created):** Same shape as a single object in List Sprints.
+
+---
+
+### Get Sprint
+
+**Endpoint:** `GET /api/tasks/sprints/{sprint_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to view a single sprint.
+
+**Success Response (200 OK):** Same shape as a single object in List Sprints.
+
+---
+
+### Sprint Dashboard
+
+**Endpoint:** `GET /api/tasks/sprints/{sprint_id}/dashboard/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to view sprint statistics. Returns sprint data, backlog count, task counts, story points, velocity, and sprint tasks.
+
+**Success Response (200 OK):** Custom dashboard object with sprint metrics.
+
+---
+
+### Replace Sprint
+
+**Endpoint:** `PUT /api/tasks/sprints/{sprint_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to fully replace a sprint.
+
+**Request Body:** Same shape as Create Sprint.
+
+**Success Response (200 OK):** The updated Sprint object.
+
+---
+
+### Update Sprint (Start/Complete)
+
+**Endpoint:** `PATCH /api/tasks/sprints/{sprint_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to update a sprint. Use this to start or complete a sprint by changing the status.
+
+**Request Body (Start):**
 
 ```json
 {
-	"checklist": 1701,
-	"content": "Document response schema",
-	"is_completed": false,
-	"position": 1
+    "status": "active"
 }
 ```
 
-**Complete Checklist Item Request:**
+**Request Body (Complete):**
 
 ```json
 {
-	"is_completed": true
+    "status": "completed"
 }
 ```
 
-**Rules:**
+**Success Response (200 OK):** The updated Sprint object.
 
-- Checklist and item records must belong to tasks visible to the authenticated participant.
-- Setting `is_completed` to `true` stores `completed_by` and `completed_at`.
-- Setting `is_completed` back to `false` clears completion fields.
-- Task activity is generated by task create/update behavior and is read-only through the API.
+---
 
-### Sprint Planning Screen
+### Delete Sprint
 
-**Purpose:** Manage sprint-methodology projects.
+**Endpoint:** `DELETE /api/tasks/sprints/{sprint_id}/`
+**Authentication:** Required (Bearer Token)
 
-**Used APIs:**
+**Description:**
+Used by **project participants** to soft-delete a sprint.
 
-| Action | Method | URL | Permission |
-| ------ | ------ | --- | ---------- |
-| List sprints | GET | `/api/tasks/sprints/` | Project participant |
-| Create sprint | POST | `/api/tasks/sprints/` | Project participant |
-| Get sprint | GET | `/api/tasks/sprints/{sprint_id}/` | Project participant |
-| Sprint dashboard | GET | `/api/tasks/sprints/{sprint_id}/dashboard/` | Project participant |
-| Replace sprint | PUT | `/api/tasks/sprints/{sprint_id}/` | Project participant |
-| Update sprint | PATCH | `/api/tasks/sprints/{sprint_id}/` | Project participant |
-| Delete sprint | DELETE | `/api/tasks/sprints/{sprint_id}/` | Project participant; soft delete |
-| List sprint task assignments | GET | `/api/tasks/sprint-tasks/` | Project participant |
-| Assign task to sprint | POST | `/api/tasks/sprint-tasks/` | Project participant |
-| Get sprint task assignment | GET | `/api/tasks/sprint-tasks/{sprint_task_id}/` | Project participant |
-| Replace sprint task assignment | PUT | `/api/tasks/sprint-tasks/{sprint_task_id}/` | Project participant if visible in queryset |
-| Update sprint task assignment | PATCH | `/api/tasks/sprint-tasks/{sprint_task_id}/` | Project participant if visible in queryset |
-| Remove task from sprint | DELETE | `/api/tasks/sprint-tasks/{sprint_task_id}/` | Project participant if visible in queryset |
+**Request Body:** None
 
-**Create Sprint Request:**
+**Success Response:** `204 No Content`
+
+---
+
+## Sprint-Task Assignments
+
+### List Sprint-Task Assignments
+
+**Endpoint:** `GET /api/tasks/sprint-tasks/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to list all sprint-task assignments.
+
+**Success Response (200 OK):**
+
+```json
+[
+    {
+        "id": 1301,
+        "sprint": 601,
+        "task": 401,
+        "created_at": "2026-06-15T08:40:00Z",
+        "updated_at": "2026-06-15T08:40:00Z"
+    }
+]
+```
+
+---
+
+### Assign Task to Sprint
+
+**Endpoint:** `POST /api/tasks/sprint-tasks/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to assign a task to a sprint. Both must belong to the same project.
+
+**Request Body:**
 
 ```json
 {
-	"project": 101,
-	"name": "Sprint 1",
-	"goal": "Deliver task CRUD and kanban UI.",
-	"starts_at": "2026-07-01T09:00:00Z",
-	"ends_at": "2026-07-14T17:00:00Z",
-	"status": "planned"
+    "sprint": 601,               // REQUIRED: Integer ID of the sprint
+    "task": 401                  // REQUIRED: Integer ID of the task
 }
 ```
 
-**Start/Complete Sprint:**
+**Success Response (201 Created):** Same shape as a single object in List Sprint-Task Assignments.
+
+---
+
+### Get Sprint-Task Assignment
+
+**Endpoint:** `GET /api/tasks/sprint-tasks/{sprint_task_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to view a single sprint-task assignment.
+
+**Success Response (200 OK):** Same shape as a single object in List Sprint-Task Assignments.
+
+---
+
+### Replace Sprint-Task Assignment
+
+**Endpoint:** `PUT /api/tasks/sprint-tasks/{sprint_task_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to replace a sprint-task assignment.
+
+**Request Body:** Same shape as Assign Task to Sprint.
+
+**Success Response (200 OK):** The updated SprintTask object.
+
+---
+
+### Update Sprint-Task Assignment
+
+**Endpoint:** `PATCH /api/tasks/sprint-tasks/{sprint_task_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to partially update a sprint-task assignment.
+
+**Request Body:** Any subset of Assign Task to Sprint fields.
+
+**Success Response (200 OK):** The updated SprintTask object.
+
+---
+
+### Remove Task from Sprint
+
+**Endpoint:** `DELETE /api/tasks/sprint-tasks/{sprint_task_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to remove a task from a sprint.
+
+**Request Body:** None
+
+**Success Response:** `204 No Content`
+
+---
+
+## Milestones
+
+### List Milestones
+
+**Endpoint:** `GET /api/tasks/milestones/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to list all milestones (only valid for milestone-methodology projects).
+
+**Success Response (200 OK):**
+
+```json
+[
+    {
+        "id": 701,
+        "project": 101,
+        "name": "Prototype Review",
+        "description": "Demo the first working prototype.",
+        "due_at": "2026-08-01T12:00:00Z",
+        "status": "planned",
+        "position": 1,
+        "deleted_at": null,
+        "created_at": "2026-06-15T08:45:00Z",
+        "updated_at": "2026-06-15T08:45:00Z"
+    }
+]
+```
+
+---
+
+### Create Milestone
+
+**Endpoint:** `POST /api/tasks/milestones/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to create a milestone for a milestone-methodology project.
+
+**Request Body:**
 
 ```json
 {
-	"status": "active"
+    "project": 101,                                              // REQUIRED: Integer ID of the project
+    "name": "Prototype Review",                                   // REQUIRED: Max 255 characters
+    "description": "Demo the first working prototype.",          // Optional
+    "due_at": "2026-08-01T12:00:00Z",                            // REQUIRED: ISO 8601 datetime
+    "status": "planned",                                          // Optional, defaults to "planned". Values: "planned" | "in_progress" | "completed"
+    "position": 1                                                 // Optional: Positive integer, defaults to 0
 }
 ```
+
+**Success Response (201 Created):** Same shape as a single object in List Milestones.
+
+---
+
+### Get Milestone
+
+**Endpoint:** `GET /api/tasks/milestones/{milestone_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to view a single milestone.
+
+**Success Response (200 OK):** Same shape as a single object in List Milestones.
+
+---
+
+### Milestone Dashboard
+
+**Endpoint:** `GET /api/tasks/milestones/{milestone_id}/dashboard/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to view milestone progress statistics (total/completed tasks, progress percentage).
+
+**Success Response (200 OK):** Custom dashboard object with milestone metrics.
+
+---
+
+### Replace Milestone
+
+**Endpoint:** `PUT /api/tasks/milestones/{milestone_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to fully replace a milestone.
+
+**Request Body:** Same shape as Create Milestone.
+
+**Success Response (200 OK):** The updated Milestone object.
+
+---
+
+### Update Milestone (Complete)
+
+**Endpoint:** `PATCH /api/tasks/milestones/{milestone_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to update a milestone. Use this to mark a milestone as completed.
+
+**Request Body (Complete):**
 
 ```json
 {
-	"status": "completed"
+    "status": "completed"
 }
 ```
 
-**Assign Task Request:**
+**Success Response (200 OK):** The updated Milestone object.
+
+---
+
+### Delete Milestone
+
+**Endpoint:** `DELETE /api/tasks/milestones/{milestone_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to soft-delete a milestone.
+
+**Request Body:** None
+
+**Success Response:** `204 No Content`
+
+---
+
+## Milestone-Task Assignments
+
+### List Milestone-Task Assignments
+
+**Endpoint:** `GET /api/tasks/milestone-tasks/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to list all milestone-task assignments.
+
+**Success Response (200 OK):**
+
+```json
+[
+    {
+        "id": 1401,
+        "milestone": 701,
+        "task": 401,
+        "created_at": "2026-06-15T08:45:00Z",
+        "updated_at": "2026-06-15T08:45:00Z"
+    }
+]
+```
+
+---
+
+### Assign Task to Milestone
+
+**Endpoint:** `POST /api/tasks/milestone-tasks/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to assign a task to a milestone. Both must belong to the same project.
+
+**Request Body:**
 
 ```json
 {
-	"sprint": 601,
-	"task": 401
+    "milestone": 701,            // REQUIRED: Integer ID of the milestone
+    "task": 401                  // REQUIRED: Integer ID of the task
 }
 ```
 
-**SprintTask Assignment Response:**
+**Success Response (201 Created):** Same shape as a single object in List Milestone-Task Assignments.
+
+---
+
+### Get Milestone-Task Assignment
+
+**Endpoint:** `GET /api/tasks/milestone-tasks/{milestone_task_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to view a single milestone-task assignment.
+
+**Success Response (200 OK):** Same shape as a single object in List Milestone-Task Assignments.
+
+---
+
+### Replace Milestone-Task Assignment
+
+**Endpoint:** `PUT /api/tasks/milestone-tasks/{milestone_task_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to replace a milestone-task assignment.
+
+**Request Body:** Same shape as Assign Task to Milestone.
+
+**Success Response (200 OK):** The updated MilestoneTask object.
+
+---
+
+### Update Milestone-Task Assignment
+
+**Endpoint:** `PATCH /api/tasks/milestone-tasks/{milestone_task_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to partially update a milestone-task assignment.
+
+**Request Body:** Any subset of Assign Task to Milestone fields.
+
+**Success Response (200 OK):** The updated MilestoneTask object.
+
+---
+
+### Remove Task from Milestone
+
+**Endpoint:** `DELETE /api/tasks/milestone-tasks/{milestone_task_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to remove a task from a milestone.
+
+**Request Body:** None
+
+**Success Response:** `204 No Content`
+
+---
+
+## Kanban Board Columns
+
+### List Columns
+
+**Endpoint:** `GET /api/tasks/board-columns/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to list all board columns (only valid for kanban-methodology projects).
+
+**Success Response (200 OK):**
+
+```json
+[
+    {
+        "id": 301,
+        "project": 101,
+        "name": "In Review",
+        "position": 30,
+        "wip_limit": 4,
+        "deleted_at": null,
+        "created_at": "2026-06-15T08:15:00Z",
+        "updated_at": "2026-06-15T08:15:00Z"
+    }
+]
+```
+
+---
+
+### Create Column
+
+**Endpoint:** `POST /api/tasks/board-columns/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to create a board column for a kanban-methodology project.
+
+**Request Body:**
 
 ```json
 {
-	"id": 1301,
-	"sprint": 601,
-	"task": 401,
-	"created_at": "2026-06-15T08:40:00Z",
-	"updated_at": "2026-06-15T08:40:00Z"
+    "project": 101,              // REQUIRED: Integer ID of the project
+    "name": "In Review",         // REQUIRED: Max 100 characters, unique per project
+    "position": 30,              // Optional: Positive integer for ordering, defaults to 0
+    "wip_limit": 4               // Optional: Work-in-progress limit
 }
 ```
 
-**Rules:**
+**Success Response (201 Created):** Same shape as a single object in List Columns.
 
-- Sprint records are valid only when `project.methodology == "sprint"`.
-- `ends_at` must be after `starts_at`.
-- A sprint task and task must belong to the same project.
-- The sprint dashboard returns `current_sprint`, `backlog_count`, task counts, `story_points`, `velocity`, and serialized `sprint_tasks`.
-- Creates return `201 Created`; sprint and sprint-task updates return `200 OK`; deletes return `204 No Content`.
+---
 
-### Milestone Timeline Screen
+### Get Column
 
-**Purpose:** Manage milestone-methodology projects.
+**Endpoint:** `GET /api/tasks/board-columns/{column_id}/`
+**Authentication:** Required (Bearer Token)
 
-**Used APIs:**
+**Description:**
+Used by **project participants** to view a single board column.
 
-| Action | Method | URL | Permission |
-| ------ | ------ | --- | ---------- |
-| List milestones | GET | `/api/tasks/milestones/` | Project participant |
-| Create milestone | POST | `/api/tasks/milestones/` | Project participant |
-| Get milestone | GET | `/api/tasks/milestones/{milestone_id}/` | Project participant |
-| Milestone dashboard | GET | `/api/tasks/milestones/{milestone_id}/dashboard/` | Project participant |
-| Replace milestone | PUT | `/api/tasks/milestones/{milestone_id}/` | Project participant |
-| Update milestone | PATCH | `/api/tasks/milestones/{milestone_id}/` | Project participant |
-| Delete milestone | DELETE | `/api/tasks/milestones/{milestone_id}/` | Project participant; soft delete |
-| List milestone task assignments | GET | `/api/tasks/milestone-tasks/` | Project participant |
-| Assign task to milestone | POST | `/api/tasks/milestone-tasks/` | Project participant |
-| Get milestone task assignment | GET | `/api/tasks/milestone-tasks/{milestone_task_id}/` | Project participant |
-| Replace milestone task assignment | PUT | `/api/tasks/milestone-tasks/{milestone_task_id}/` | Project participant if visible in queryset |
-| Update milestone task assignment | PATCH | `/api/tasks/milestone-tasks/{milestone_task_id}/` | Project participant if visible in queryset |
-| Remove task from milestone | DELETE | `/api/tasks/milestone-tasks/{milestone_task_id}/` | Project participant if visible in queryset |
+**Success Response (200 OK):** Same shape as a single object in List Columns.
 
-**Create Milestone Request:**
+---
+
+### Replace Column
+
+**Endpoint:** `PUT /api/tasks/board-columns/{column_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to fully replace a board column.
+
+**Request Body:** Same shape as Create Column.
+
+**Success Response (200 OK):** The updated BoardColumn object.
+
+---
+
+### Update Column (Reorder)
+
+**Endpoint:** `PATCH /api/tasks/board-columns/{column_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to update a board column. Use this to reorder columns by changing the `position`.
+
+**Request Body:**
 
 ```json
 {
-	"project": 101,
-	"name": "Prototype Review",
-	"description": "Demo the first working prototype.",
-	"due_at": "2026-08-01T12:00:00Z",
-	"status": "planned",
-	"position": 1
+    "position": 40               // Optional: Change position for reordering
 }
 ```
 
-**Complete Milestone:**
+**Success Response (200 OK):** The updated BoardColumn object.
+
+---
+
+### Delete Column
+
+**Endpoint:** `DELETE /api/tasks/board-columns/{column_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to soft-delete a board column.
+
+**Request Body:** None
+
+**Success Response:** `204 No Content`
+
+---
+
+### Kanban Dashboard
+
+**Endpoint:** `GET /api/tasks/board-columns/dashboard/?project={project_id}`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to view the full kanban board: columns, tasks in each column, throughput, blocked tasks, and cycle time.
+
+**Success Response (200 OK):** Custom dashboard object with columns, tasks, throughput count, blocked task count, and cycle time hours.
+
+---
+
+### Base URL: `/api/projects`
+
+---
+
+## Deliverables
+
+### List Deliverables
+
+**Endpoint:** `GET /api/projects/deliverables/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to list all deliverables.
+
+**Success Response (200 OK):**
+
+```json
+[
+    {
+        "id": 1501,
+        "project": 101,
+        "title": "Final Report",
+        "description": "PDF report and source-code archive.",
+        "due_at": "2026-09-10T23:59:00Z",
+        "status": "draft",
+        "created_by": 12,
+        "submitted_at": null,
+        "reviewed_by": null,
+        "reviewed_at": null,
+        "review_note": "",
+        "deleted_at": null,
+        "created_at": "2026-06-15T08:50:00Z",
+        "updated_at": "2026-06-15T08:50:00Z",
+        "files": []
+    }
+]
+```
+
+---
+
+### Create Deliverable
+
+**Endpoint:** `POST /api/projects/deliverables/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to create a deliverable for a project.
+
+**Request Body:**
 
 ```json
 {
-	"status": "completed"
+    "project": 101,                                              // REQUIRED: Integer ID of the project
+    "title": "Final Report",                                      // REQUIRED: Max 255 characters
+    "description": "PDF report and source-code archive.",         // Optional
+    "due_at": "2026-09-10T23:59:00Z"                             // Optional: ISO 8601 datetime
 }
 ```
 
-**Assign Task Request:**
+**Success Response (201 Created):** Same shape as a single object in List Deliverables.
+
+---
+
+### Get Deliverable
+
+**Endpoint:** `GET /api/projects/deliverables/{deliverable_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to view a single deliverable and its files.
+
+**Success Response (200 OK):** Same shape as a single object in List Deliverables.
+
+---
+
+### Replace Deliverable
+
+**Endpoint:** `PUT /api/projects/deliverables/{deliverable_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to fully replace a deliverable.
+
+**Request Body:** Same shape as Create Deliverable.
+
+**Success Response (200 OK):** The updated Deliverable object.
+
+---
+
+### Update Deliverable
+
+**Endpoint:** `PATCH /api/projects/deliverables/{deliverable_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to partially update a deliverable.
+
+**Request Body:** Any subset of Create Deliverable fields.
+
+**Success Response (200 OK):** The updated Deliverable object.
+
+---
+
+### Delete Deliverable
+
+**Endpoint:** `DELETE /api/projects/deliverables/{deliverable_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to soft-delete a deliverable.
+
+**Request Body:** None
+
+**Success Response:** `204 No Content`
+
+---
+
+### Submit Deliverable
+
+**Endpoint:** `POST /api/projects/deliverables/{deliverable_id}/submit/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project members only** to submit a deliverable for review. Sets status to `pending` and stores `submitted_at`.
+
+**Request Body:** None
+
+**Success Response (200 OK):** The updated Deliverable object with `status: "pending"`.
+
+---
+
+### Approve Deliverable
+
+**Endpoint:** `POST /api/projects/deliverables/{deliverable_id}/approve/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project supervisors only** to approve a submitted deliverable.
+
+**Request Body:**
 
 ```json
 {
-	"milestone": 701,
-	"task": 401
+    "note": "Looks good, approved."          // Optional: Review note
 }
 ```
 
-**MilestoneTask Assignment Response:**
+**Success Response (200 OK):** The updated Deliverable object with `status: "approved"`.
+
+---
+
+### Reject Deliverable
+
+**Endpoint:** `POST /api/projects/deliverables/{deliverable_id}/reject/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project supervisors only** to reject a submitted deliverable.
+
+**Request Body:**
 
 ```json
 {
-	"id": 1401,
-	"milestone": 701,
-	"task": 401,
-	"created_at": "2026-06-15T08:45:00Z",
-	"updated_at": "2026-06-15T08:45:00Z"
+    "note": "Please add the evaluation results section."    // Optional: Reason for rejection
 }
 ```
 
-**Rules:**
+**Success Response (200 OK):** The updated Deliverable object with `status: "rejected"`.
 
-- Milestone records are valid only when `project.methodology == "milestone"`.
-- A milestone task and task must belong to the same project.
-- The milestone dashboard returns `milestone`, task counts, `progress_percent`, and serialized `tasks`.
-- Creates return `201 Created`; milestone and milestone-task updates return `200 OK`; deletes return `204 No Content`.
+---
 
-### Kanban Board Screen
+### Request Deliverable Revision
 
-**Purpose:** Manage kanban-methodology columns and drag tasks between columns.
+**Endpoint:** `POST /api/projects/deliverables/{deliverable_id}/request-revision/`
+**Authentication:** Required (Bearer Token)
 
-**Used APIs:**
+**Description:**
+Used by **project supervisors only** to request changes to a submitted deliverable.
 
-| Action | Method | URL | Permission |
-| ------ | ------ | --- | ---------- |
-| List columns | GET | `/api/tasks/board-columns/` | Project participant |
-| Create column | POST | `/api/tasks/board-columns/` | Project participant |
-| Get column | GET | `/api/tasks/board-columns/{column_id}/` | Project participant |
-| Replace column | PUT | `/api/tasks/board-columns/{column_id}/` | Project participant |
-| Update column | PATCH | `/api/tasks/board-columns/{column_id}/` | Project participant |
-| Delete column | DELETE | `/api/tasks/board-columns/{column_id}/` | Project participant; soft delete |
-| Kanban dashboard | GET | `/api/tasks/board-columns/dashboard/?project={project_id}` | Project participant |
-| Reorder column | PATCH | `/api/tasks/board-columns/{column_id}/` | Project participant |
-| Move task between columns | PATCH | `/api/tasks/{task_id}/` | Project participant |
-
-**Create Column Request:**
+**Request Body:**
 
 ```json
 {
-	"project": 101,
-	"name": "In Review",
-	"position": 30,
-	"wip_limit": 4
+    "note": "Please add the evaluation results section."    // Optional: Revision instructions
 }
 ```
 
-**Drag-and-Drop Task Move:**
+**Success Response (200 OK):** The updated Deliverable object with `status: "needs_revision"`.
+
+---
+
+## Deliverable Files
+
+### List Deliverable Files
+
+**Endpoint:** `GET /api/projects/deliverable-files/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to list all deliverable files.
+
+**Success Response (200 OK):**
+
+```json
+[
+    {
+        "id": 1601,
+        "deliverable": 1501,
+        "file": "/media/projects/deliverables/final-report.pdf",
+        "uploaded_by": 34,
+        "created_at": "2026-06-15T09:00:00Z",
+        "updated_at": "2026-06-15T09:00:00Z"
+    }
+]
+```
+
+---
+
+### Upload Deliverable File
+
+**Endpoint:** `POST /api/projects/deliverable-files/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to upload a file to a deliverable. Uses multipart form-data.
+
+**Request Body (multipart/form-data):**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `deliverable` | Integer | REQUIRED | ID of the deliverable |
+| `file` | File | REQUIRED | The file to upload |
+
+**Success Response (201 Created):** Same shape as a single object in List Deliverable Files.
+
+---
+
+### Get Deliverable File
+
+**Endpoint:** `GET /api/projects/deliverable-files/{file_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to view a single deliverable file record.
+
+**Success Response (200 OK):** Same shape as a single object in List Deliverable Files.
+
+---
+
+### Replace Deliverable File
+
+**Endpoint:** `PUT /api/projects/deliverable-files/{file_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to replace a deliverable file.
+
+**Request Body (multipart/form-data):** Same shape as Upload Deliverable File.
+
+**Success Response (200 OK):** The updated DeliverableFile object.
+
+---
+
+### Update Deliverable File
+
+**Endpoint:** `PATCH /api/projects/deliverable-files/{file_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to partially update a deliverable file.
+
+**Request Body (multipart/form-data):** Any subset of Upload Deliverable File fields.
+
+**Success Response (200 OK):** The updated DeliverableFile object.
+
+---
+
+### Delete Deliverable File
+
+**Endpoint:** `DELETE /api/projects/deliverable-files/{file_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to delete a deliverable file.
+
+**Request Body:** None
+
+**Success Response:** `204 No Content`
+
+---
+
+## Meetings
+
+### List Meetings
+
+**Endpoint:** `GET /api/projects/meetings/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to list all meetings for their projects. Meetings are records/notes only (not a video-conferencing system).
+
+**Success Response (200 OK):**
+
+```json
+[
+    {
+        "id": 1801,
+        "project": 101,
+        "title": "Weekly supervisor sync",
+        "description": "Discuss prototype progress.",
+        "starts_at": "2026-07-05T10:00:00Z",
+        "ends_at": "2026-07-05T10:30:00Z",
+        "location": "Room 302",
+        "created_by": 12,
+        "attendees": [12, 34, 8],
+        "deleted_at": null,
+        "created_at": "2026-06-15T09:00:00Z",
+        "updated_at": "2026-06-15T09:00:00Z",
+        "notes": [],
+        "attendance_records": []
+    }
+]
+```
+
+---
+
+### Create Meeting
+
+**Endpoint:** `POST /api/projects/meetings/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to create a meeting record.
+
+**Request Body:**
 
 ```json
 {
-	"board_column": 302,
-	"status": "review",
-	"position": 30
+    "project": 101,                                              // REQUIRED: Integer ID of the project
+    "title": "Weekly supervisor sync",                            // REQUIRED: Max 255 characters
+    "description": "Discuss prototype progress.",                 // Optional
+    "starts_at": "2026-07-05T10:00:00Z",                         // REQUIRED: ISO 8601 datetime
+    "ends_at": "2026-07-05T10:30:00Z",                           // Optional: ISO 8601 datetime, must be after starts_at
+    "location": "Room 302",                                       // Optional: Max 255 characters
+    "attendees": [12, 34, 8]                                     // Optional: Array of user IDs
 }
 ```
 
-**Rules:**
+**Success Response (201 Created):** Same shape as a single object in List Meetings.
 
-- Board columns are valid only when `project.methodology == "kanban"`.
-- The kanban dashboard returns serialized `columns`, serialized `tasks`, `throughput`, `blocked_tasks`, and `cycle_time_hours` (`null` until cycle-time tracking is added).
-- Column creates return `201 Created`; updates return `200 OK`; deletes return `204 No Content`.
+---
 
-### Deliverables Screen
+### Get Meeting
 
-**Purpose:** Track required outputs, file submissions, and supervisor review.
+**Endpoint:** `GET /api/projects/meetings/{meeting_id}/`
+**Authentication:** Required (Bearer Token)
 
-**Used APIs:**
+**Description:**
+Used by **project participants** to view a single meeting with its notes and attendance records.
 
-| Action | Method | URL | Permission |
-| ------ | ------ | --- | ---------- |
-| List deliverables | GET | `/api/projects/deliverables/` | Project participant |
-| Create deliverable | POST | `/api/projects/deliverables/` | Project participant |
-| Get deliverable | GET | `/api/projects/deliverables/{deliverable_id}/` | Project participant |
-| Replace deliverable | PUT | `/api/projects/deliverables/{deliverable_id}/` | Project participant if visible in queryset |
-| Update deliverable | PATCH | `/api/projects/deliverables/{deliverable_id}/` | Project participant if visible in queryset |
-| Delete deliverable | DELETE | `/api/projects/deliverables/{deliverable_id}/` | Project participant if visible in queryset; soft delete |
-| Submit deliverable | POST | `/api/projects/deliverables/{deliverable_id}/submit/` | Project member only |
-| Approve deliverable | POST | `/api/projects/deliverables/{deliverable_id}/approve/` | Project supervisor only |
-| Reject deliverable | POST | `/api/projects/deliverables/{deliverable_id}/reject/` | Project supervisor only |
-| Request deliverable revision | POST | `/api/projects/deliverables/{deliverable_id}/request-revision/` | Project supervisor only |
-| List files | GET | `/api/projects/deliverable-files/` | Project participant |
-| Upload file | POST | `/api/projects/deliverable-files/` | Project participant |
-| Get file | GET | `/api/projects/deliverable-files/{file_id}/` | Project participant |
-| Replace file | PUT | `/api/projects/deliverable-files/{file_id}/` | Project participant if visible in queryset |
-| Update file | PATCH | `/api/projects/deliverable-files/{file_id}/` | Project participant if visible in queryset |
-| Delete file | DELETE | `/api/projects/deliverable-files/{file_id}/` | Project participant if visible in queryset |
+**Success Response (200 OK):** Same shape as a single object in List Meetings.
 
-**Create Deliverable Request:**
+---
+
+### Replace Meeting
+
+**Endpoint:** `PUT /api/projects/meetings/{meeting_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to fully replace a meeting.
+
+**Request Body:** Same shape as Create Meeting.
+
+**Success Response (200 OK):** The updated Meeting object.
+
+---
+
+### Update Meeting
+
+**Endpoint:** `PATCH /api/projects/meetings/{meeting_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to partially update a meeting.
+
+**Request Body:** Any subset of Create Meeting fields.
+
+**Success Response (200 OK):** The updated Meeting object.
+
+---
+
+### Delete Meeting
+
+**Endpoint:** `DELETE /api/projects/meetings/{meeting_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to soft-delete a meeting.
+
+**Request Body:** None
+
+**Success Response:** `204 No Content`
+
+---
+
+## Meeting Attendance
+
+### List Attendance Records
+
+**Endpoint:** `GET /api/projects/meeting-attendance/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to list all meeting attendance records.
+
+**Success Response (200 OK):**
+
+```json
+[
+    {
+        "id": 1901,
+        "meeting": 1801,
+        "user": 34,
+        "user_detail": {
+            "id": 34,
+            "username": "omar",
+            "full_name": "Omar Ali",
+            "email": "omar@uni.edu.eg",
+            "role": "STUDENT",
+            "avatar_url": null
+        },
+        "status": "present",
+        "note": "Joined online.",
+        "created_at": "2026-06-15T09:05:00Z",
+        "updated_at": "2026-06-15T09:05:00Z"
+    }
+]
+```
+
+---
+
+### Create Attendance Record
+
+**Endpoint:** `POST /api/projects/meeting-attendance/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to create an attendance record for a meeting.
+
+**Request Body:**
 
 ```json
 {
-	"project": 101,
-	"title": "Final Report",
-	"description": "PDF report and source-code archive.",
-	"due_at": "2026-09-10T23:59:00Z"
+    "meeting": 1801,                       // REQUIRED: Integer ID of the meeting
+    "user": 34,                            // REQUIRED: Integer ID of the user
+    "status": "present",                   // Optional, defaults to "invited". Values: "invited" | "present" | "absent" | "excused"
+    "note": "Joined online."               // Optional
 }
 ```
 
-**Reject or Request Revision Body:**
+**Success Response (201 Created):** Same shape as a single object in List Attendance Records.
+
+---
+
+### Update Attendance Record
+
+**Endpoint:** `PATCH /api/projects/meeting-attendance/{attendance_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to update an attendance record (e.g., change status).
+
+**Request Body:** Any subset of Create Attendance Record fields.
+
+**Success Response (200 OK):** The updated MeetingAttendance object.
+
+---
+
+### Delete Attendance Record
+
+**Endpoint:** `DELETE /api/projects/meeting-attendance/{attendance_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to delete an attendance record.
+
+**Request Body:** None
+
+**Success Response:** `204 No Content`
+
+---
+
+## Meeting Notes
+
+### List Meeting Notes
+
+**Endpoint:** `GET /api/projects/meeting-notes/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to list all meeting notes.
+
+**Success Response (200 OK):**
+
+```json
+[
+    {
+        "id": 2001,
+        "meeting": 1801,
+        "author": 34,
+        "author_detail": {
+            "id": 34,
+            "username": "omar",
+            "full_name": "Omar Ali",
+            "email": "omar@uni.edu.eg",
+            "role": "STUDENT",
+            "avatar_url": null
+        },
+        "content": "Supervisor approved the revised milestone plan.",
+        "created_at": "2026-06-15T09:10:00Z",
+        "updated_at": "2026-06-15T09:10:00Z"
+    }
+]
+```
+
+---
+
+### Create Meeting Note
+
+**Endpoint:** `POST /api/projects/meeting-notes/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to add a note to a meeting.
+
+**Request Body:**
 
 ```json
 {
-	"note": "Please add the evaluation results section."
+    "meeting": 1801,                                              // REQUIRED: Integer ID of the meeting
+    "content": "Supervisor approved the revised milestone plan."   // REQUIRED: Note text
 }
 ```
 
-**Deliverable Response Example:**
+**Success Response (201 Created):** Same shape as a single object in List Meeting Notes.
+
+---
+
+### Update Meeting Note
+
+**Endpoint:** `PATCH /api/projects/meeting-notes/{note_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by the **note author** only to update a meeting note.
+
+**Request Body:** Any subset of Create Meeting Note fields.
+
+**Success Response (200 OK):** The updated MeetingNote object.
+
+---
+
+### Delete Meeting Note
+
+**Endpoint:** `DELETE /api/projects/meeting-notes/{note_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by the **note author** only to delete a meeting note.
+
+**Request Body:** None
+
+**Success Response:** `204 No Content`
+
+---
+
+## Feedback
+
+### List Feedback
+
+**Endpoint:** `GET /api/projects/feedback/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to list all feedback entries.
+
+**Success Response (200 OK):**
+
+```json
+[
+    {
+        "id": 2101,
+        "project": 101,
+        "task": null,
+        "deliverable": null,
+        "meeting": null,
+        "author": 8,
+        "author_detail": {
+            "id": 8,
+            "username": "dr.samir",
+            "full_name": "Samir Nabil",
+            "email": "samir@uni.edu.eg",
+            "role": "SUPERVISOR",
+            "avatar_url": null
+        },
+        "content": "The scope is acceptable; focus on measurable evaluation.",
+        "created_at": "2026-06-15T09:15:00Z",
+        "updated_at": "2026-06-15T09:15:00Z"
+    }
+]
+```
+
+---
+
+### Create Feedback
+
+**Endpoint:** `POST /api/projects/feedback/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project supervisors only** to provide feedback. Must attach to exactly one target: `project`, `task`, `deliverable`, or `meeting`.
+
+**Request Body:**
 
 ```json
 {
-	"id": 1501,
-	"project": 101,
-	"title": "Final Report",
-	"description": "PDF report and source-code archive.",
-	"due_at": "2026-09-10T23:59:00Z",
-	"status": "draft",
-	"created_by": 12,
-	"submitted_at": null,
-	"reviewed_by": null,
-	"reviewed_at": null,
-	"review_note": "",
-	"deleted_at": null,
-	"created_at": "2026-06-15T08:50:00Z",
-	"updated_at": "2026-06-15T08:50:00Z",
-	"files": []
+    "project": 101,                                              // Optional: Integer ID of the project (provide exactly one target)
+    "task": null,                                                 // Optional: Integer ID of the task
+    "deliverable": null,                                          // Optional: Integer ID of the deliverable
+    "meeting": null,                                              // Optional: Integer ID of the meeting
+    "content": "The scope is acceptable; focus on measurable evaluation."    // REQUIRED: Feedback text
 }
 ```
 
-**Upload Deliverable File Request:** multipart form-data
+**Success Response (201 Created):** Same shape as a single object in List Feedback.
 
-- `deliverable`: deliverable ID
-- `file`: selected file
+---
 
-**DeliverableFile Upload Response:**
+### Get Feedback
+
+**Endpoint:** `GET /api/projects/feedback/{feedback_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by **project participants** to view a single feedback entry.
+
+**Success Response (200 OK):** Same shape as a single object in List Feedback.
+
+---
+
+### Update Feedback
+
+**Endpoint:** `PATCH /api/projects/feedback/{feedback_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by the **feedback author** only to update feedback.
+
+**Request Body:** Any subset of Create Feedback fields.
+
+**Success Response (200 OK):** The updated Feedback object.
+
+---
+
+### Delete Feedback
+
+**Endpoint:** `DELETE /api/projects/feedback/{feedback_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by the **feedback author** only to delete feedback.
+
+**Request Body:** None
+
+**Success Response:** `204 No Content`
+
+---
+
+### Base URL: `/api/notifications`
+
+---
+
+## Notifications
+
+### List Notifications
+
+**Endpoint:** `GET /api/notifications/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by the **authenticated user** to view their own notifications. Optionally filter by `?unread=true` to see only unread notifications.
+
+**Query Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `unread` | String | Optional | `true`, `1`, or `yes` filters to unread notifications only |
+
+**Success Response (200 OK):**
+
+```json
+[
+    {
+        "id": 1001,
+        "recipient": 34,
+        "actor": 12,
+        "actor_detail": {
+            "id": 12,
+            "username": "mona",
+            "full_name": "Mona Hassan",
+            "email": "mona@uni.edu.eg",
+            "role": "STUDENT",
+            "avatar_url": null
+        },
+        "notification_type": "invitation",
+        "title": "Project invitation",
+        "message": "You were invited to join Smart Attendance.",
+        "data": {
+            "project_id": 101,
+            "invitation_id": 801
+        },
+        "read_at": null,
+        "is_read": false,
+        "created_at": "2026-06-15T08:30:00Z"
+    }
+]
+```
+
+---
+
+### Create Notification
+
+**Endpoint:** `POST /api/notifications/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by any **authenticated user** to create a notification. Both `recipient` and `actor` are force-set to the current user (you can only create notifications for yourself). For sending notifications to other users, the system uses programmatic calls via `services.create_notification()`.
+
+**Request Body:**
 
 ```json
 {
-	"id": 1601,
-	"deliverable": 1501,
-	"file": "/media/projects/deliverables/final-report.pdf",
-	"uploaded_by": 34,
-	"created_at": "2026-06-15T09:00:00Z",
-	"updated_at": "2026-06-15T09:00:00Z"
+    "notification_type": "invitation",                // REQUIRED: Values: "invitation" | "request" | "approval" | "comment" | "task_assignment" | "task_update" | "feedback" | "meeting" | "deliverable_review" | "system"
+    "title": "Project Invitation",                     // REQUIRED: Max 255 characters
+    "message": "You have been invited to...",          // REQUIRED: Notification body text
+    "data": {}                                         // Optional: Arbitrary JSON payload
 }
 ```
 
-**Rules:**
+**Success Response (201 Created):** Same shape as a single object in List Notifications.
 
-- Any project participant can create deliverables.
-- Only project members can submit deliverables.
-- Submitting a deliverable sets status to `pending` and stores `submitted_at`.
-- Review status values are `pending`, `approved`, `rejected`, and `needs_revision`; legacy `submitted` is still accepted for existing records.
-- Only project supervisors can approve, reject, or request revision for pending deliverables.
-- Upload uses multipart form-data with `deliverable` and `file`.
-- Deliverable and file creates return `201 Created`; submit/approve/reject/request-revision/update responses return `200 OK`; deletes return `204 No Content`.
+---
 
-### Meetings Screen
+### Get Notification
 
-**Purpose:** Record meeting schedule/details for a project.
+**Endpoint:** `GET /api/notifications/{notification_id}/`
+**Authentication:** Required (Bearer Token)
 
-Meetings are records/notes only. This is not a video-conferencing system.
+**Description:**
+Used by the **notification recipient** to view a single notification.
 
-**Used APIs:**
+**Success Response (200 OK):** Same shape as a single object in List Notifications.
 
-| Action | Method | URL | Permission |
-| ------ | ------ | --- | ---------- |
-| List meetings | GET | `/api/projects/meetings/` | Project participant |
-| Create meeting | POST | `/api/projects/meetings/` | Project participant |
-| Get meeting | GET | `/api/projects/meetings/{meeting_id}/` | Project participant |
-| Replace meeting | PUT | `/api/projects/meetings/{meeting_id}/` | Project participant |
-| Update meeting | PATCH | `/api/projects/meetings/{meeting_id}/` | Project participant |
-| Delete meeting | DELETE | `/api/projects/meetings/{meeting_id}/` | Project participant; soft delete |
-| List attendance records | GET | `/api/projects/meeting-attendance/` | Project participant |
-| Create attendance record | POST | `/api/projects/meeting-attendance/` | Project participant |
-| Update attendance record | PATCH | `/api/projects/meeting-attendance/{attendance_id}/` | Project participant |
-| Delete attendance record | DELETE | `/api/projects/meeting-attendance/{attendance_id}/` | Project participant |
-| List meeting notes | GET | `/api/projects/meeting-notes/` | Project participant |
-| Create meeting note | POST | `/api/projects/meeting-notes/` | Project participant |
-| Update meeting note | PATCH | `/api/projects/meeting-notes/{note_id}/` | Note author |
-| Delete meeting note | DELETE | `/api/projects/meeting-notes/{note_id}/` | Note author |
+---
 
-**Create Meeting Request:**
+### Replace Notification
+
+**Endpoint:** `PUT /api/notifications/{notification_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by the **notification recipient** to fully replace a notification.
+
+**Request Body:** Same shape as Create Notification.
+
+**Success Response (200 OK):** The updated Notification object.
+
+---
+
+### Update Notification
+
+**Endpoint:** `PATCH /api/notifications/{notification_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by the **notification recipient** to partially update a notification.
+
+**Request Body:** Any subset of Create Notification fields.
+
+**Success Response (200 OK):** The updated Notification object.
+
+---
+
+### Delete Notification
+
+**Endpoint:** `DELETE /api/notifications/{notification_id}/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by the **notification recipient** to delete a notification.
+
+**Request Body:** None
+
+**Success Response:** `204 No Content`
+
+---
+
+### Unread Count
+
+**Endpoint:** `GET /api/notifications/unread-count/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by the **authenticated user** to get the count of their unread notifications.
+
+**Success Response (200 OK):**
 
 ```json
 {
-	"project": 101,
-	"title": "Weekly supervisor sync",
-	"description": "Discuss prototype progress.",
-	"starts_at": "2026-07-05T10:00:00Z",
-	"ends_at": "2026-07-05T10:30:00Z",
-	"location": "Room 302",
-	"attendees": [12, 34, 8]
+    "count": 3
 }
 ```
 
-**Create Attendance Record:**
+---
+
+### Mark One Read
+
+**Endpoint:** `POST /api/notifications/{notification_id}/mark-read/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by the **notification recipient** to mark a single notification as read. Sets `read_at` to the current time.
+
+**Request Body:** None
+
+**Success Response (200 OK):** The updated Notification object with `read_at` set.
+
+---
+
+### Mark All Read
+
+**Endpoint:** `POST /api/notifications/mark-all-read/`
+**Authentication:** Required (Bearer Token)
+
+**Description:**
+Used by the **authenticated user** to mark all their unread notifications as read.
+
+**Request Body:** None
+
+**Success Response (200 OK):**
 
 ```json
 {
-	"meeting": 1801,
-	"user": 34,
-	"status": "present",
-	"note": "Joined online."
+    "updated": 3
 }
 ```
 
-**Create Meeting Note:**
+---
 
-```json
-{
-	"meeting": 1801,
-	"content": "Supervisor approved the revised milestone plan."
-}
-```
+## Notification Websocket
 
-**Rules:**
+**Connection URL:** `ws://localhost:8000/ws/notifications/?token=<access_token>`
 
-- Any participant can create a meeting.
-- `ends_at` must be after `starts_at`.
-- Attendance status values are `invited`, `present`, `absent`, and `excused`.
-- Meeting note `author` is set from the authenticated user.
-- Creates return `201 Created`; updates return `200 OK`; deletes return `204 No Content`.
+**Authentication:** Required JWT. The token can be passed as a query parameter (`?token=<jwt>`) or as an `Authorization: Bearer <jwt>` header. Unauthenticated connections close with code `4401`.
 
-### Feedback Screen
-
-**Purpose:** Show supervisor feedback in one place without burying it in notifications.
-
-**Used APIs:**
-
-| Action | Method | URL | Permission |
-| ------ | ------ | --- | ---------- |
-| List feedback | GET | `/api/projects/feedback/` | Project participant |
-| Create feedback | POST | `/api/projects/feedback/` | Project supervisor only |
-| Get feedback | GET | `/api/projects/feedback/{feedback_id}/` | Project participant |
-| Update feedback | PATCH | `/api/projects/feedback/{feedback_id}/` | Feedback author |
-| Delete feedback | DELETE | `/api/projects/feedback/{feedback_id}/` | Feedback author |
-
-**Create Project Feedback Request:**
-
-```json
-{
-	"project": 101,
-	"content": "The scope is acceptable; focus on measurable evaluation."
-}
-```
-
-**Create Task Feedback Request:**
-
-```json
-{
-	"task": 401,
-	"content": "Add error handling tests before closing this task."
-}
-```
-
-**Rules:**
-
-- Feedback must belong to exactly one target: `project`, `task`, `deliverable`, or `meeting`.
-- Only assigned project supervisors can create feedback.
-- Feedback creation sends `feedback` notifications to project members.
-
-### Notifications Center
-
-**Purpose:** Show system, invitation, request, task, comment, feedback, meeting, deliverable review, and approval notifications.
-
-**Used APIs:**
-
-| Action | Method | URL | Permission |
-| ------ | ------ | --- | ---------- |
-| List notifications | GET | `/api/notifications/` | Authenticated recipient; returns only own notifications |
-| Create notification | POST | `/api/notifications/` | Authenticated user; `recipient` and `actor` are saved as current user |
-| List unread only | GET | `/api/notifications/?unread=true` | Authenticated recipient; returns only own unread notifications |
-| Get notification | GET | `/api/notifications/{notification_id}/` | Notification recipient only |
-| Replace notification | PUT | `/api/notifications/{notification_id}/` | Notification recipient only |
-| Update notification | PATCH | `/api/notifications/{notification_id}/` | Notification recipient only |
-| Delete notification | DELETE | `/api/notifications/{notification_id}/` | Notification recipient only |
-| Unread count | GET | `/api/notifications/unread-count/` | Authenticated recipient |
-| Mark one read | POST | `/api/notifications/{notification_id}/mark-read/` | Notification recipient only |
-| Mark all read | POST | `/api/notifications/mark-all-read/` | Authenticated recipient |
-
-**Notification Response Example:**
-
-```json
-{
-	"id": 1001,
-	"recipient": 34,
-	"actor": 12,
-	"actor_detail": {
-		"id": 12,
-		"username": "mona",
-		"full_name": "Mona Hassan",
-		"email": "mona@uni.edu.eg",
-		"role": "STUDENT",
-		"avatar_url": null
-	},
-	"notification_type": "invitation",
-	"title": "Project invitation",
-	"message": "You were invited to join Smart Attendance.",
-	"data": {
-		"project_id": 101,
-		"invitation_id": 801
-	},
-	"read_at": null,
-	"is_read": false,
-	"created_at": "2026-06-15T08:30:00Z"
-}
-```
-
-**Notification Query Parameters:**
-
-- `unread=true`, `unread=1`, and `unread=yes` filter the list to notifications where `read_at` is `null`.
-- Other `unread` values are ignored by the implementation and return the same result as an unfiltered list.
-- No search, ordering, pagination, or generic notification filters are implemented.
-
-**Mark All Read Response:**
-
-```json
-{
-	"updated": 3
-}
-```
-
-**Unread Count Response:**
-
-```json
-{
-	"count": 3
-}
-```
-
-**Status Codes:**
-
-- `200 OK`: List, retrieve, update, mark read, mark all read, unread count.
-- `201 Created`: Create notification.
-- `204 No Content`: Delete notification.
-- `401 Unauthorized`: Missing or invalid JWT.
-- `404 Not Found`: Notification does not exist or does not belong to the authenticated user.
-
-## 3.5 Notification Websocket Behavior
-
-**Connection URL:**
-
-```text
-ws://localhost:8000/ws/notifications/?token=<access_token>
-```
-
-The middleware also supports an `Authorization: Bearer <access_token>` header when the websocket client can send custom headers.
-
-**Authentication:** Required JWT. Unauthenticated connections close with code `4401`.
+**Description:**
+The websocket pushes newly created notifications in real-time to the authenticated recipient. When a notification is created programmatically (e.g., when someone sends you an invitation), it is pushed to your websocket connection.
 
 **Event Type:** `notification`
 
@@ -2077,249 +3784,53 @@ The middleware also supports an `Authorization: Bearer <access_token>` header wh
 
 ```json
 {
-	"type": "notification",
-	"notification": {
-		"id": 1001,
-		"notification_type": "task_assignment",
-		"title": "Task assigned",
-		"message": "You were assigned: Build attendance API",
-		"data": {
-			"project_id": 101,
-			"task_id": 401
-		},
-		"actor_id": 12,
-		"read_at": null,
-		"created_at": "2026-06-15T08:30:00Z"
-	}
+    "type": "notification",
+    "notification": {
+        "id": 1001,
+        "notification_type": "task_assignment",
+        "title": "Task assigned",
+        "message": "You were assigned: Build attendance API",
+        "data": {
+            "project_id": 101,
+            "task_id": 401
+        },
+        "actor_id": 12,
+        "read_at": null,
+        "created_at": "2026-06-15T08:30:00Z"
+    }
 }
 ```
 
-Notifications are currently generated for project invitations, join requests, supervisor requests, invitation/join/supervisor responses, supervisor modification requests, task assignment, task updates, task comments, deliverable reviews, meeting changes, and supervisor feedback.
+**Note:** Read-state changes from `mark-read` and `mark-all-read` do not emit websocket events. Refresh notification state through the REST endpoints after marking notifications read.
 
-Read-state changes from `mark-read` and `mark-all-read` do not emit websocket events in the current implementation. Refresh notification state through the REST endpoints after marking notifications read.
+---
 
-## 3.6 Permissions Matrix
+## Common Status Codes
 
-| Action | Student | Leader | Doctor | TA |
-| ------ | ------- | ------ | ------ | -- |
-| Create Project | Yes | Yes | Yes in code | Yes in code |
-| Edit Project | No | Yes | No | No |
-| Delete Project | No | Yes | No | No |
-| Activate Project | No | Yes | No | No |
-| Submit Project | No | Yes | No | No |
-| Approve Final Submission | No | Yes | Yes if supervisor on project | Yes if supervisor on project |
-| Archive Project | No | Yes | No | No |
-| Send Invitation | No | Yes | No | No |
-| Accept Own Invitation | Yes | Yes | Yes | Yes |
-| Send Join Request | Yes | Yes if not already member | Yes in code | Yes in code |
-| Accept Join Request | No | Yes | No | No |
-| Transfer Leadership | Missing | Missing | Missing | Missing |
-| Leave Team | Missing | Missing | Missing | Missing |
-| Send Supervisor Request | No | Yes | No | No |
-| Accept/Reject/Request Modification on Supervisor Request | No | No | Yes when requested | Yes when requested |
-| Create/Update ProjectSupervisor Record | No | Yes with accepted request | No | No |
-| Assign TA | No | Partially via secondary supervisor request | No | Accepts request |
-| Create Task | Participant only | Yes | Yes if supervisor on project | Yes if supervisor on project |
-| Edit Task | Participant only | Yes | Yes if supervisor on project | Yes if supervisor on project |
-| Delete Task | Participant only | Yes | Yes if supervisor on project | Yes if supervisor on project |
-| Manage Task Labels | Participant only | Yes | Yes if supervisor on project | Yes if supervisor on project |
-| Manage Task Checklists | Participant only | Yes | Yes if supervisor on project | Yes if supervisor on project |
-| Upload Task Attachment | Participant only | Yes | Yes if supervisor on project | Yes if supervisor on project |
-| Start Sprint | Participant can PATCH status | Yes | Yes if supervisor on project | Yes if supervisor on project |
-| Complete Sprint | Participant can PATCH status | Yes | Yes if supervisor on project | Yes if supervisor on project |
-| Assign Sprint Task | Participant only | Yes | Yes if supervisor on project | Yes if supervisor on project |
-| Assign Milestone Task | Participant only | Yes | Yes if supervisor on project | Yes if supervisor on project |
-| Upload Deliverable File | Participant only | Yes | Yes if supervisor on project | Yes if supervisor on project |
-| Approve Deliverable | No | No | Yes if supervisor on project | Yes if supervisor on project |
-| Reject Deliverable | No | No | Yes if supervisor on project | Yes if supervisor on project |
-| Request Deliverable Revision | No | No | Yes if supervisor on project | Yes if supervisor on project |
-| Create Meeting | Participant only | Yes | Yes if supervisor on project | Yes if supervisor on project |
-| Manage Meeting Attendance/Notes | Participant only | Yes | Yes if supervisor on project | Yes if supervisor on project |
-| Create Feedback | No | No | Yes if supervisor on project | Yes if supervisor on project |
-| Read/Update Own Notifications | Own notifications only | Own notifications only | Own notifications only | Own notifications only |
+| Status Code | Meaning |
+|-------------|---------|
+| `200 OK` | Successful read, update, or custom action |
+| `201 Created` | Successful resource creation |
+| `204 No Content` | Successful deletion |
+| `400 Bad Request` | Validation error (invalid fields, missing required fields, business rule violation) |
+| `401 Unauthorized` | Missing, expired, or invalid JWT |
+| `403 Forbidden` | User lacks permission for the action |
+| `404 Not Found` | Resource does not exist or is outside the user's visible queryset |
 
-## 3.7 Common Error Patterns
+---
 
-| Error | Typical Cause |
-| ----- | ------------- |
-| `401 Unauthorized` | Missing, expired, or invalid JWT. |
-| `403 Forbidden` | User is not the leader, invitee, requested supervisor, comment author, or project participant required for the action. |
-| `400 Bad Request` with capacity message | Project has reached `max_members`. |
-| `400 Bad Request` with minimum team message | Project has not reached `min_members` during activation. |
-| `400 Bad Request` with methodology message | Creating sprint data for a non-sprint project, milestone data for a non-milestone project, or board columns for a non-kanban project. |
-| `400 Bad Request` with supervisor title message | Primary supervisor must be a doctor; secondary supervisor must be a TA. |
-| `400 Bad Request` with feedback target message | Feedback did not include exactly one of `project`, `task`, `deliverable`, or `meeting`. |
-| `400 Bad Request` with duplicate/unique constraint | Duplicate pending invitation, join request, supervisor role request, label name, board column name, or one-to-one sprint/milestone task assignment. |
+## Permissions Summary
 
-## 3.8 Quick Endpoint Reference
+| Role | Tasks | Labels | Comments | Attachments | Checklists | Checklist Items | Sprints | Milestones | Board Columns | Deliverables | Deliverable Files | Meetings | Attendance | Meeting Notes | Feedback | Notifications |
+|------|-------|--------|----------|-------------|------------|-----------------|---------|------------|---------------|--------------|-------------------|----------|------------|---------------|----------|---------------|
+| Project Member | CRUD | CRUD | CRUD | CRUD | CRUD | CRUD | CRUD | CRUD | CRUD | Create, Submit | CRUD | CRUD | CRUD | Create | View only | Own only |
+| Project Leader | CRUD | CRUD | CRUD | CRUD | CRUD | CRUD | CRUD | CRUD | CRUD | CRUD | CRUD | CRUD | CRUD | CRUD | View only | Own only |
+| Project Supervisor | CRUD | CRUD | CRUD | CRUD | CRUD | CRUD | CRUD | CRUD | CRUD | Approve/Reject/Review | CRUD | CRUD | CRUD | CRUD | Create, CRUD own | Own only |
+| Non-participant | None | None | None | None | None | None | None | None | None | None | None | None | None | None | None | Own only |
 
-### Projects
-
-| Method | Endpoint |
-| ------ | -------- |
-| GET/POST | `/api/projects/` |
-| GET/PATCH/PUT/DELETE | `/api/projects/{id}/` |
-| POST | `/api/projects/{id}/activate/` |
-| POST | `/api/projects/{id}/submit/` |
-| POST | `/api/projects/{id}/approve-submission/` |
-| POST | `/api/projects/{id}/archive/` |
-
-### Memberships
-
-| Method | Endpoint |
-| ------ | -------- |
-| GET/POST | `/api/projects/memberships/` |
-| GET/PATCH/PUT/DELETE | `/api/projects/memberships/{id}/` |
-
-### Invitations
-
-| Method | Endpoint |
-| ------ | -------- |
-| GET/POST | `/api/projects/invitations/` |
-| GET/PATCH/PUT/DELETE | `/api/projects/invitations/{id}/` |
-| POST | `/api/projects/invitations/{id}/accept/` |
-| POST | `/api/projects/invitations/{id}/reject/` |
-
-### Join Requests
-
-| Method | Endpoint |
-| ------ | -------- |
-| GET/POST | `/api/projects/join-requests/` |
-| GET/PATCH/PUT/DELETE | `/api/projects/join-requests/{id}/` |
-| POST | `/api/projects/join-requests/{id}/accept/` |
-| POST | `/api/projects/join-requests/{id}/reject/` |
-
-### Supervision
-
-| Method | Endpoint |
-| ------ | -------- |
-| GET/POST | `/api/projects/supervisor-requests/` |
-| GET/PATCH/PUT/DELETE | `/api/projects/supervisor-requests/{id}/` |
-| POST | `/api/projects/supervisor-requests/{id}/accept/` |
-| POST | `/api/projects/supervisor-requests/{id}/reject/` |
-| POST | `/api/projects/supervisor-requests/{id}/request-modification/` |
-| GET/POST | `/api/projects/supervisors/` |
-| GET/PATCH/PUT/DELETE | `/api/projects/supervisors/{id}/` |
-
-### Tasks
-
-| Method | Endpoint |
-| ------ | -------- |
-| GET/POST | `/api/tasks/` |
-| GET/PATCH/PUT/DELETE | `/api/tasks/{id}/` |
-| GET | `/api/tasks/?project={project_id}` |
-| GET | `/api/tasks/?assignee={user_id}` |
-| GET | `/api/tasks/?status={status}` |
-
-### Comments
-
-| Method | Endpoint |
-| ------ | -------- |
-| GET/POST | `/api/tasks/comments/` |
-| GET/PATCH/PUT/DELETE | `/api/tasks/comments/{id}/` |
-
-### Attachments
-
-| Method | Endpoint |
-| ------ | -------- |
-| GET/POST | `/api/tasks/attachments/` |
-| GET/PATCH/PUT/DELETE | `/api/tasks/attachments/{id}/` |
-
-### Checklists and Activity
-
-| Method | Endpoint |
-| ------ | -------- |
-| GET/POST | `/api/tasks/checklists/` |
-| GET/PATCH/PUT/DELETE | `/api/tasks/checklists/{id}/` |
-| GET/POST | `/api/tasks/checklist-items/` |
-| GET/PATCH/PUT/DELETE | `/api/tasks/checklist-items/{id}/` |
-| GET | `/api/tasks/activity/` |
-| GET | `/api/tasks/activity/{id}/` |
-
-### Labels
-
-| Method | Endpoint |
-| ------ | -------- |
-| GET/POST | `/api/tasks/labels/` |
-| GET/PATCH/PUT/DELETE | `/api/tasks/labels/{id}/` |
-
-### Sprint
-
-| Method | Endpoint |
-| ------ | -------- |
-| GET/POST | `/api/tasks/sprints/` |
-| GET/PATCH/PUT/DELETE | `/api/tasks/sprints/{id}/` |
-| GET | `/api/tasks/sprints/{id}/dashboard/` |
-| GET/POST | `/api/tasks/sprint-tasks/` |
-| GET/PATCH/PUT/DELETE | `/api/tasks/sprint-tasks/{id}/` |
-
-### Milestone
-
-| Method | Endpoint |
-| ------ | -------- |
-| GET/POST | `/api/tasks/milestones/` |
-| GET/PATCH/PUT/DELETE | `/api/tasks/milestones/{id}/` |
-| GET | `/api/tasks/milestones/{id}/dashboard/` |
-| GET/POST | `/api/tasks/milestone-tasks/` |
-| GET/PATCH/PUT/DELETE | `/api/tasks/milestone-tasks/{id}/` |
-
-### Kanban
-
-| Method | Endpoint |
-| ------ | -------- |
-| GET/POST | `/api/tasks/board-columns/` |
-| GET/PATCH/PUT/DELETE | `/api/tasks/board-columns/{id}/` |
-| GET | `/api/tasks/board-columns/dashboard/?project={project_id}` |
-| PATCH | `/api/tasks/{task_id}/` |
-
-### Deliverables
-
-| Method | Endpoint |
-| ------ | -------- |
-| GET/POST | `/api/projects/deliverables/` |
-| GET/PATCH/PUT/DELETE | `/api/projects/deliverables/{id}/` |
-| POST | `/api/projects/deliverables/{id}/submit/` |
-| POST | `/api/projects/deliverables/{id}/approve/` |
-| POST | `/api/projects/deliverables/{id}/reject/` |
-| POST | `/api/projects/deliverables/{id}/request-revision/` |
-| GET/POST | `/api/projects/deliverable-files/` |
-| GET/PATCH/PUT/DELETE | `/api/projects/deliverable-files/{id}/` |
-
-### Meetings
-
-| Method | Endpoint |
-| ------ | -------- |
-| GET/POST | `/api/projects/meetings/` |
-| GET/PATCH/PUT/DELETE | `/api/projects/meetings/{id}/` |
-| GET/POST | `/api/projects/meeting-attendance/` |
-| GET/PATCH/PUT/DELETE | `/api/projects/meeting-attendance/{id}/` |
-| GET/POST | `/api/projects/meeting-notes/` |
-| GET/PATCH/PUT/DELETE | `/api/projects/meeting-notes/{id}/` |
-
-### Project Taxonomy / Selectors
-
-| Method | Endpoint |
-| ------ | -------- |
-| GET | `/api/projects/categories/` |
-| GET | `/api/projects/semesters/` |
-| GET | `/api/projects/academic-years/` |
-| GET | `/api/projects/subjects/` |
-| GET | `/api/projects/technologies/search/?q={query}` |
-
-### Feedback
-
-| Method | Endpoint |
-| ------ | -------- |
-| GET/POST | `/api/projects/feedback/` |
-| GET/PATCH/PUT/DELETE | `/api/projects/feedback/{id}/` |
-
-### Notifications
-
-| Method | Endpoint |
-| ------ | -------- |
-| GET/POST | `/api/notifications/` |
-| GET/PATCH/PUT/DELETE | `/api/notifications/{id}/` |
-| GET | `/api/notifications/unread-count/` |
-| POST | `/api/notifications/{id}/mark-read/` |
-| POST | `/api/notifications/mark-all-read/` |
-| WS | `/ws/notifications/?token={access_token}` |
+**Notes:**
+- "CRUD" = Create, Read, Update, Delete (full access to that resource).
+- Comment authors can edit/delete their own comments. Meeting note authors can edit/delete their own notes. Feedback authors can edit/delete their own feedback.
+- Deliverable submit is member-only. Approve/reject/request-revision are supervisor-only.
+- Feedback creation is supervisor-only.
+- Activity records are read-only for all participants.

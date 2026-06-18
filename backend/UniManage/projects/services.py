@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.db.models import Count, Prefetch, Q
 from django.utils import timezone
 from rest_framework.exceptions import PermissionDenied, ValidationError
 
@@ -367,3 +368,97 @@ def create_feedback(*, author, **data):
             data={'project_id': target_project.id, 'feedback_id': feedback.id},
         )
     return feedback
+
+
+def get_base_marketplace_queryset():
+    return Project.objects.filter(
+        is_public=True,
+        status=Project.Status.ARCHIVED,
+        deleted_at__isnull=True,
+    )
+
+
+def get_marketplace_projects(*, search='', category=None, technology=None,
+                              project_type=None, academic_year=None,
+                              ordering='-created_at'):
+    qs = get_base_marketplace_queryset()
+
+    qs = qs.select_related('category', 'academic_year', 'semester', 'subject')
+
+    qs = qs.prefetch_related(
+        'technologies',
+        Prefetch(
+            'memberships',
+            queryset=ProjectMembership.objects.select_related('user'),
+        ),
+        Prefetch(
+            'supervisors',
+            queryset=ProjectSupervisor.objects.select_related('supervisor'),
+        ),
+    )
+
+    qs = qs.annotate(
+        _member_count=Count('memberships', distinct=True),
+        _supervisor_count=Count('supervisors', distinct=True),
+    )
+
+    if search:
+        qs = qs.filter(
+            Q(name__icontains=search)
+            | Q(description__icontains=search)
+            | Q(technologies__name__icontains=search)
+        ).distinct()
+
+    if category:
+        qs = qs.filter(category_id=category)
+
+    if technology:
+        qs = qs.filter(technologies__name__iexact=technology)
+
+    if project_type:
+        qs = qs.filter(project_type=project_type)
+
+    if academic_year:
+        qs = qs.filter(academic_year_id=academic_year)
+
+    allowed_ordering = {
+        'created_at': 'created_at',
+        '-created_at': '-created_at',
+        'updated_at': 'updated_at',
+        '-updated_at': '-updated_at',
+        'name': 'name',
+        '-name': '-name',
+    }
+
+    ordering_field = allowed_ordering.get(ordering, '-created_at')
+    qs = qs.order_by(ordering_field)
+
+    return qs
+
+
+def get_marketplace_project_details(project_id):
+    qs = get_base_marketplace_queryset()
+
+    qs = qs.select_related('category', 'academic_year', 'semester', 'subject')
+
+    qs = qs.prefetch_related(
+        'technologies',
+        Prefetch(
+            'memberships',
+            queryset=ProjectMembership.objects.select_related('user'),
+        ),
+        Prefetch(
+            'supervisors',
+            queryset=ProjectSupervisor.objects.select_related('supervisor'),
+        ),
+    )
+
+    qs = qs.annotate(
+        _member_count=Count('memberships', distinct=True),
+        _supervisor_count=Count('supervisors', distinct=True),
+    )
+
+    try:
+        return qs.get(id=project_id)
+    except Project.DoesNotExist:
+        return None

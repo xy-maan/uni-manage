@@ -275,3 +275,90 @@ class FeedbackSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return services.create_feedback(author=self.context['request'].user, **validated_data)
+
+
+class MarketplaceMemberSerializer(serializers.Serializer):
+    id = serializers.IntegerField(source='user.id')
+    name = serializers.CharField(source='user.get_full_name')
+    role = serializers.CharField()
+
+
+class MarketplaceSupervisorSerializer(serializers.Serializer):
+    id = serializers.IntegerField(source='supervisor.id')
+    name = serializers.CharField(source='supervisor.get_full_name')
+    role = serializers.CharField()
+
+
+class MarketplaceProjectListSerializer(serializers.ModelSerializer):
+    category = serializers.CharField(source='category.name', default=None)
+    academic_year = serializers.CharField(source='academic_year.name', default=None)
+    technology_names = serializers.SerializerMethodField()
+    member_count = serializers.SerializerMethodField()
+    supervisor_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Project
+        fields = [
+            'id', 'name', 'description', 'category', 'project_type',
+            'academic_year', 'technology_names', 'member_count',
+            'supervisor_count', 'repository_url', 'documentation_url',
+            'created_at', 'updated_at',
+        ]
+
+    def get_technology_names(self, obj):
+        return list(obj.technologies.values_list('name', flat=True))
+
+    def get_member_count(self, obj):
+        return getattr(obj, '_member_count', obj.memberships.count())
+
+    def get_supervisor_count(self, obj):
+        return getattr(obj, '_supervisor_count', obj.supervisors.count())
+
+
+class MarketplaceProjectDetailSerializer(serializers.ModelSerializer):
+    category = serializers.CharField(source='category.name', default=None)
+    academic_year = serializers.CharField(source='academic_year.name', default=None)
+    semester = serializers.CharField(source='semester.name', default=None)
+    subject = serializers.CharField(source='subject.name', default=None)
+    technology_names = serializers.SerializerMethodField()
+    members = serializers.SerializerMethodField()
+    supervisors = serializers.SerializerMethodField()
+    member_count = serializers.SerializerMethodField()
+    technology_count = serializers.SerializerMethodField()
+    supervisor_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Project
+        fields = [
+            'id', 'name', 'description', 'project_type', 'methodology',
+            'status', 'proposal', 'abstract', 'expected_scope', 'archive_year',
+            'category', 'subject', 'semester', 'academic_year',
+            'technology_names', 'members', 'supervisors',
+            'member_count', 'technology_count', 'supervisor_count',
+            'repository_url', 'documentation_url',
+            'created_at', 'updated_at',
+        ]
+
+    def get_technology_names(self, obj):
+        return list(obj.technologies.values_list('name', flat=True))
+
+    def get_members(self, obj):
+        memberships = getattr(obj, '_memberships', None)
+        if memberships is None:
+            memberships = obj.memberships.select_related('user').all()
+        return MarketplaceMemberSerializer(memberships, many=True).data
+
+    def get_supervisors(self, obj):
+        supervisors = getattr(obj, '_supervisors', None)
+        if supervisors is None:
+            supervisors = obj.supervisors.select_related('supervisor').all()
+        return MarketplaceSupervisorSerializer(supervisors, many=True).data
+
+    def get_member_count(self, obj):
+        return getattr(obj, '_member_count', obj.memberships.count())
+
+    def get_technology_count(self, obj):
+        return len(self.get_technology_names(obj))
+
+    def get_supervisor_count(self, obj):
+        return getattr(obj, '_supervisor_count', obj.supervisors.count())

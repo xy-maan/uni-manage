@@ -3,7 +3,9 @@ from rest_framework.routers import DefaultRouter
 
 from .views import (
     AcademicYearListView, CategoryListView, DeliverableFileViewSet, DeliverableViewSet,
-    FeedbackViewSet, JoinRequestViewSet, MeetingAttendanceViewSet, MeetingNoteViewSet,
+    FeedbackViewSet, JoinRequestViewSet, MarketplaceProjectDetailView,
+    MarketplaceProjectListView, MarketplaceTechnologyListView,
+    MeetingAttendanceViewSet, MeetingNoteViewSet,
     MeetingViewSet, ProjectInvitationViewSet, ProjectMembershipViewSet,
     ProjectSupervisorViewSet, ProjectViewSet, SemesterListView, SubjectListView,
     SupervisorRequestViewSet, TechnologySearchView,
@@ -28,6 +30,9 @@ urlpatterns = [
     path('semesters/', SemesterListView.as_view(), name='semester-list'),
     path('academic-years/', AcademicYearListView.as_view(), name='academic-year-list'),
     path('technologies/search/', TechnologySearchView.as_view(), name='technology-search'),
+    path('technologies/', MarketplaceTechnologyListView.as_view(), name='technology-list'),
     path('subjects/', SubjectListView.as_view(), name='subject-list'),
+    path('marketplace/projects/', MarketplaceProjectListView.as_view(), name='marketplace-project-list'),
+    path('marketplace/projects/<int:project_id>/', MarketplaceProjectDetailView.as_view(), name='marketplace-project-detail'),
     path('', include(router.urls)),
 ]
