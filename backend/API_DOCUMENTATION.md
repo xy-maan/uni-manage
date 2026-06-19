@@ -804,7 +804,7 @@ These field lists reflect the active serializers in `projects`, `tasks`, and `no
 | Serializer | Returned Fields |
 | ---------- | --------------- |
 | `Subject` | `id`, `name`, `code`, `credit_hours`, `description` |
-| `Project` | `id`, `creator_detail`, `memberships`, `supervisors`, `name`, `description`, `category` (nested `{id, name}`), `semester` (nested `{id, name}`), `academic_year` (nested `{id, name}`), `technologies` (array of `{id, name, is_official}`), `project_type`, `methodology`, `status`, `min_members`, `max_members`, `is_public`, `proposal`, `abstract`, `expected_scope`, `repository_url`, `documentation_url`, `archive_year`, `archive_tags` (response: array of `{id, name, is_official}`; write: mixed array of integer IDs or raw strings), `deleted_at`, `created_at`, `updated_at`, `creator` |
+| `Project` | `id`, `creator_detail`, `memberships`, `supervisors`, `name`, `description`, `subject` (nested `{id, name, code, credit_hours, description}`), `category` (nested `{id, name}`), `semester` (nested `{id, name}`), `academic_year` (nested `{id, name}`), `technologies` (array of `{id, name, is_official}`), `project_type`, `methodology`, `status`, `min_members`, `max_members`, `is_public`, `proposal`, `abstract`, `expected_scope`, `repository_url`, `documentation_url`, `archive_year`, `archive_tags` (response: array of `{id, name, is_official}`; write: mixed array of integer IDs or raw strings), `deleted_at`, `created_at`, `updated_at`, `creator`. **Write-only fields:** `subject_id`, `category_id`, `semester_id`, `academic_year_id` (integer IDs for the corresponding FK relations). |
 | `ProjectMembership` | `id`, `user_detail`, `project`, `user`, `role`, `joined_at`, `created_at`, `updated_at` |
 | `SupervisorRequest` | `id`, `requested_by_detail`, `supervisor_detail`, `project`, `requested_by`, `supervisor`, `role`, `message`, `proposal`, `abstract`, `technology_stack` (array of `{id, name, is_official}`), `expected_scope`, `modification_note`, `status`, `responded_at`, `created_at`, `updated_at` |
 | `ProjectSupervisor` | `id`, `supervisor_detail`, `project`, `supervisor`, `role`, `created_at`, `updated_at` |
@@ -831,7 +831,7 @@ Student opens Create Project
   -> selects project type: course or graduation
   -> selects methodology: sprint, milestone, or kanban
   -> enters implemented project fields
-       name, description, category_id, semester_id, academic_year_id,
+        name, description, subject_id, category_id, semester_id, academic_year_id,
        technology_names, min_members, max_members, is_public, proposal,
        abstract, expected_scope
   -> project is created with status "forming"
@@ -1018,6 +1018,7 @@ _Frontend Behavior:_ When the user selects an existing technology, extract the `
 {
 	"name": "Smart Attendance",
 	"description": "Face recognition attendance system for course rooms.",
+	"subject_id": 1,
 	"category_id": 1,
 	"semester_id": 1,
 	"academic_year_id": 1,
@@ -1041,6 +1042,7 @@ _Frontend Behavior:_ When the user selects an existing technology, extract the `
 	"id": 101,
 	"name": "Smart Attendance",
 	"description": "Face recognition attendance system for course rooms.",
+	"subject": {"id": 1, "name": "Computer Science", "code": "CS301", "credit_hours": 3, "description": "Advanced computing topics."},
 	"category": {"id": 1, "name": "Computer Vision"},
 	"semester": {"id": 1, "name": "Fall"},
 	"academic_year": {"id": 1, "name": "2026/2027"},
@@ -1125,6 +1127,10 @@ _Frontend Behavior:_ When the user selects an existing technology, extract the `
 {
 	"name": "Smart Attendance v2",
 	"description": "Updated project description.",
+	"subject_id": 2,
+	"category_id": 3,
+	"semester_id": 2,
+	"academic_year_id": 2,
 	"min_members": 3,
 	"max_members": 6,
 	"is_public": false,

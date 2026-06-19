@@ -100,6 +100,10 @@ class ProjectSerializer(serializers.ModelSerializer):
     academic_year = AcademicYearSerializer(read_only=True)
     technologies = TechnologySerializer(many=True, read_only=True)
     archive_tags = ArchiveTagsField()
+    subject_id = serializers.IntegerField(write_only=True, required=False)
+    category_id = serializers.IntegerField(write_only=True, required=False)
+    semester_id = serializers.IntegerField(write_only=True, required=False)
+    academic_year_id = serializers.IntegerField(write_only=True, required=False)
     technology_names = serializers.ListField(
         child=serializers.CharField(), write_only=True, required=False,
     )
@@ -113,7 +117,7 @@ class ProjectSerializer(serializers.ModelSerializer):
             'min_members', 'max_members', 'is_public', 'proposal', 'abstract',
             'expected_scope', 'repository_url', 'documentation_url',
             'archive_year', 'archive_tags', 'deleted_at', 'created_at', 'updated_at',
-            'technology_names',
+            'technology_names', 'subject_id', 'category_id', 'semester_id', 'academic_year_id',
         ]
         read_only_fields = ['creator', 'status', 'deleted_at', 'created_at', 'updated_at']
 
