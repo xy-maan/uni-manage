@@ -12,7 +12,7 @@ from urllib.parse import urlencode
 import requests
 
 from .models import StudentProfile, SupervisorProfile, User, Skill, SkillAlias, AcademicLevel, Department
-from .serializers import StudentProfileSerializer, SupervisorProfileSerializer, UserSerializer, SkillSerializer, DepartmentSerializer, AcademicLevelSerializer, StudentListSerializer
+from .serializers import StudentProfileSerializer, SupervisorProfileSerializer, UserSerializer, SkillSerializer, DepartmentSerializer, AcademicLevelSerializer, StudentListSerializer, SupervisorListSerializer
 from django.db.models import Q
 
 def resolve_skills(skill_input_list, user=None):
