@@ -754,14 +754,14 @@ This section reflects the implementation currently present in `projects`, `tasks
 | Supervisor search | Missing | No endpoint in these apps lists/searches doctors or TAs. Frontend needs another source before sending `supervisor` IDs. |
 | Supervisor requests | Implemented | Leaders send proposal-backed requests; requested supervisor can accept, reject, or request modification. Accept creates `ProjectSupervisor`. |
 | Assign TA | Partially Implemented | Use a supervisor request with `role: "secondary"` to a TA. There is no separate "assign TA" endpoint. |
-| Task CRUD and movement | Partially Implemented | Tasks can be CRUDed and moved by `PATCH`ing `status`, `position`, and/or `board_column`. There is no dedicated move/reorder endpoint. |
+| Task CRUD and movement | Partially Implemented | Tasks can be CRUDed and moved by `PATCH`ing `status` and/or `board_column`. There is no dedicated move/reorder endpoint. |
 | Comments | Implemented | CRUD exists. Only the author may update/delete their comment. |
 | Attachments | Implemented | Upload/list/delete exists through multipart CRUD. There is no custom upload action. |
 | Sprint records | Implemented | CRUD exists only for sprint-methodology projects. `status` can be patched and `/api/tasks/sprints/{id}/dashboard/` returns sprint summary metrics. |
 | Sprint task assignment | Implemented | Create/delete records in `/api/tasks/sprint-tasks/`. Each task can belong to one sprint. |
 | Milestone records | Implemented | CRUD exists only for milestone-methodology projects. `status` can be patched and `/api/tasks/milestones/{id}/dashboard/` returns progress. |
 | Milestone task assignment | Implemented | Create/delete records in `/api/tasks/milestone-tasks/`. Each task can belong to one milestone. |
-| Kanban columns | Implemented | CRUD exists only for kanban-methodology projects. Reordering uses `PATCH position`; moving tasks uses `PATCH task.board_column`; `/api/tasks/board-columns/dashboard/?project={id}` returns columns, tasks, and flow summary. |
+| Kanban columns | Implemented | CRUD exists only for kanban-methodology projects. Moving tasks uses `PATCH task.board_column`; `/api/tasks/board-columns/dashboard/?project={id}` returns columns, tasks, and flow summary. |
 | Task checklist/activity | Implemented | Tasks support checklists, checklist items, and read-only activity records. |
 | Deliverables | Implemented | CRUD, submit, approve, reject, request revision, and file upload/list/delete exist. Review is supervisor-only. |
 | Meetings | Implemented | CRUD exists with attendee IDs plus meeting attendance records and meeting notes. This is not a video-conferencing system. |
@@ -808,7 +808,7 @@ These field lists reflect the active serializers in `projects`, `tasks`, and `no
 | `ProjectMembership` | `id`, `user_detail`, `project`, `user`, `role`, `joined_at`, `created_at`, `updated_at` |
 | `SupervisorRequest` | `id`, `requested_by_detail`, `supervisor_detail`, `project`, `requested_by`, `supervisor`, `role`, `message`, `proposal`, `abstract`, `technology_stack` (array of `{id, name, is_official}`), `expected_scope`, `modification_note`, `status`, `responded_at`, `created_at`, `updated_at` |
 | `ProjectSupervisor` | `id`, `supervisor_detail`, `project`, `supervisor`, `role`, `created_at`, `updated_at` |
-| `Task` | `id`, `creator_detail`, `assignee_detail`, `comments`, `attachments`, `checklists`, `activity`, `project`, `title`, `description`, `status`, `priority`, `creator`, `assignee`, `labels`, `board_column`, `due_at`, `estimated_hours`, `actual_hours`, `story_points`, `completed_at`, `position`, `deleted_at`, `created_at`, `updated_at` |
+| `Task` | `id`, `creator_detail`, `assignee_detail`, `comments`, `attachments`, `checklists`, `activity`, `project`, `title`, `description`, `status`, `priority`, `creator`, `assignee`, `labels`, `board_column`, `due_at`, `estimated_hours`, `actual_hours`, `story_points` (1–5), `completed_at`, `deleted_at`, `created_at`, `updated_at` |
 | `TaskLabel` | `id`, `project`, `name`, `color`, `created_at`, `updated_at` |
 | `DeliverableFile` | `id`, `deliverable`, `file`, `uploaded_by`, `created_at`, `updated_at` |
 | `TaskAttachment` | `id`, `task`, `file`, `uploaded_by`, `created_at`, `updated_at` |
@@ -1705,7 +1705,6 @@ Used by **project participants** (members or supervisors) to list tasks. Support
         "actual_hours": null,
         "story_points": 5,
         "completed_at": null,
-        "position": 20,
         "deleted_at": null,
         "created_at": "2026-06-15T08:20:00Z",
         "updated_at": "2026-06-15T08:25:00Z",
@@ -1742,8 +1741,7 @@ Used by **project participants** to create a new task.
     "due_at": "2026-06-30T18:00:00Z",                                         // Optional: ISO 8601 datetime
     "estimated_hours": "12.50",                                               // Optional: Decimal up to 9999.99
     "actual_hours": null,                                                     // Optional: Decimal up to 9999.99
-    "story_points": 5,                                                        // Optional: Positive integer
-    "position": 10                                                            // Optional: Positive integer for ordering, defaults to 0
+    "story_points": 5                                                         // Optional: Integer between 1 and 5
 }
 ```
 
@@ -1783,15 +1781,14 @@ Used by **project participants** to fully replace a task. All required fields mu
 **Authentication:** Required (Bearer Token)
 
 **Description:**
-Used by **project participants** to partially update a task. Use this endpoint for drag-and-drop moves (changing `board_column`, `status`, and `position`).
+Used by **project participants** to partially update a task. Use this endpoint for drag-and-drop moves (changing `board_column` and/or `status`).
 
 **Request Body (partial update):**
 
 ```json
 {
     "status": "in_progress",         // Optional: Change status
-    "board_column": 302,             // Optional: Move to a different column
-    "position": 20                   // Optional: Reorder within column
+    "board_column": 302              // Optional: Move to a different column
 }
 ```
 

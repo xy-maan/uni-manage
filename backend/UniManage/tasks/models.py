@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils import timezone
 
@@ -76,9 +77,11 @@ class Task(SoftDeleteModel):
     due_at = models.DateTimeField(null=True, blank=True)
     estimated_hours = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
     actual_hours = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
-    story_points = models.PositiveSmallIntegerField(null=True, blank=True)
+    story_points = models.PositiveSmallIntegerField(
+        null=True, blank=True,
+        validators=[MinValueValidator(1), MaxValueValidator(5)],
+    )
     completed_at = models.DateTimeField(null=True, blank=True)
-    position = models.PositiveIntegerField(default=0)
 
 
 class TaskComment(TimeStampedModel):

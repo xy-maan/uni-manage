@@ -154,7 +154,7 @@ class ProjectMembership(TimeStampedModel):
             models.UniqueConstraint(fields=['project', 'user'], name='unique_project_member'),
             models.UniqueConstraint(fields=['project'], condition=models.Q(role='leader'), name='unique_project_leader'),
         ]
-
+    
 
 class RequestStatus(models.TextChoices):
     PENDING = 'pending', 'Pending'

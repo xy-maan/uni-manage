@@ -9,7 +9,6 @@ from .views import (
 )
 
 router = DefaultRouter()
-router.register('', TaskViewSet, basename='task')
 router.register('comments', TaskCommentViewSet, basename='task-comment')
 router.register('attachments', TaskAttachmentViewSet, basename='task-attachment')
 router.register('checklists', TaskChecklistViewSet, basename='task-checklist')
@@ -21,5 +20,6 @@ router.register('sprint-tasks', SprintTaskViewSet, basename='sprint-task')
 router.register('milestones', MilestoneViewSet, basename='milestone')
 router.register('milestone-tasks', MilestoneTaskViewSet, basename='milestone-task')
 router.register('board-columns', BoardColumnViewSet, basename='board-column')
+router.register('', TaskViewSet, basename='task')
 
 urlpatterns = [path('', include(router.urls))]

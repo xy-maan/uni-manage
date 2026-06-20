@@ -64,7 +64,7 @@ class TaskViewSet(SoftDeleteViewSetMixin, viewsets.ModelViewSet):
             queryset = queryset.filter(assignee_id=assignee_id)
         if status_value:
             queryset = queryset.filter(status=status_value)
-        return queryset.order_by('position', '-created_at')
+        return queryset.order_by('-created_at')
 
     def perform_create(self, serializer):
         services.save_task(serializer=serializer, user=self.request.user)
