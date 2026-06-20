@@ -31,11 +31,7 @@ export default function LoginPage({ role = 'student' }:  roleType ) {
           </div>
         </div>
       </div>
-        {/* <div className="mt-6">
-          <p className="text-center text-sm text-muted-foreground ">Already have an account?<Link  href={`/register/${role}`}>
-         
-   <span className='text-primary hover:underline font-medium'>Sign Up</span></Link></p>
-        </div> */}
+
 
     </div>
     )

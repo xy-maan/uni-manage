@@ -7,7 +7,7 @@ import { GetCategoryAction } from "@/Actions/getCategory.action";
 import { PostItem, PostItems } from "@/types/getPosts";
 import { Category, Tag } from "@/types/post";
 import { toast } from "sonner";
-import PostLoading from "../PostLoading";
+import Loading from "../Loading";
 import { useQuery } from "@tanstack/react-query";
 import { GetTagsAction } from "@/Actions/getTags.action";
 import { CommunityContext } from "@/app/Providers/FilteringCategoryProvider";
@@ -48,7 +48,7 @@ const filteredPosts = posts?.filter((post) => {
     : true;
   return  selected && searched ;
 });
-   if (postsLoading) return <PostLoading />;
+   if (postsLoading) return <Loading />;
   return (
     <div>
       {/* number of posts */}

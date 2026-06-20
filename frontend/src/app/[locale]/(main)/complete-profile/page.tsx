@@ -137,7 +137,8 @@ role: data.role.toUpperCase() as "STUDENT" | "SUPERVISOR",
             duration: 2000,
           });
 if (data.role === "STUDENT") router.push("/student/dashboard");
-        } else {
+        }
+         else {
           toast.error(res.payload.error, {
             position: "top-center",
             duration: 2000,

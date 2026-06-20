@@ -1,9 +1,8 @@
 "use server"
 import { CommentValues } from "@/schemas/Comment.schema";
 import { Logout } from "@/types/logout";
-import {  CreatePostRequest, Post } from "@/types/post";
 import getAuthData from "@/utilities/getAuthData";
-export async function CreateCommentAction(postId:number,content:CommentValues){
+export async function CreateCommentAction(postId:number,content:any){
   const session = await getAuthData();
  if( !session?.django.access){
     return {ok:false,payload:null}

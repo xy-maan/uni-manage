@@ -149,8 +149,40 @@ export default function FormSupervisor({
             </FormItem>
           )}
         />
-
-        <FormField
+               <FormField
+                control={control}
+                name="department"
+                render={({ field }) => (
+                  <FormItem className="">
+                    <FormLabel className="text-foreground text-sm font-medium">
+                      <Award className="size-4 text-primary"/>
+                      Department *
+                    </FormLabel>
+                    <FormControl>
+                      <Select
+                        name={field.name}
+                    value={field.value ? field.value.toString() : ""}
+                       onValueChange={(v) => field.onChange(Number(v))}
+                      >
+                        <SelectTrigger
+                          id="department"
+                          className="w-full"
+                        >
+                          <SelectValue placeholder="Select department" />
+                        </SelectTrigger>
+                        <SelectContent position="item-aligned">
+                          
+                          {departments.map((department) => (
+                            <SelectItem key={department.id} value={department.id.toString()}>{department.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+        {/* <FormField
           control={control}
           name="department"
           render={({ field }) => (
@@ -183,7 +215,7 @@ export default function FormSupervisor({
               <FormMessage />
             </FormItem>
           )}
-        />
+        /> */}
 
         <FormField
           control={control}

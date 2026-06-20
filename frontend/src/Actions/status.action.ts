@@ -7,6 +7,7 @@ export async function GetUserStatus(token: string) {
         
       });
       const payload:UserData = await res.json();
+      console.log("statussss",payload)
   return{
     payload,
     ok: res.ok,

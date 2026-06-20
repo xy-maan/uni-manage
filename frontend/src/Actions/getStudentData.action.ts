@@ -1,5 +1,5 @@
 "use server";
-import { StudentData } from "@/types/student";
+import { StudentProfile } from "@/types/student";
 import getAuthData from "@/utilities/getAuthData";
 export async function GetStudentDataAction() {
   const session = await getAuthData();
@@ -18,7 +18,8 @@ export async function GetStudentDataAction() {
 if (!res.ok) {
   throw new Error("Failed to fetch")
 }
-  const payload:StudentData = await res.json();
+  const payload:StudentProfile = await res.json();
+  console.log("sssss",payload)
   return {
     payload,
   };

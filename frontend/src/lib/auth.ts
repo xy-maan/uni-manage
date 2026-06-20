@@ -68,9 +68,10 @@ const payload = await response.json();
         //  token.djangoAccessExpires = Date.now() +5*1000;
 
     const { payload, ok } = await GetUserStatus(account.djangoAccess as string);
+    console.log(payload)
     if (ok) {
       token.role = payload.role;
-      token.isComplete = payload.is_complete;
+      // token.isComplete = payload.is_complete;
     }
         return token;
       }
@@ -115,7 +116,6 @@ const payload = await response.json();
       session.djangoRefresh = token.djangoRefresh;
       session.error = token.error;
   session.role = token.role;           
-  session.isComplete = token.isComplete; 
 
         return session;
     },

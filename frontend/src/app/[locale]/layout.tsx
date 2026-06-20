@@ -9,6 +9,9 @@ import { UserProvider } from "../Providers/UserDataContext";
 import ReactQueryProvider from "../Providers/ReactQueryProvider";
 import MySessionProvider from "../Providers/MySessionProvider";
 import { NextIntlClientProvider } from 'next-intl';
+import NotificationCountProvider from "../Providers/NotificationCountProvider";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,7 +35,7 @@ export default async function RootLayout({
   
 }>) {
     const { locale } = await params;
-
+  const session = await getServerSession(authOptions)
   const messages = (await import(`@/messages/${locale}.json`)).default;
   return (
     <html  suppressHydrationWarning lang={locale} dir={locale === "ar" ? "rtl" : "ltr"}>
@@ -42,7 +45,7 @@ export default async function RootLayout({
       >
         <NextIntlClientProvider messages={messages}>
 
-          <MySessionProvider>
+          <MySessionProvider session={session}>
                  <ParentProvider>
         <ThemeProvider attribute="class" defaultTheme="light">
           <div className="min-h-screen   bg-background">
@@ -52,7 +55,10 @@ export default async function RootLayout({
 
             <main className="w-full flex flex-1 bg-linear-to-br from-primary/5 via-secondary/5 to-background flex-col items-center min-h-screen ">
                         <Toaster />
+                        <NotificationCountProvider>
+
                 {children}
+                        </NotificationCountProvider>
             </main>
 </ReactQueryProvider>
               </UserProvider>

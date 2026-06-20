@@ -8,7 +8,7 @@ declare module 'next-auth' {
     djangoRefresh?: string;
     error?: string;
         role?: string;      
-    isComplete?: boolean;
+    // isComplete?: boolean;
   }
   interface Account {
     djangoAccess?: string;
@@ -26,6 +26,6 @@ declare module 'next-auth/jwt' {
       djangoAccessExpires?: number;
         sessionExpires?: number;
             role?: string;       
-    isComplete?: boolean; 
+    // isComplete?: boolean; 
   }
 }

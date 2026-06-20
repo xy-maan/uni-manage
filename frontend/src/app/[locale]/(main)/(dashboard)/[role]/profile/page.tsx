@@ -59,10 +59,10 @@ export default async function profile() {
                   <Badge className="bg-primary/10 text-primary">
                   <GraduationCap className="size-3 mr-1"/>
                 
-                    {data.major}
+                    {data.user.role}
                   </Badge>
                   <Badge className="bg-secondary/10 text-secondary">
-                    {data.academic_level}
+                    {data.academic_level.name}
                   </Badge>
                   <Badge className="bg-success/10 text-success">
                   <Star className="size-3 mr-1"/>
@@ -148,8 +148,8 @@ export default async function profile() {
               </CardHeader>
               <CardContent className="text-sm text-muted-foreground">
                 {data.skills.map((skill) => (
-                  <Badge className=" bg-secondary text-secondary-foreground capitalize">
-                    {skill}
+                  <Badge    key={skill.id} className=" bg-secondary text-secondary-foreground capitalize" >
+                    {skill.name}
                   </Badge>
                 ))}
               </CardContent>
@@ -192,8 +192,8 @@ export default async function profile() {
               <CardContent className="text-sm px-6 pb-6 flex items-center flex-wrap gap-3">
                 <div className="flex flex-wrap gap-3">
                   {data.skills.map((skill) => (
-                    <div className="  capitalize px-4 py-2 rounded-lg border-2 border-border hover:border-primary hover:bg-primary/5 transition-all">
-                      <span className="text-sm font-medium">{skill}</span>
+                    <div key={skill.id} className="  capitalize px-4 py-2 rounded-lg border-2 border-border hover:border-primary hover:bg-primary/5 transition-all">
+                      <span className="text-sm font-medium">{skill.name}</span>
                     </div>
                   ))}
                 </div>
@@ -227,8 +227,8 @@ export default async function profile() {
             <CardContent className="p-0" >
         <p className=" text-sm text-muted-foreground mb-3">Role: Team Lead</p>
           {data.skills.map((skill) => (
-                  <Badge className=" bg-secondary text-secondary-foreground capitalize">
-                    {skill}
+                  <Badge    key={skill.id} className=" bg-secondary text-secondary-foreground capitalize">
+                    {skill.name}
                   </Badge>
                 ))}
             </CardContent>
@@ -254,8 +254,8 @@ export default async function profile() {
             <CardContent className="p-0" >
         <p className=" text-sm text-muted-foreground mb-3">Role: Team Lead</p>
           {data.skills.map((skill) => (
-                  <Badge className=" bg-secondary text-secondary-foreground capitalize">
-                    {skill}
+                  <Badge    key={skill.id} className=" bg-secondary text-secondary-foreground capitalize">
+                    {skill.name}
                   </Badge>
                 ))}
             </CardContent>

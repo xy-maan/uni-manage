@@ -1,12 +1,13 @@
 "use client"
 import { SearchTagsAction } from '@/Actions/SearchTags.action';
 import { Badge } from '@/components/ui/badge';
-import { TagsOptionsPayload } from '@/types/skills';
+import { OptionsPayload } from '@/types/skills';
 import React, { useState } from 'react'
 import { MultiValue } from "react-select";
 import AsyncCreatableSelect from "react-select/async-creatable";
 import { PopularTags } from './PopularTags';
 import { GetTagsAction } from '@/Actions/getTags.action';
+import { SearchTechnologyAction } from '@/Actions/searchTechnology.action';
 
 export type tagsOption = {
   value: number | string;
@@ -28,22 +29,36 @@ export default function MultiSelect({ value, onChange, isInvalid, onBlur,variant
   const [selectedOptions, setSelectedOptions] = useState<tagsOption[]>([]);
   async function searchOptions(queryValue: string) {
     const { payload } = await SearchTagsAction(queryValue);
-    return payload.map((Tag: TagsOptionsPayload) => ({
+    return payload.map((Tag: OptionsPayload) => ({
       value: Tag.id,
       label: Tag.name,
     }));
   }
-
-
+  async function searchTechnology(queryValue: string) {
+    const { payload } = await SearchTechnologyAction(queryValue);
+    return payload.map((Tag: OptionsPayload) => ({
+      value: Tag.id,
+      label: Tag.name,
+    }));
+  }
+async function searchHandle(queryValue: string){
+  if(variant=="project"){
+return  searchTechnology(queryValue)
+  }
+  else{
+  return   searchOptions(queryValue)
+  }
+}
 
   return (
     <div className="space-y-3">
       <AsyncCreatableSelect
         controlShouldRenderValue={false}
         onBlur={onBlur}
-        loadOptions={searchOptions}
+        loadOptions={searchHandle}
         value={selectedOptions}
         onChange={(selected: MultiValue<tagsOption>) => {
+          console.log("selected:", selected); 
           setSelectedOptions(selected as tagsOption[]);
           const values = selected.map(item => item.is_official ? item.label : item.value);
           onChange(values);

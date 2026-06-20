@@ -1,5 +1,6 @@
 "use client"
 import { getMarketplaceProjectDetailAction } from '@/Actions/getMarketplaceProjectDetail.action'
+import Loading from '@/app/[locale]/_Components/CommunityComponent/Loading'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
@@ -30,9 +31,7 @@ export default function MarketplaceProjectDetailPage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center py-12 text-muted-foreground">Loading...</div>
-      </div>
+     <Loading />
     )
   }
 

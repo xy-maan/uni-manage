@@ -22,10 +22,7 @@ export interface Post  {
     updated_at:      Date;
 }
 
-export interface Tag {
-    id:   number;
-    name: string;
-}
+
 export type Category = {
   id: number;
   name: string;
