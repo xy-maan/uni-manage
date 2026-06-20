@@ -11,6 +11,7 @@ from .services import mark_read
 class NotificationViewSet(viewsets.ModelViewSet):
     serializer_class = NotificationSerializer
     permission_classes = [permissions.IsAuthenticated]
+    lookup_value_regex = r'\d+'
 
     def get_queryset(self):
         queryset = Notification.objects.filter(recipient=self.request.user).select_related('actor')

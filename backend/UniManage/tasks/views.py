@@ -50,6 +50,7 @@ class ProjectResourceViewSet(viewsets.ModelViewSet):
 class TaskViewSet(SoftDeleteViewSetMixin, viewsets.ModelViewSet):
     serializer_class = TaskSerializer
     permission_classes = [permissions.IsAuthenticated]
+    lookup_value_regex = r'\d+'
 
     def get_queryset(self):
         queryset = Task.objects.filter(participant_filter(self.request.user)).distinct().select_related(

@@ -48,3 +48,6 @@ frontend/.env.production.local
 # AI Agents
 AGENTS.md
 .opencode/**
+
+# Test settings (local override)
+backend/UniManage/UniManage/test_settings.py

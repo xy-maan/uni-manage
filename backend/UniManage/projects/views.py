@@ -32,6 +32,7 @@ class SoftDeleteViewSetMixin:
 class ProjectViewSet(SoftDeleteViewSetMixin, viewsets.ModelViewSet):
     serializer_class = ProjectSerializer
     permission_classes = [permissions.IsAuthenticated]
+    lookup_value_regex = r'\d+'
 
     def get_queryset(self):
         user = self.request.user
@@ -330,6 +331,12 @@ class MeetingNoteViewSet(viewsets.ModelViewSet):
             from rest_framework.exceptions import PermissionDenied
             raise PermissionDenied('Only the note author may edit it.')
         serializer.save()
+
+    def perform_destroy(self, instance):
+        if instance.author_id != self.request.user.id:
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied('Only the note author may delete it.')
+        instance.delete()
 
 
 class FeedbackViewSet(viewsets.ModelViewSet):
