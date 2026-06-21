@@ -290,6 +290,11 @@ class MeetingViewSet(SoftDeleteViewSetMixin, viewsets.ModelViewSet):
             raise PermissionDenied('You are not a project participant.')
         serializer.save(created_by=self.request.user)
 
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response({'message': 'Meeting deleted successfully.'}, status=status.HTTP_200_OK)
+
 
 class MeetingAttendanceViewSet(viewsets.ModelViewSet):
     serializer_class = MeetingAttendanceSerializer

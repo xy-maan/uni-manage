@@ -454,7 +454,7 @@ class MeetingAPITests(APITestCase):
         self.client.force_authenticate(self.leader)
         m = Meeting.objects.create(project=self.project, title='Delete me', starts_at='2026-07-05T10:00:00Z', created_by=self.leader)
         response = self.client.delete(reverse('meeting-detail', args=[m.id]))
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertFalse(Meeting.objects.filter(id=m.id).exists())
 
 

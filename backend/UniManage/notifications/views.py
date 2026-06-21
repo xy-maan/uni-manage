@@ -1,5 +1,5 @@
 from django.utils import timezone
-from rest_framework import permissions, viewsets
+from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -22,6 +22,11 @@ class NotificationViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(recipient=self.request.user, actor=self.request.user)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response({'message': 'Notification deleted successfully.'}, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['post'], url_path='mark-read')
     def mark_read(self, request, pk=None):

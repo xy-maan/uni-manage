@@ -3351,7 +3351,14 @@ Used by **project participants** to soft-delete a meeting.
 
 **Request Body:** None
 
-**Success Response:** `204 No Content`
+**Success Response:** `200 OK`
+
+**Response Example:**
+```json
+{
+  "message": "Meeting deleted successfully."
+}
+```
 
 ---
 
@@ -3753,7 +3760,14 @@ Used by the **notification recipient** to delete a notification.
 
 **Request Body:** None
 
-**Success Response:** `204 No Content`
+**Success Response:** `200 OK`
+
+**Response Example:**
+```json
+{
+  "message": "Notification deleted successfully."
+}
+```
 
 ---
 
