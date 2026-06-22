@@ -16,18 +16,16 @@ import { usePathname, useRouter,Link } from "@/i18n/navigation";
 import { signOut, useSession } from "next-auth/react";
 import StatusData from "./StatusData/StatusData";
 import NotificationBtn from "../Btns/NotificationBtn/NotificationBtn";
-import ChatBtn from "../Btns/ChatBtn/ChatBtn";
-import SearchNavbarBtn from "./SearchNavbarBtn/SearchNavbarBtn";
 import LanguageSelector from "../UtilitiesComponents/LanguageSelector/LanguageSelector";
 
+const navItemsHome = [
+{ href: "/#projects",  label: "Projects" },
+{ href: "/#feature",  label: "Features" },
+{ href: "/#work",  label: "How It Works" },
+{ href: "/#access",  label: "Access" },
+];
 export default function Navbar() {
 
-   const navItemsHome = [
-  { href: "/#projects",  label: "Projects" },
-  { href: "/#feature",  label: "Features" },
-  { href: "/#work",  label: "How It Works" },
-  { href: "/#access",  label: "Access" },
-];
   const { theme, setTheme } = useTheme();
   const {status,data}=useSession()
   const router = useRouter();
@@ -37,9 +35,6 @@ export default function Navbar() {
 // const locale = useLocale(); 
 const role = pathname.split("/")[1]; 
 const isDashboard = role === "student" || role === "supervisor";
-
-//   const singleRole = pathname.split("/");
-// const role = singleRole[1]; 
 const navItems = [
   { href: `/${role}/dashboard`, icon: LayoutDashboard, label: "Dashboard" },
   { href: `/${role}/projects/create`, icon: FolderOpen, label: "Projects" },
@@ -127,7 +122,6 @@ const navItems = [
            
           
                <li className="m-0 ">
-{/* <Link href={`/${role}/findteam`}>    */}
        <DropdownMenu >
                   <DropdownMenuTrigger asChild className="flex  text-muted-foreground hover:text-foreground hover:bg-muted/50  items-center gap-2 px-4 py-2 rounded-lg transition-all font-medium text-sm">
                     <div className="flex items-center justify-center gap-1">
@@ -200,10 +194,9 @@ const navItems = [
           
           <ul className="md:flex hidden gap-2 text-accent-foreground   items-center justify-center font-medium p-4 md:p-0 mt-4 rounded-base bg-neutral-secondary-soft md:space-x-8 rtl:space-x-reverse md:flex-row  md:mt-0 md:border-0 md:bg-neutral-primary">
 
-              {status === "authenticated" && (
-               <div className="flex items=center gap-2 justify-center m-0"> <ChatBtn/>
-               <SearchNavbarBtn/>
-    <NotificationBtn /></div>
+              {status === "authenticated" &&(
+               <div className="flex items=center gap-2 justify-center m-0">
+    <NotificationBtn role={role} /></div>
   )}
     <button
     onClick={() => setTheme(theme === "light" ? "dark" : "light")}
@@ -232,9 +225,7 @@ const navItems = [
       <span className="loader-auth"></span>
     ) : status === "authenticated" ? (
 
-      // <div className="size-11 rounded-full border border-border flex items-center justify-center">
         <StatusData />
-      // </div>
 
     ) : (
         <DropdownMenu>
@@ -264,19 +255,7 @@ const navItems = [
                           <span>Student / Supervisor</span>
                         </Link>
                       </DropdownMenuItem>
-                      <DropdownMenuItem asChild className="px-2">
-                        <Link href="/login">
-                         <GraduationCap className="size-4 mr-2"/>
-                          <span>Admin</span>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link href="/login">
-                        <Building2 className="size-4 mr-2"/>
-                      
-                          <span>Organization</span>
-                        </Link>
-                      </DropdownMenuItem>
+                   
                              
                     </DropdownMenuGroup>
                   </DropdownMenuContent>
@@ -397,12 +376,6 @@ const navItems = [
                     <span   onClick={() => {
     setIsOpenMenu(false); 
   }}>Student / Supervisor</span>
-                </div>
-                  </Link>
-                  <Link href="/login">
-                <div className="flex gap-2 items-center justify-start  px-3 py-2   bg-background text-foreground hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 rounded-lg text-sm font-medium border h-9 w-full">
-                   <Building2 className="size-4"/>
-                    <span>Organization</span>
                 </div>
                   </Link>
               </div>

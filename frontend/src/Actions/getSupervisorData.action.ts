@@ -1,0 +1,25 @@
+"use server";
+import { StudentProfile } from "@/types/student";
+import getAuthData from "@/utilities/getAuthData";
+export async function GetSupervisorDataAction() {
+  const session = await getAuthData();
+
+  if (!session?.django.access) {
+    throw new Error("No access token");
+  }
+
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/users/profile/supervisor/`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${session.django.access}`,
+    },
+  });
+if (!res.ok) {
+  throw new Error("Failed to fetch")
+}
+  const payload = await res.json();
+  return {
+    payload,
+  };
+}

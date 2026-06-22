@@ -18,7 +18,6 @@ export async function VotePollAction(postId: number, optionId: number) {
   );
 
   const payload = await res.json();
-  console.log(payload);
   
   return { ok: res.ok, payload };
 }

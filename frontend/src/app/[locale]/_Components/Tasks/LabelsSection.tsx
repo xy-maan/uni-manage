@@ -22,7 +22,6 @@ export default function LabelsSection({
   async function loadLabels() {
     setLoading(true);
     const { ok, payload } = await GetAllLabelsAction();
-      console.log("🔍 labels response:", { ok, payload });
 
     if (ok) {
       setLabels(payload.filter((l: Label) => l.project === projectId));

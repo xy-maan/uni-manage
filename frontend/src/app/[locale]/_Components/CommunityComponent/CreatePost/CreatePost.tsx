@@ -67,7 +67,6 @@ export default function CreatePost() {
   });
 
   const { control, handleSubmit,formState } = formObj;
-  console.log("errors:", formState.errors);
 async function handleCreatePost(data: CreateTextPostValues) {
   if (switchPost == "text") {
     await handleCreatePostText(data);
@@ -86,11 +85,9 @@ async function handleCreatePost(data: CreateTextPostValues) {
     tag_names: data.tag_names ?? [],
     post_type: data.post_type.toUpperCase() as "TEXT" | "POLL",
     };
-  console.log( postData); 
 
     const { payload, ok } = await CreatePostAction(postData);
-    console.log(formObj.formState.errors);
-      console.log(payload); 
+    (formObj.formState.errors);
     if (!ok) { toast.error("Failed to create post");  queryClient.invalidateQueries({ queryKey: ["posts"] }); return; }
 
     if (data.file && payload?.id) {
@@ -108,13 +105,12 @@ async function handleCreatePost(data: CreateTextPostValues) {
   async function handleCreatePostPoll(data: CreateTextPostValues) {
     const postData = {
 ...data,
-   poll_option_texts: data.poll_option_texts?.map((o) => o.value),
+   poll_option_texts: data.poll_option_texts?.map((o:any) => o.value),
           post_type: data.post_type.toUpperCase() as "TEXT" | "POLL",
 
     };
 
     const { payload, ok } = await CreatePostAction(postData);
-    console.log(payload);
     
     if (!ok) { toast.error("Failed to create poll");  queryClient.invalidateQueries({ queryKey: ["posts"] }); return; }
 
@@ -295,7 +291,7 @@ useEffect(() => {
               </div>
               {/* <DialogFooter> */}
               <div className="flex gap-2 pt-1 ">
-                <Button type="submit" className="flex-1 cursor-pointer"    onClick={() => console.log("errors:", formObj.formState.errors)}
+                <Button type="submit" className="flex-1 cursor-pointer"  
 
 >
   <Send className=" size-4"/>

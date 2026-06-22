@@ -122,14 +122,13 @@ async function handleCompleteProfile(data: CompleteProfileType) {
 
 }
       async function handleFormStudent(data: CompleteProfileType) {
-          console.log("SUBMITTED", data);
           const roleData:CompleteProfileType =
        {
 ...data,
 role: data.role.toUpperCase() as "STUDENT" | "SUPERVISOR",
         }
         const res = await completeProfileAction(roleData);
-        console.log(res);
+        (res);
 
         if (res.ok) {
           toast.success(res.payload.message, {
@@ -146,14 +145,13 @@ if (data.role === "STUDENT") router.push("/student/dashboard");
         }
       }
         async function handleFormSupervisor(data: CompleteProfileType) {
-          console.log("SUBMITTED", data);
           const roleData:CompleteProfileType =
        {
         ...data,
     role: data.role.toUpperCase() as "STUDENT" | "SUPERVISOR",
         };
         const res = await completeProfileAction(roleData);
-        console.log(res);
+        (res);
 
         if (res.ok) {
           toast.success(res.payload.message, {

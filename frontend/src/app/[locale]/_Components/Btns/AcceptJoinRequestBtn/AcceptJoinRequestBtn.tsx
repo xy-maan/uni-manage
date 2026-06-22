@@ -33,7 +33,6 @@ export default function AcceptJoinRequestBtn({
       setMembers((prev) => [...prev, payload]);
       toast.success("Member accepted successfully", { position: "top-center", duration: 2000 });
     } else {
-      console.log("payload:", payload); 
       toast.error("faild accept", { position: "top-center", duration: 2000 });
     }
     setLoading(false);

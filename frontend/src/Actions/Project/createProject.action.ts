@@ -6,7 +6,7 @@ import { createProjectValues } from "@/types/schema";
 export async function createProjectAction(data: createProjectValues) {
   const session = await getAuthData();
   if (!session?.django.access) return { ok: false, payload: null };
-console.log("URL:", `${process.env.NEXT_PUBLIC_BASE_URL}/projects/`);
+("URL:", `${process.env.NEXT_PUBLIC_BASE_URL}/projects/`);
   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/projects/`, {
     method: "POST",
     headers: {

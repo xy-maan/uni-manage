@@ -9,6 +9,11 @@ import { Badge } from '@/components/ui/badge';
 import { Field } from '@/components/ui/field';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import FilteringProjects from '@/app/[locale]/_Components/Projects/FilteringProjects';
+import EditInvitationBtn from '@/app/[locale]/_Components/Btns/InvitiationsBtn/InvitationBtn';
+import { Metadata } from "next";
+ export const metadata: Metadata = {
+   title: "Create Project",
+ };
 export default async function Projects({
   params,
 }: {
@@ -17,6 +22,7 @@ export default async function Projects({
   const { role } = await params;
   
 const {projects= []}=await GetAllProjectsAction()
+
   return (
     <div className="container mx-auto px-4 lg:px-8 py-8 ">
       <div className="space-y-6">
@@ -26,13 +32,18 @@ const {projects= []}=await GetAllProjectsAction()
           <div className="text-sm text-muted-foreground mt-0.5">{projects.length} project</div>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline">
-              <Bell className='size-4 mr-2'/>
-              Invitations
-            <Badge variant={'outline'}>1</Badge>
-            </Button>
-                
-            <CreateTeamBtn role={role}/>
+            {role === "student" &&
+            
+            // <Button variant="outline">
+            //   <Bell className='size-4 mr-2'/>
+            //   Invitations
+            // <Badge variant={'outline'}>1</Badge>
+            // </Button>
+            <EditInvitationBtn/>
+            
+}
+                {role === "student" && <CreateTeamBtn role={role} />}
+            {/* <CreateTeamBtn role={role}/> */}
           </div>
         </div>
         <FilteringProjects projects={projects}/>

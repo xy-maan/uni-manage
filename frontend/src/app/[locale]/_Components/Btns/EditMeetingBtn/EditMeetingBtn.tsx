@@ -68,11 +68,11 @@ export default function EditMeetingBtn({
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
               <Label>Start</Label>
-              <Input type="datetime-local" value={startsAt} onChange={(e) => setStartsAt(e.target.value)} />
+              <Input type="date" value={startsAt} onChange={(e) => setStartsAt(e.target.value)} />
             </div>
             <div className="space-y-2">
               <Label>End</Label>
-              <Input type="datetime-local" value={endsAt} onChange={(e) => setEndsAt(e.target.value)} />
+              <Input type="date" value={endsAt} onChange={(e) => setEndsAt(e.target.value)} />
             </div>
           </div>
           <div className="space-y-2">

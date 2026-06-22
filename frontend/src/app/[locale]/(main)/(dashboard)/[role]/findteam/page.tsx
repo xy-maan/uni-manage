@@ -77,12 +77,15 @@ import SearchInputTeam from "@/app/[locale]/_Components/Teams/SearchInputTeam";
 import FindTeamTabs from "@/app/[locale]/_Components/FindTeamTabs";
 import { GetAllStudentsAction } from "@/Actions/Memberships/getAllStudents.action";
 import { GetAllProjectsAction } from "@/Actions/Project/getAllProjects.action";
+import { Metadata } from "next";
 
+export const metadata: Metadata = {
+  title: "Find Team",
+};
 export default async function FindTeam() {
 
   const { payload: projects ,myProject} = await GetAllProjectsAction();
   const { payload: students } = await GetAllStudentsAction();
-
   return (
     <div className="container mx-auto px-4 lg:px-8 py-8">
       <FindTeamTabs

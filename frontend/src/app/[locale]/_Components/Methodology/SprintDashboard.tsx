@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 import { GetSprintDashboardAction } from "@/Actions/methodology/Sprints/GetSprintDashboard.action";
+import Loading from "../CommunityComponent/Loading";
 
 export default function SprintDashboard({ sprintId }: { sprintId: number }) {
   const [dashboard, setDashboard] = useState<any>(null);
@@ -24,7 +25,7 @@ export default function SprintDashboard({ sprintId }: { sprintId: number }) {
     loadDashboard();
   }, [sprintId]);
 
-  if (loading) return <p className="text-sm text-muted-foreground">Loading dashboard...</p>;
+  if (loading) return <Loading/>;
   if (!dashboard) return null;
 
   return (

@@ -56,12 +56,12 @@ export default function FormSupervisor({
   const [levels, setLevels] = useState<Levels[]>([]);
   async function handleGetDepartments() {
     const { payload } = await GetDepartmentsAction();
-    console.log("Department", payload);
+    ("Department", payload);
     setDepartments(payload);
   }
   async function handleAcademicLevels() {
     const { payload } = await GetAcademicLevelsAction();
-    console.log("Levels", payload);
+    ("Levels", payload);
     setLevels(payload);
   }
 
@@ -156,7 +156,7 @@ export default function FormSupervisor({
                   <FormItem className="">
                     <FormLabel className="text-foreground text-sm font-medium">
                       <Award className="size-4 text-primary"/>
-                      Department *
+                      Department 
                     </FormLabel>
                     <FormControl>
                       <Select
@@ -224,7 +224,7 @@ export default function FormSupervisor({
             <FormItem>
               <FormLabel className="text-foreground text-sm font-medium">
                 <Target className="text-primary size-4" />
-                Areas of Expertise * (Select at least 2)
+                Areas of Expertise 
               </FormLabel>
               <FormControl>
                 <MultiSelect
@@ -246,7 +246,7 @@ export default function FormSupervisor({
             <FormItem className="">
               <FormLabel className="text-foreground text-sm font-medium">
                 <Github className="text-primary size-4" />
-                scholar_url *
+                scholar_url 
               </FormLabel>
               <FormControl>
                 <Input
@@ -266,7 +266,7 @@ export default function FormSupervisor({
             <FormItem className="">
               <FormLabel className="text-foreground text-sm font-medium">
                 <Linkedin className="text-primary size-4" />
-                Linkedin URL *
+                Linkedin URL 
               </FormLabel>
               <FormControl>
                 <Input

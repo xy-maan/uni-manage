@@ -44,7 +44,7 @@ export default function StatusData() {
       const res = await GetUserStatus(data?.djangoAccess);
       setRole(res?.payload?.role);
     }
-    // console.log(role);
+    // (role);
   }
   useEffect(() => {
     getRoleUser();

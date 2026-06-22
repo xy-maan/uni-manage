@@ -17,7 +17,6 @@ export default function PollOptions({
   async function handleVote(optionId: number) {
     if (hasVoted) return;
     const { ok, payload } = await VotePollAction(postId, optionId);
-    console.log(payload);
 
     if (!ok)
       toast.error(payload.detail, { position: "top-center", duration: 2000 });

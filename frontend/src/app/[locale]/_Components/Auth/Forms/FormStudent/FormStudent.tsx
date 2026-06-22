@@ -43,13 +43,11 @@ export default function FormStudent({
   const [levels, setLevels] = useState<Levels[]>([])
   async function  handleGetDepartments() {
     const {payload}=await GetDepartmentsAction() 
-    console.log("Department",payload);
       setDepartments(payload)
     
   }
 async function  handleAcademicLevels() {
   const {payload}=await GetAcademicLevelsAction() 
-  console.log("Levels",payload);
 setLevels(payload)
   
 }

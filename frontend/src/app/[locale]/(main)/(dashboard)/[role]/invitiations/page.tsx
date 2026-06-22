@@ -1,13 +1,16 @@
 import { Mail } from "lucide-react";
 import { GetInvitationsAction } from "@/Actions/invitations/getInvitations.action";
 import InvitationsList from "@/app/[locale]/_Components/Invitations/InvitationsList";
+import { Metadata } from "next";
 
+export const metadata: Metadata = {
+  title: "Invitations",
+};
 export default async function InvitationsPage() {
   const { ok, payload } = await GetInvitationsAction();
   const invitations = ok
     ? payload.filter((inv: any) => inv.status === "pending")
     : [];
-
   return (
     <div className="container mx-auto px-4 lg:px-8 py-8">
       <div className="flex items-center gap-3 mb-6">

@@ -9,7 +9,7 @@ export async function approveProjectAction(project_id:number){
     return {ok:false,payload:null}
  } 
    const res= await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/projects/${project_id}/approve-submission/`, {
-    method: "PATCH",
+    method: "POST",
       headers: {
         "Authorization": `Bearer ${session.django.access}`,
       },

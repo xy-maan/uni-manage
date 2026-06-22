@@ -3,10 +3,11 @@
 import React, { createContext, useState, ReactNode, Dispatch, SetStateAction, useEffect } from "react";
 import { GetInvitationsAction } from "@/Actions/invitations/getInvitations.action";
 import getAuthData from "@/utilities/getAuthData";
+import { GetUnreadCountAction } from "@/Actions/Notifications/getUnreadCount.action";
 
 type NotificationCountContextType = {
-//   notificationCount: number;
-//   setNotificationCount: Dispatch<SetStateAction<number>>;
+  notificationCount: number;
+  setNotificationCount: Dispatch<SetStateAction<number>>;
   invitationCount: number;
   setInvitationCount: Dispatch<SetStateAction<number>>;
 };
@@ -14,17 +15,17 @@ type NotificationCountContextType = {
 export const NotificationCountContext = createContext<NotificationCountContextType | null>(null);
 
 export default function NotificationCountProvider({ children }: { children: ReactNode }) {
-//   const [notificationCount, setNotificationCount] = useState(0);
+  const [notificationCount, setNotificationCount] = useState(0);
   const [invitationCount, setInvitationCount] = useState(0);
 
   async function getCounts() {
     const session = await getAuthData();
     if (!session?.django.access) return;
 
-    // const { ok: notifOk, payload: notifPayload } = await GetUnreadCountAction();
-    // if (notifOk) {
-    //   setNotificationCount(notifPayload.count);
-    // }
+    const { ok: notifOk, payload: notifPayload } = await GetUnreadCountAction();
+    if (notifOk) {
+      setNotificationCount(notifPayload.count);
+    }
 
     const { ok: invOk, payload: invPayload } = await GetInvitationsAction();
     if (invOk) {
@@ -39,7 +40,7 @@ export default function NotificationCountProvider({ children }: { children: Reac
 
   return (
     <NotificationCountContext.Provider
-      value={{ invitationCount, setInvitationCount }}
+      value={{ invitationCount, setInvitationCount, notificationCount,setNotificationCount}}
     >
       {children}
     </NotificationCountContext.Provider>

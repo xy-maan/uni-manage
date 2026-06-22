@@ -30,7 +30,7 @@ if (!nextAuthToken) return null;
     const refresh = nextAuthData?.djangoRefresh || null;
 
 
-    console.log({ access, refresh, nextAuthData });
+    ({ access, refresh, nextAuthData });
 
     return {
       nextAuth: nextAuthData,

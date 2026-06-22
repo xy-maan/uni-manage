@@ -37,7 +37,6 @@ export default function RequestSupervisorBtn({
   role: "primary" | "secondary";
   onRequested: (request: SupervisorRequest) => void;
 }) {
-    console.log("role:", role);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [supervisors, setSupervisors] = useState<Doctor[]>([]);
@@ -50,7 +49,6 @@ export default function RequestSupervisorBtn({
     supervisor: undefined,
     message: "",
     proposal: "",
-    abstract: "",
     expected_scope: "",
     technology_names: undefined,
   },
@@ -60,7 +58,6 @@ export default function RequestSupervisorBtn({
 
   async function loadSupervisors() {
     const { ok, payload } = await GetAllSupervisorAction();
-    console.log(payload);
     
     if (ok) {
       setSupervisors(
@@ -73,9 +70,9 @@ export default function RequestSupervisorBtn({
     if (!open) return;
     loadSupervisors();
   }, [open]);
-console.log(formObj.getValues());
+(formObj.getValues());
   async function handleSend(data: RequestType) {
-    console.log(data)
+    (data)
     setLoading(true);
     const body: RequestType = {
       project: projectId,
@@ -129,9 +126,7 @@ console.log(formObj.getValues());
         </DialogHeader>
 
         <Form {...formObj}>
-        <form onSubmit={handleSubmit(handleSend, (errors) => {
-  console.log("VALIDATION ERRORS:", errors);
-})}>
+        <form onSubmit={handleSubmit(handleSend)}>
             <div className="space-y-4">
 
               {/* Supervisor Select */}
@@ -187,7 +182,7 @@ console.log(formObj.getValues());
                     name="proposal"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Proposal *</FormLabel>
+                        <FormLabel>Proposal </FormLabel>
                         <FormControl>
                           <Textarea {...field} className="resize-none" rows={3} placeholder="Full project proposal text..." />
                         </FormControl>
@@ -195,25 +190,13 @@ console.log(formObj.getValues());
                       </FormItem>
                     )}
                   />
-                  <FormField
-                    control={control}
-                    name="abstract"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Abstract *</FormLabel>
-                        <FormControl>
-                          <Textarea {...field} className="resize-none" rows={2} placeholder="Short project abstract..." />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                 
                   <FormField
                     control={control}
                     name="expected_scope"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Expected Scope *</FormLabel>
+                        <FormLabel>Expected Scope </FormLabel>
                         <FormControl>
                           <Textarea {...field} className="resize-none" rows={2} placeholder="Authentication, dashboard, reports..." />
                         </FormControl>
@@ -227,7 +210,7 @@ console.log(formObj.getValues());
   render={({ field, fieldState }) => (
     <FormItem>
       <FormLabel className="text-foreground text-sm font-medium">
-        Tag * (Select at least 3)</FormLabel>
+        Your Skills</FormLabel>
       <FormControl>
         <MultiSelect
           variant="student"

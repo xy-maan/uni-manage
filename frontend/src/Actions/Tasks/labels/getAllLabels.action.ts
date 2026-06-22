@@ -9,8 +9,8 @@ export async function GetAllLabelsAction() {
     return { ok: false, payload: null };
   }
 
-console.log("🔍 BASE_URL:", process.env.NEXT_PUBLIC_BASE_URL);
-console.log("🔍 Full URL:", `${process.env.NEXT_PUBLIC_BASE_URL}/tasks/labels/`);
+("🔍 BASE_URL:", process.env.NEXT_PUBLIC_BASE_URL);
+("🔍 Full URL:", `${process.env.NEXT_PUBLIC_BASE_URL}/tasks/labels/`);
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/tasks/labels/`,
     {
@@ -21,7 +21,6 @@ console.log("🔍 Full URL:", `${process.env.NEXT_PUBLIC_BASE_URL}/tasks/labels/
   );
 
   const payload = await res.json();
-console.log(payload)
   return {
     ok: res.ok,
     payload,

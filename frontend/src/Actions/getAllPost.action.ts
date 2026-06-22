@@ -14,7 +14,6 @@ export async function GetPostAction(){
       },    
      cache: "no-store",});
     const payload:PostItems = await res.json();
-    console.log(payload);
     
       return {    payload,
     ok: res.ok,}

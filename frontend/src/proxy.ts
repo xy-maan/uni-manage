@@ -206,7 +206,9 @@ export async function proxy(request: NextRequest) {
       new URL(`/${locale}`, request.url)
     );
   }
-
+if (isHomePage) {
+  return handleI18nRouting(request); 
+}
   const role = token.role as string | null;
 
   // =========================

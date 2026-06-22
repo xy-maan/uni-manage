@@ -19,9 +19,7 @@ export async function logoutAction(){
       },
       body: JSON.stringify({ refresh: session.djangoRefresh }),
     });
-    console.log("status:", res.status);
     const payload:Logout = await res.json();
-    console.log("payload:", payload)
       return {    payload,
     ok: res.ok,}
 };

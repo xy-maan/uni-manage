@@ -10,6 +10,7 @@ import { GetTasksAction } from "@/Actions/Tasks/tasks/getAllTasks.action";
 import { GetTaskAction } from "@/Actions/Tasks/tasks/getTask.action";
 import { Membership } from "@/types/team";
 import { Task } from "@/types/tasks";
+import { GetAllLabelsAction } from "@/Actions/Tasks/labels/getAllLabels.action";
 
 export default function TasksSection({
   projectId,
@@ -22,7 +23,7 @@ export default function TasksSection({
 }) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
-
+  const [labels, setLabels] = useState<any[]>([])
   async function loadTasks() {
     setLoading(true);
     const { ok, payload } = await GetTaskAction(projectId);
@@ -32,6 +33,12 @@ export default function TasksSection({
       toast.error("Failed to load tasks", { position: "top-center", duration: 2000 });
     }
     setLoading(false);
+  }
+ async function loadLabels() {
+    const { ok, payload } = await GetAllLabelsAction(); 
+    if (ok) {
+      setLabels(payload);
+    }
   }
 
   useEffect(() => {
@@ -68,7 +75,11 @@ export default function TasksSection({
             </div>
             {isParticipant && (
               <div className="flex items-center gap-1 shrink-0">
-                <EditTaskBtn task={task} members={members} setTasks={setTasks} />
+                <EditTaskBtn labels={labels} task={task} members={members} onUpdated={(updatedTask) =>
+    setTasks((prev) =>
+      prev.map((t) => (t.id === updatedTask.id ? updatedTask : t))
+    )
+  }  />
                 <DeleteTaskBtn task_id={task.id} title={task.title} setTasks={setTasks} />
               </div>
             )}

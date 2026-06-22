@@ -113,6 +113,7 @@ import { CircleCheck, Flag, Info, LayoutGrid, Target, Zap } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 import { createProjectValues } from "@/types/schema";
 import { Card, CardContent } from "@/components/ui/card";
+import LearnMore from "./LearnMore";
 type Methodology=  "kanban" | "sprint" | "milestone" | null
 export default function MethodologyType({formObj,setSelectedMethType,selectedMethType}:{formObj:UseFormReturn<createProjectValues>;  setSelectedMethType: (
   methodology:Methodology
@@ -128,8 +129,10 @@ export default function MethodologyType({formObj,setSelectedMethType,selectedMet
   formObj.setValue("methodology", "sprint");
 }} >
 
-    <CardContent className='p-4 flex items-start gap-3 pb-6'>
-                <div className={`p-2 rounded-lg shrink-0  ${selectedMethType=="sprint"?"bg-primary text-primary-foreground":"bg-muted"}`}>
+    <CardContent className='p-4  pb-6'>
+              <div className="flex items-start gap-3">
+
+                  <div className={`p-2 rounded-lg shrink-0  ${selectedMethType=="sprint"?"bg-primary text-primary-foreground":"bg-muted"}`}>
 
 <Zap className="size-6"/>
                 </div>
@@ -138,6 +141,8 @@ export default function MethodologyType({formObj,setSelectedMethType,selectedMet
                     <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">Fixed time-boxed iterations with planning, review, and retrospective cycles. Best for iterative, adaptable projects.</p>
                 </div>
                  {selectedMethType=="sprint"&& <CircleCheck className="size-5 text-primary absolute top-4 right-4"/>}
+              </div>
+                 <LearnMore variant="agile" />
         </CardContent>
         
 </Card>
@@ -148,8 +153,10 @@ export default function MethodologyType({formObj,setSelectedMethType,selectedMet
   formObj.setValue("methodology", "milestone");
 }} >
 
-    <CardContent className='p-4 flex items-start gap-3 pb-6'>
-                <div className={`p-2 rounded-lg shrink-0  ${selectedMethType=="milestone"?"bg-primary text-primary-foreground":"bg-muted"}`}>
+    <CardContent className='p-4 pb-6'>
+              <div className="flex items-start gap-3">
+
+                  <div className={`p-2 rounded-lg shrink-0  ${selectedMethType=="milestone"?"bg-primary text-primary-foreground":"bg-muted"}`}>
 
 <Flag className="size-6"/>
                 </div>
@@ -158,6 +165,8 @@ export default function MethodologyType({formObj,setSelectedMethType,selectedMet
                     <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">Sequential phases with defined gates. Best for well-scoped projects with clear deliverables at each phase.</p>
                 </div>
                  {selectedMethType=="milestone"&& <CircleCheck className="size-5 text-primary absolute top-4 right-4"/>}
+              </div>
+                  <LearnMore variant="waterfall" />
         </CardContent>
         
 </Card>
@@ -168,8 +177,9 @@ export default function MethodologyType({formObj,setSelectedMethType,selectedMet
   formObj.setValue("methodology", "kanban");
 }} >
 
-    <CardContent className='p-4 flex items-start gap-3 pb-6'>
-                <div className={`p-2 rounded-lg shrink-0  ${selectedMethType=="kanban"?"bg-primary text-primary-foreground":"bg-muted"}`}>
+    <CardContent className='p-4  pb-6'>
+              <div className="flex items-start gap-3">
+                  <div className={`p-2 rounded-lg shrink-0  ${selectedMethType=="kanban"?"bg-primary text-primary-foreground":"bg-muted"}`}>
 
 <LayoutGrid className="size-6"/>
                 </div>
@@ -178,6 +188,8 @@ export default function MethodologyType({formObj,setSelectedMethType,selectedMet
                     <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">Continuous flow with visual columns and WIP limits. Best for ongoing work without fixed iterations.</p>
                 </div>
                  {selectedMethType=="kanban"&& <CircleCheck className="size-5 text-primary absolute top-4 right-4"/>}
+              </div>
+                  <LearnMore variant="kanban" />
         </CardContent>
         
 </Card>    

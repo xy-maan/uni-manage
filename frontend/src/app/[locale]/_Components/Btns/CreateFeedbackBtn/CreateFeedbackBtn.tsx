@@ -1,15 +1,30 @@
-// Btns/CreateFeedbackBtn/CreateFeedbackBtn.tsx
 "use client";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { CreateFeedbackAction } from "@/Actions/feedback/createFeedback.action";
+import { FeedbackValue } from "@/types/schema";
+import { createFeedbackSchema } from "@/schemas/feedback.schema";
 
 export default function CreateFeedbackBtn({
   projectId,
@@ -25,32 +40,47 @@ export default function CreateFeedbackBtn({
   onCreated: (feedback: any) => void;
 }) {
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [content, setContent] = useState("");
 
-  async function handleCreate() {
-    if (!content) {
-      toast.error("Feedback content is required", { position: "top-center", duration: 2000 });
-      return;
-    }
+  const formObj = useForm<FeedbackValue>({
+    resolver: zodResolver(createFeedbackSchema),
+    defaultValues: {
+      project: projectId,
+      task: taskId,
+      deliverable: deliverableId,
+      meeting: meetingId,
+      content: "",
+    },
+  });
 
-    setLoading(true);
-    const body: any = { content };
-    if (projectId) body.project = projectId;
-    if (taskId) body.task = taskId;
-    if (deliverableId) body.deliverable = deliverableId;
-    if (meetingId) body.meeting = meetingId;
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { isSubmitting },
+  } = formObj;
 
-    const { payload, ok } = await CreateFeedbackAction(body);
-    setLoading(false);
+  async function onSubmit(data: FeedbackValue) {
+    const { payload, ok } = await CreateFeedbackAction(data);
 
     if (ok) {
       onCreated(payload);
-      toast.success("Feedback added successfully", { position: "top-center", duration: 2000 });
-      setContent("");
+      toast.success("Feedback added successfully", {
+        position: "top-center",
+        duration: 2000,
+      });
+      reset({
+        project: projectId,
+        task: taskId,
+        deliverable: deliverableId,
+        meeting: meetingId,
+        content: "",
+      });
       setOpen(false);
     } else {
-      toast.error("faild add feedback", { position: "top-center", duration: 2000 });
+      toast.error("Failed to add feedback", {
+        position: "top-center",
+        duration: 2000,
+      });
     }
   }
 
@@ -66,16 +96,42 @@ export default function CreateFeedbackBtn({
         <DialogHeader>
           <DialogTitle>Add Feedback</DialogTitle>
         </DialogHeader>
-        <div className="w-full space-y-2">
-          <Label>Content</Label>
-          <Textarea value={content} onChange={(e) => setContent(e.target.value)} className="resize-none" rows={3} />
-        </div>
-        <DialogFooter className="mt-3">
-          <Button variant="outline" type="button" onClick={() => setOpen(false)}>Cancel</Button>
-          <Button className="py-0 h-8" onClick={handleCreate} disabled={loading}>
-            {loading ? "Sending..." : "Send"}
-          </Button>
-        </DialogFooter>
+
+        <Form {...formObj}>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={control}
+              name="content *"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Content *</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      {...field}
+                      className="resize-none"
+                      rows={3}
+                      placeholder="The scope is acceptable; focus on measurable evaluation."
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <DialogFooter className="mt-3">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" className="py-0 h-8" disabled={isSubmitting}>
+                {isSubmitting ? "Sending..." : "Send"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

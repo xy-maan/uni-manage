@@ -402,21 +402,21 @@ export interface Project {
   created_at: string;  
   updated_at: string;  
 }
-export interface Supervsiors {
-    id:                number;
-    username:          string;
-    full_name:         string;
-    email:             string;
-    role:              string;
-    avatar_url:        null;
-    title:             string;
-    title_display:     string;
-    department:        Department;
-    expertise:         Expertise[];
-    max_team_capacity: number;
-    scholar_url:       null;
-    linkedin_url:      null;
-}
+// export interface Supervsiors {
+//     id:                number;
+//     username:          string;
+//     full_name:         string;
+//     email:             string;
+//     role:              string;
+//     avatar_url:        null;
+//     title:             string;
+//     title_display:     string;
+//     department:        Department;
+//     expertise:         Expertise[];
+//     max_team_capacity: number;
+//     scholar_url:       null;
+//     linkedin_url:      null;
+// }
 
 export interface Department {
     id:   number;
@@ -439,4 +439,22 @@ export interface Memberships {
   created_at: string;
   updated_at: string;
   user_detail: UserDetail;
+}
+export interface Supervsiors {
+    id:                number;
+    project:           number;
+    supervisor:        number;
+    supervisor_detail: SupervisorDetail;
+    role:              string;
+    created_at:        Date;
+    updated_at:        Date;
+}
+
+export interface SupervisorDetail {
+    id:         number;
+    username:   string;
+    full_name:  string;
+    email:      string;
+    role:       string;
+    avatar_url: null;
 }

@@ -1,4 +1,4 @@
-import SupervisorDashboard from '@/app/[locale]/_Components/DashboardComponents/SupervisorDashboard/SupervisorDashboard'
+import SupervisorDashboard from '@/app/[locale]/_Components/CommunityComponent/DashboardComponents/SupervisorDashboard/SupervisorDashboard'
 import React from 'react'
 
 export default function page() {

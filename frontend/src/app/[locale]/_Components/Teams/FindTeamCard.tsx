@@ -15,7 +15,7 @@ export default function FindTeamCard({ project: initialProject, student,currentP
   const isTeamCard = !!initialProject;
   const isStudentCard = !!student;
   const [project, setProject] = useState(initialProject);
-  console.log(project)
+  (project)
   const [requestsJoin, setRequestsJoin] = useState<JoinRequest[]>([]);
     const [loading, setLoading] = useState(true);
    async function getAllRequestsJoin() {
@@ -49,9 +49,6 @@ export default function FindTeamCard({ project: initialProject, student,currentP
             {project.project_type}
           </Badge>
 </div>
-          <p className="text-sm text-muted-foreground">
-            {project.abstract || "No abstract provided"}
-          </p>
         </CardHeader>
 
         <CardContent className="p-6 pt-0 space-y-3">

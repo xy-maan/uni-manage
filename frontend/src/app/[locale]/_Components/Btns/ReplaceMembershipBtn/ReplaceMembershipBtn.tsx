@@ -39,12 +39,11 @@ project:project,
 user:membershipId,
            
          };
-       console.log( dataMember); 
+       ( dataMember); 
        setLoading(true)
     const { payload, ok  } = await CreateJoinRequestAction(dataMember);
 
     setLoading(false);
-  console.log("Response:", { payload, ok });
 
     if (ok) {
         setMembers((prev:any) => ({
@@ -69,7 +68,6 @@ const message =
         ? firstValue
         : "Error occurred";
   toast.error(message);
-          console.log("Error payload:", payload); 
 
     }
   }

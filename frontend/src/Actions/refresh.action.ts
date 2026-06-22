@@ -1,6 +1,6 @@
 "use server";
 export async function refreshTokenAction(refreshToken: string) {
-   console.log("🔄 Calling refresh endpoint...");
+   ("🔄 Calling refresh endpoint...");
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/users/token/refresh/`,

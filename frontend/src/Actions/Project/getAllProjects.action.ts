@@ -14,7 +14,6 @@ export async function GetAllProjectsAction(){
       },
     });
     const payload:Project[]  = await res.json();
-    console.log("alll projectss",payload)
 const projects = payload.filter((p: any) =>
   p.memberships?.some(
     (m: any) =>

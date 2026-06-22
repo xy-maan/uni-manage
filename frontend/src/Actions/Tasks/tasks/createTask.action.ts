@@ -18,7 +18,6 @@ export async function CreateTaskAction(data: any) {
   });
 
   const payload = await res.json();
-console.log("payloaaaad",payload)
   return {
     ok: res.ok,
     payload,

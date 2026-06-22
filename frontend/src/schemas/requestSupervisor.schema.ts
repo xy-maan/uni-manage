@@ -6,7 +6,6 @@ export const requestSchema = z.object({
   supervisor: z.number({ message: "Supervisor is required" }),
   message: z.string().optional(),
   proposal: z.string().optional(),
-  abstract: z.string().optional(),
   expected_scope: z.string().optional(),
   technology_names: z.array(z.union([z.number(), z.string()])).optional(),
 })

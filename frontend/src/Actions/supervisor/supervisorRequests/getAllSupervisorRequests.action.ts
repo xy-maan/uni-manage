@@ -11,6 +11,6 @@ export async function GetAllSupervisorRequestsAction() {
   });
 
   const payload = await res.json();
-    console.log("RAW API RESPONSE:", payload); 
+    ("RAW API RESPONSE:", payload); 
   return { payload, ok: res.ok };
 }

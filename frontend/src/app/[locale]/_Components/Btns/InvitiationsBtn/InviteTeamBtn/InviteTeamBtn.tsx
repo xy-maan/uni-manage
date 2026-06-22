@@ -35,7 +35,7 @@ export default function InviteTeamBtn({projectId,onInvited, className}:{projectI
 
 const { data: session } = useSession();
 
-// console.log(session?.user?.email);
+// (session?.user?.email);
 const currentUserEmail=session?.user?.email
     const [students, setStudents] = useState<Student[]>([]);
 
@@ -74,11 +74,10 @@ useEffect(() => {
            project:projectId
            
          };
-       console.log( dataMember); 
+       ( dataMember); 
        setLoading(true)
     const { payload, ok  } = await CreateInvitationAction(dataMember);
     setLoading(false);
-  console.log("Response:", { payload, ok });
 
     if (ok) {
       
@@ -96,7 +95,6 @@ const message =
         ? firstValue
         : "Error occurred";
   toast.error(message);
-          console.log("Error payload:", payload); 
     }
   }
 

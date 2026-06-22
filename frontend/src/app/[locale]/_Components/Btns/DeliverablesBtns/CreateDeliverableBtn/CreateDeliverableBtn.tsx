@@ -73,7 +73,7 @@
 //           </div>
 //           <div className="space-y-2">
 //             <Label>Due Date</Label>
-//             <Input type="datetime-local" value={dueAt} onChange={(e) => setDueAt(e.target.value)} />
+//             <Input type="date" value={dueAt} onChange={(e) => setDueAt(e.target.value)} />
 //           </div>
 //         </div>
 //         <DialogFooter className="mt-3">
@@ -174,7 +174,7 @@ export default function CreateDeliverableBtn({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Due Date</FormLabel>
-                    <FormControl><Input type="datetime-local" {...field} /></FormControl>
+                    <FormControl><Input type="date" {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )}

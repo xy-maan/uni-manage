@@ -58,7 +58,6 @@ return  searchTechnology(queryValue)
         loadOptions={searchHandle}
         value={selectedOptions}
         onChange={(selected: MultiValue<tagsOption>) => {
-          console.log("selected:", selected); 
           setSelectedOptions(selected as tagsOption[]);
           const values = selected.map(item => item.is_official ? item.label : item.value);
           onChange(values);

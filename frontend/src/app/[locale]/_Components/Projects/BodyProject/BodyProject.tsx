@@ -24,6 +24,8 @@ import { useSession } from 'next-auth/react';
 import FeedBackTab from '../../FeedBackTab/FeedBackTab';
 import MeetingsSection from '../../Tasks/MeetingsSection';
 import DeliverablesSection from '../../Tasks/DeliverablesSection';
+import { usePathname, useRouter } from '@/i18n/navigation';
+import { useSearchParams } from "next/navigation";
 
 export default function BodyProject({project,role}:{project:Project;role:string}) {
   const {data}=useSession();
@@ -33,19 +35,35 @@ export default function BodyProject({project,role}:{project:Project;role:string}
 const isMember = project.memberships.some(
   (m: Membership) => m.user_detail.email === currentUserEmail
 );
-  const isSupervisor = project.supervisors?.some(
-    (s: any) => s.supervisor === currentUserEmail
-  );
+const isSupervisor = project.supervisors?.some(
+  (s: any) => s.supervisor_detail?.email === currentUserEmail
+);
+
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const currentTab = searchParams.get("tab") || "overview";
+
+  const handleTabChange = (tab: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+
+    params.set("tab", tab);
+
+    router.replace(`${pathname}?${params.toString()}`);
+  };
+
   return (
-<Tabs defaultValue="overview" className="w-full space-y-6">
+<Tabs    value={currentTab}
+className="w-full space-y-6" onValueChange={handleTabChange}>
   <TabsList>
-    <TabsTrigger value="overview">Overview</TabsTrigger>
-    <TabsTrigger value="team">Team</TabsTrigger>
-    <TabsTrigger value="tasks">Tasks</TabsTrigger>
-    <TabsTrigger value="deliverables">Deliverables</TabsTrigger>
-    <TabsTrigger value="meetings">Meetings</TabsTrigger>
-    <TabsTrigger value="feedback">Feedback</TabsTrigger>
-    <TabsTrigger value="supervision">Supervision</TabsTrigger>
+    <TabsTrigger  value="overview" className='transition-all border'>Overview</TabsTrigger>
+    <TabsTrigger value="team"  className='transition-all border'>Team</TabsTrigger>
+    <TabsTrigger value="tasks"  className='transition-all border'>Tasks</TabsTrigger>
+    <TabsTrigger value="deliverables"  className='transition-all border'>Deliverables</TabsTrigger>
+    <TabsTrigger value="meetings"  className='transition-all border'>Meetings</TabsTrigger>
+    <TabsTrigger value="feedback"  className='transition-all border'>Feedback</TabsTrigger>
+    <TabsTrigger value="supervision"  className='transition-all border'>Supervision</TabsTrigger>
   </TabsList>
 
   <TabsContent value="overview" ><OverviewProject project={project} role={role}/></TabsContent>

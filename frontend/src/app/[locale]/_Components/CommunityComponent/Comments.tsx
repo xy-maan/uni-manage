@@ -7,7 +7,7 @@ import HeaderContent from "./HeaderContent";
 import { useQuery } from "@tanstack/react-query";
 export default  function Comments({ postId }: { postId: number }) {
 //   const { payload: comments } = await GetCommentAction(postId);
-//   console.log(comments);
+//   (comments);
    const { data:comments, isLoading, error } = useQuery({
     queryKey: ["comments", postId],
     queryFn: async  () =>{

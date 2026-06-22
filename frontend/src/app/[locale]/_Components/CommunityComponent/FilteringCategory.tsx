@@ -14,7 +14,6 @@ export default function FilteringCategory() {
   useEffect(() => {
     async function getCategories() {
       const { ok, payload } = await GetCategoryAction();
-      console.log(payload);
       
       if (ok) setCategories(payload);
     }

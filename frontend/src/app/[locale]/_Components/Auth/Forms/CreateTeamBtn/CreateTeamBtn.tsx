@@ -76,8 +76,6 @@ export default function CreateTeamBtn({role}:{role:string}) {
     max_members: 7,
     is_public: true,
     proposal: "",
-    abstract: "",
-    expected_scope: "",
     archive_tags:[]
      },
    });
@@ -87,13 +85,12 @@ export default function CreateTeamBtn({role}:{role:string}) {
            ...data,
            
          };
-       console.log( postData); 
+       ( postData); 
        
     const { payload, ok  } = await createProjectAction(postData);
          if(ok){
  router.push(`/${role}/projects`)
          }
-           console.log(payload); 
   
        if (!ok ) 
  
@@ -216,21 +213,15 @@ export default function CreateTeamBtn({role}:{role:string}) {
 
                       <div className="flex justify-end pt-4 mt-6 gap-3 ">
 
-                    {step <4  ? (
-                          // <div className="flex gap-3">
-    <Button type="button" onClick={onContinue}>
+ {step < 4 ? (
+    <Button type="button" onClick={() => setStep(step + 1)}>
       Continue
     </Button>
-    // </div>
-) : (
-    // <div className="flex gap-3"> 
-    <Button
-    type="submit"
-    >
-    Create a Team
-  </Button>
-  // </div>
-)}
+  ) : (
+    <Button type="submit">
+      Create Project
+    </Button>
+  )}
       <Button
       type="button"
       variant="outline"
@@ -242,9 +233,6 @@ export default function CreateTeamBtn({role}:{role:string}) {
                 </form>
                 </Form>
 
-      {/* </div> */}
-    {/* {role=="student" && */}
-    {/* } */}
 
 
       </div>

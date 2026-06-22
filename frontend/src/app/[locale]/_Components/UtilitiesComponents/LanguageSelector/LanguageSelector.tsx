@@ -39,7 +39,7 @@ export default function LanguageSelector() {
   </DropdownMenuItem>
 ))}
     {/* {LANGUAGE.map((lan) => {
-  console.log("Item:", lan);
+  ("Item:", lan);
   return (
     <DropdownMenuItem
       key={lan.locale}

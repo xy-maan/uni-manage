@@ -1,33 +1,3 @@
-// {isLeader&&
-//   <div className="flex flex-wrap gap-2 shrink-0">
-
-//     <Button>
-//         <ChevronRight className="size-3.5"/>
-//          Submit for Review
-//     </Button>
-//      <Button variant={'outline'}>
-//         <Archive className="size-3.5"/>
-//          Archive
-//     </Button>
-    
-// <EditBtn id={project.id}/>
-//      <Button  variant={'outline'} className='text-destructive hover:text-destructive'>
-//         <Trash2 className="size-3.5"/>
-//           Delete
-//     </Button>
-//      <Button  variant={'outline'}>
-//         <CircleCheck className="size-3.5 text-success"/>
-//         Approve 
-//     </Button>
-//        <Button  variant={'outline'}>
-//         <Check className="size-3.5 text-success"/>
-//         Activate 
-//     </Button>
-//   </div>
-  
-  
-//   }
-// Btns.tsx
 "use client";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -73,7 +43,6 @@ export default function ProjectActionBtns({
   isSupervisor: boolean;
   onProjectChange?: (updated: any) => void;
 }) {
-  console.log("project status:", project.status);
   const router = useRouter();
   const [pendingAction, setPendingAction] = useState<ConfirmAction>(null);
   const [loading, setLoading] = useState(false);
@@ -158,7 +127,6 @@ export default function ProjectActionBtns({
           </Button>
         )}
 
-        {/* ✅ leader فقط — activate */}
         {canActivate && (
           <Button variant="outline" onClick={() => setPendingAction("activate")}>
             <Check className="size-3.5 text-success" />

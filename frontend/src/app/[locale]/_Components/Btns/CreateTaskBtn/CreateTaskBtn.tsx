@@ -180,7 +180,7 @@
 //                   <FormItem>
 //                     <FormLabel>Due Date</FormLabel>
 //                     <FormControl>
-//                       <Input type="datetime-local" {...field} />
+//                       <Input type="date" {...field} />
 //                     </FormControl>
 //                     <FormMessage />
 //                   </FormItem>
@@ -218,6 +218,7 @@ import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { createTaskSchema, CreateTaskValues } from "@/schemas/task.schema";
 import { CreateTaskAction } from "@/Actions/Tasks/tasks/createTask.action";
+import StoryPointsTooltip from "../../UtilitiesComponents/StoryPointsTooltip";
 
 export default function CreateTaskBtn({
   projectId,
@@ -252,7 +253,6 @@ export default function CreateTaskBtn({
     body.due_at = new Date(body.due_at).toISOString();
   }
     const { payload, ok } = await CreateTaskAction(body);
-   console.log(payload)
     if (ok) {
       onCreated(payload);
       toast.success("Task created successfully", { position: "top-center", duration: 2000 });
@@ -355,7 +355,9 @@ export default function CreateTaskBtn({
               <FormField control={control} name="story_points"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Story Points</FormLabel>
+                    <FormLabel>
+                      <StoryPointsTooltip />
+                      Story Points</FormLabel>
                     <FormControl>
                       <Input
                         type="number"

@@ -9,6 +9,7 @@ import CreateSprintBtn from "./Btns/Sprints/CreateSprintBtn";
 import DeleteSprintBtn from "./Btns/Sprints/DeleteSprintBtn";
 import { GetSprintsAction } from "@/Actions/methodology/Sprints/GetSprints.action";
 import { Sprint } from "@/types/methodology";
+import Loading from "../CommunityComponent/Loading";
 const statusConfig: Record<string, { label: string; class: string }> = {
   planned:   { label: "Planned",   class: "bg-gray-500/20 text-gray-500" },
   active:    { label: "Active",    class: "bg-green-500/20 text-green-500" },
@@ -29,7 +30,6 @@ export default function SprintsSection({
     setLoading(true);
     try {
       const { ok, payload } = await GetSprintsAction();
-      console.log(payload)
       if (ok) {
         setSprints(payload.filter((s: Sprint) => s.project === projectId));
       } else {
@@ -47,8 +47,8 @@ export default function SprintsSection({
     loadSprints();
   }, [projectId]);
 
-  if (loading) return <p className="text-sm text-muted-foreground">Loading sprints...</p>;
-
+  // if (loading) return <p className="text-sm text-muted-foreground">Loading sprints...</p>;
+  if (loading) return <Loading/>;
   return (
     <Card className="p-0 mb-5">
       <CardHeader className="p-6 pb-3 flex items-center justify-between">

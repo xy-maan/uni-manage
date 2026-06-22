@@ -43,7 +43,7 @@ const filteredProjects =
     key={item.value}
     variant={status === item.value ? "default" : "outline"}
     onClick={() => setStatus(item.value)}
-    className="py-0 h-8 text-xs"
+    className="py-0 h-8 text-xs border"
   >
 
     {item.label}

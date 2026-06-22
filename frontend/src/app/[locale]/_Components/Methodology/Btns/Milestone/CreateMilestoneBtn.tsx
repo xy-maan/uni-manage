@@ -79,7 +79,7 @@ export default function CreateMilestoneBtn({
           </div>
           <div className="space-y-2">
             <Label>Due Date</Label>
-            <Input type="datetime-local" value={dueAt} onChange={(e) => setDueAt(e.target.value)} />
+            <Input type="date" value={dueAt} onChange={(e) => setDueAt(e.target.value)} />
           </div>
         </div>
         <DialogFooter className="mt-3">

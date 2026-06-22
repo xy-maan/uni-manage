@@ -164,7 +164,7 @@
 //                 render={({ field }) => (
 //                   <FormItem>
 //                     <FormLabel>Due Date</FormLabel>
-//                     <FormControl><Input type="datetime-local" {...field} /></FormControl>
+//                     <FormControl><Input type="date" {...field} /></FormControl>
 //                     <FormMessage />
 //                   </FormItem>
 //                 )}
@@ -344,7 +344,7 @@ export default function EditTaskBtn({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Due Date</FormLabel>
-                    <FormControl><Input type="datetime-local" {...field} /></FormControl>
+                    <FormControl><Input type="date" {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )}

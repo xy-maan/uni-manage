@@ -57,7 +57,7 @@ export default function Details({
                         render={({ field }) => (
                           <FormItem className="my-2 w-full">
                             <div className="gap-2">
-                              <FormLabel>Description *</FormLabel>
+                              <FormLabel>Description</FormLabel>
                             </div>
                             <FormControl>
                               <Textarea
@@ -125,7 +125,7 @@ export default function Details({
                                render={({ field }) => (
                                  <FormItem className="my-2 w-full">
                                    <div className="gap-2">
-                                     <FormLabel>expected_scope *</FormLabel>
+                                     <FormLabel>expected_scope </FormLabel>
                                    </div>
                                    <FormControl>
                                      <Textarea
@@ -138,25 +138,6 @@ export default function Details({
                                  </FormItem>
                                )}
                              />
-                                     <FormField
-                                       control={control}
-                                       name="abstract"
-                                       render={({ field }) => (
-                                         <FormItem className="my-2 w-full">
-                                           <div className="gap-2">
-                                             <FormLabel>abstract *</FormLabel>
-                                           </div>
-                                           <FormControl>
-                                             <Textarea
-                                               {...field}
-                                               className="resize-none "
-                                               placeholder="What is your project about?"
-                                             />
-                                           </FormControl>
-                                           <FormMessage />
-                                         </FormItem>
-                                       )}
-                                     />
    </div>
 
   )

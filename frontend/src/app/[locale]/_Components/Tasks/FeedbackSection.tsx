@@ -21,12 +21,10 @@ export default function FeedbackSection({
 }) {
   const [feedback, setFeedback] = useState<Feedback[]>([]);
   const [loading, setLoading] = useState(true);
-console.log("currentUserEmail",currentUserEmail)
   async function loadFeedback() {
     setLoading(true);
     const { ok, payload } = await GetAllFeedbackAction();
     if (ok) {
-      console.log("feed",feedback)
       setFeedback(payload.filter((f: Feedback) => f.project === projectId));
     } else {
       toast.error("Failed to load feedback", { position: "top-center", duration: 2000 });

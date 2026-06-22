@@ -19,7 +19,6 @@ if (!res.ok) {
   throw new Error("Failed to fetch")
 }
   const payload:StudentProfile = await res.json();
-  console.log("sssss",payload)
   return {
     payload,
   };

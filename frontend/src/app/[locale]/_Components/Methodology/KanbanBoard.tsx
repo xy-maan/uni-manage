@@ -39,9 +39,7 @@ export default function KanbanBoard({
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [draggedTaskId, setDraggedTaskId] = useState<number | null>(null);
-  const [selectedTask, setSelectedTask] = useState<any | null>(null);
-  console.log("isParticipant:", isParticipant); 
-  console.log("members:", members);             
+  const [selectedTask, setSelectedTask] = useState<any | null>(null);            
   async function loadBoard() {
     setLoading(true);
     const { ok, payload } = await GetKanbanDashboardAction(projectId);

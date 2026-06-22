@@ -21,10 +21,10 @@
 // export default function RequestJoinBtn({projectId,onRequest,leaderEmail,existingRequests}:{projectId:number;leaderEmail:string;  onRequest: (requestsJoin: any) => void;   existingRequests: any[];}) {
 //   const { data: session } = useSession();
 
-// // console.log(session?.user?.email);
+// // (session?.user?.email);
 // // const currentUserEmail=session?.user?.email
 // //     if (currentUserEmail === leaderEmail) return null;
-// // console.log(session?.user?.email);
+// // (session?.user?.email);
 //       const formObj = useForm<requestJoin>({
 //      resolver: zodResolver(RequestJoinSchema),
 //      defaultValues: {
@@ -49,7 +49,7 @@
 //            project:projectId
            
 //          };
-//        console.log( dataMember); 
+//        ( dataMember); 
 //        setLoading(true)
 //     const { payload, ok  } = await CreateJoinRequestAction(dataMember);
 
@@ -59,7 +59,7 @@
 //     //   return;
 //     // }
 //     setLoading(false);
-//   console.log("Response:", { payload, ok });
+//   ("Response:", { payload, ok });
 
 //     if (ok) {
       
@@ -77,7 +77,7 @@
 //         ? firstValue
 //         : "Error occurred";
 //   toast.error(message);
-//           console.log("Error payload:", payload); // ✅
+//           ("Error payload:", payload); // ✅
 
 //       // const firstError = typeof payload === "object" ? Object.values(payload)[0] : null;
 //       // toast.error(Array.isArray(firstError) ? firstError[0] : "Failed to send invitation");

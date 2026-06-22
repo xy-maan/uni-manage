@@ -45,7 +45,6 @@ export default async function BasicPage({ params }: { params: Promise<{ locale: 
   if (!ok) {
     return <HomeUi />;
   }
-console.log(payload)
   if (payload.is_complete) {
     redirect({ href: `/${payload.role.toLowerCase()}/dashboard`, locale });
   } else {

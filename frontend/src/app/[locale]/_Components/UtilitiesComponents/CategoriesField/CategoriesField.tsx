@@ -16,10 +16,8 @@ export default function CategoriesField({
           const [categories, setCategories] = useState<Category[]>([]);
            async function getCategory() {
     const { ok, payload } = await GetCategoryProjectsAction();
-    // console.log(payload)
     if (ok)
      {
-          console.log(payload)
       
       setCategories(payload);}
   }

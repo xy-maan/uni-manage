@@ -31,12 +31,12 @@
 //            ...data,
            
 //          };
-//        console.log( postData); 
+//        ( postData); 
 //     const { payload, ok  } = await EditProjectAction(id,);
 //          if(ok){
 // //  router.push(`/${role}/projects`)
 //          }
-//            console.log(payload); 
+//            (payload); 
 //         }
 //   return (
 //       <Dialog>
@@ -198,9 +198,7 @@ export default function EditBtn({ id, onEdited,project }: { id: number; onEdited
         
         archive_tags: data.archive_tags ?? [],
         };
-      console.log( DataEdit); 
-      console.log("data being sent:", data);
-        console.log("archive_tags:", data.archive_tags);
+      ( DataEdit); 
     setLoading(true);
     const { payload, ok } = await EditProjectAction(id, data);
     setLoading(false);

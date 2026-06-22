@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { CreateColumnAction } from "@/Actions/methodology/BoardColumns/CreateColumn.action";
+import LabelTooltip from "../../../UtilitiesComponents/LabelTooltip";
 
 const schema = z.object({
   project: z.number(),
@@ -40,9 +41,8 @@ export default function CreateColumnBtn({
   const { control, handleSubmit, reset, formState: { isSubmitting } } = formObj;
 
   async function onSubmit(data: FormValues) {
-    console.log(data)
+    (data)
     const { payload, ok } = await CreateColumnAction(data);
-console.log("payload kanban",payload)
     if (ok) {
       onCreated(payload);
       toast.success("Column created successfully", { position: "top-center", duration: 2000 });
@@ -80,7 +80,12 @@ console.log("payload kanban",payload)
               <FormField control={control} name="wip_limit"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>WIP Limit</FormLabel>
+                    {/* <FormLabel>WIP Limit</FormLabel>
+                     */}
+                     <FormLabel className="flex items-center gap-2">
+  WIP Limit
+  <LabelTooltip />
+</FormLabel>
                     <FormControl>
                       <Input
                         type="number"

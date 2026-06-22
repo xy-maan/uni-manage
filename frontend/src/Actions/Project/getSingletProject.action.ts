@@ -17,7 +17,6 @@ export async function getSingleProjectAction(project_id: number) {
   );
   const payload:Project = await res.json();
   
-console.log(payload);
 
   return { payload, ok: res.ok };
 }

@@ -19,6 +19,7 @@ export type replaceMembership = z.infer<typeof ReplaceMembershipSchema>
 
 
 export type RequestType = z.infer<typeof requestSchema>;
+export type FeedbackValue = z.infer<typeof createFeedbackSchema>;
 
 export type CreateTaskValues = z.infer<typeof createTaskSchema>;
 export type UpdateTaskValues = z.infer<typeof updateTaskSchema>;

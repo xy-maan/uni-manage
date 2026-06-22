@@ -1,7 +1,7 @@
-import StudentDashboard from "@/app/[locale]/_Components/DashboardComponents/StudentDashboard/StudentDashboard";
+import StudentDashboard from "@/app/[locale]/_Components/CommunityComponent/DashboardComponents/StudentDashboard/StudentDashboard";
 import { Metadata } from "next";
 
-import SupervisorDashboard from "@/app/[locale]/_Components/DashboardComponents/SupervisorDashboard/SupervisorDashboard";
+import SupervisorDashboard from "@/app/[locale]/_Components/CommunityComponent/DashboardComponents/SupervisorDashboard/SupervisorDashboard";
  export const metadata: Metadata = {
    title: "Dashboard",
  };

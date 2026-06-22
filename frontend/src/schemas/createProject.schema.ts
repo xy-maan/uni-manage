@@ -20,10 +20,7 @@ export const createProjectSchema = z.object({
   max_members: z.number().min(5).max(7),
   is_public: z.boolean(),
 	archive_tags:z.array(z.union([z.number(), z.string()])).optional(),
-
   proposal: z.string().optional(),
-  abstract: z.string().optional(),
-  expected_scope: z.string().optional(),
 })
 .superRefine((data, ctx) => {
 

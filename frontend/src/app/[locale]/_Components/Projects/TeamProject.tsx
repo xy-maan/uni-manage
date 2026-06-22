@@ -23,7 +23,7 @@ import RejectJoinRequestBtn from '../Btns/RejectJoinRequestBtn/RejectJoinRequest
 
 export default function TeamProject({project:initialProject}:{project:Project}) {
   const [project, setProject] = useState(initialProject);
-  // console.log(project);
+  // (project);
   
 // const [members, setMembers] = useState<Memberships[]>([]);
   const [members, setMembers] = useState<Memberships[]>(initialProject.memberships);
@@ -45,14 +45,12 @@ const isLeader = project?.memberships?.some(
  async function getAllInvitations(){
   const {payload,ok}=await GetInvitationsAction()
   if (ok) {
-    console.log(payload)
     setInvitations(payload);
   }
 }
 async function getAllRequestsJoin(){
   const {payload,ok}=await GetJoinRequestsAction()
   if (ok) {
-    console.log("requestttt",payload)
     setRequestsJoin(payload);
   }
 }
@@ -60,29 +58,12 @@ async function getAllRequestsJoin(){
     getAllInvitations();
     getAllRequestsJoin()
   }, []);
-  //           async function getAllMemberships(){
-  //        const { payload, ok  } = await GetMembershipsAction();
-  //        console.log(payload);
-  //        if(ok ){
-  //       //  setMembers(payload ? [payload] : []);
-
-  //   setMembers(payload);
-  
-  //           toast.success("Deleted Member successfully", { position: "top-center", duration: 2000 });
-  //        }
-  //        else   toast.error("faild Deleted", { position: "top-center", duration: 2000 });
-  //      }
-  //       useEffect(() => {
-  //           console.log("useEffect fired");
-
-  //   getAllMemberships();
-  // }, []);
   return (
     <div className="">
 
       <Card className="p-0 mb-5">
   <CardHeader className='p-6 pb-3 flex items-center justify-between '>
-    <h4 className="text-sm">Members (4/5)</h4>
+    <h4 className="text-sm">{project.memberships.length}/{project.max_members} members)</h4>
     {isLeader&&
     <InviteTeamBtn
     className="w-fit"
@@ -109,7 +90,7 @@ mh
 
   </div>
   <p className="text-xs text-muted-foreground">{member?.user_detail?.email} . Joined  {formatDueDate(member?.joined_at)}</p>
-   {/* {project.technologies?.length > 0 && (
+   {project.technologies?.length > 0 && (
          <div className="flex flex-wrap gap-1 mt-1">
            {project?.technologies.slice(0, 3).map((tech: Technology) => (
              <Badge key={tech.id}  variant="outline" className="text-xs ">
@@ -122,7 +103,7 @@ mh
              </Badge>
            )}
          </div>
-       )} */}
+       )}
 </div>
 
     {isLeader && member.role !== "leader" && (

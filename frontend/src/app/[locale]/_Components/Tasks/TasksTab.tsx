@@ -16,10 +16,10 @@ export default function TasksTab({
   isParticipant: boolean;
   currentUserEmail: string;
 }) {
-  console.log(project.methodology)
+  (project.methodology)
   return (
     <div className="space-y-4">
-      {/* <LabelsSection projectId={project.id} isParticipant={isParticipant} /> */}
+      <LabelsSection projectId={project.id} isParticipant={isParticipant} />
 
       {project.methodology === "kanban" && (
         <KanbanBoard

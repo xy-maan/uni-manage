@@ -6,7 +6,11 @@ import { Button } from '@/components/ui/button'
 import { Link } from '@/i18n/navigation';
 import { ArrowLeft, Badge } from 'lucide-react'
 import React from 'react'
+import { Metadata } from "next";
 
+ export const metadata: Metadata = {
+   title: "Projects",
+ };
 export default async function SingleProject({
   params,
 }: {
@@ -20,13 +24,13 @@ if(!ok){
 if (!payload) {
   return null;
 }
-const data=await GetMembershipsAction()
-if(!ok){
-  return 
-}
-if (!payload) {
-  return null;
-}
+// const data=await GetMembershipsAction()
+// if(!ok){
+//   return 
+// }
+// if (!payload) {
+//   return null;
+// }
   return (
     <div className='container mx-auto px-4 lg:px-8 py-8'>
 <div className="flex items-center justify-between mb-4">

@@ -15,7 +15,6 @@ export default function SemesterField({
           const [semesters, setsemesters] = useState<Semesters[]>([]);
            async function getSemester() {
     const { ok, payload } = await GetSemesterAction();
-    console.log(payload);
     
     if (ok)
      {  setsemesters(payload);}

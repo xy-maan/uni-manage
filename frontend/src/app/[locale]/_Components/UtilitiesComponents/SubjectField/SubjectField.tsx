@@ -16,10 +16,8 @@ export default function SubjectField({
           const [subject, setSubject] = useState<Category[]>([]);
            async function getSubject() {
     const { ok, payload } = await GetSubjectAction();
-    // console.log(payload)
     if (ok)
      {
-          console.log(payload)
       
       setSubject(payload);}
   }

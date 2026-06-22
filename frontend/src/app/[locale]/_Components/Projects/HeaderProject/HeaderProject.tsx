@@ -45,7 +45,7 @@ const [currentProject, setCurrentProject] = useState(project);
     (s: any) => s.supervisor_detail?.email === currentUserEmail
   );
 
-  console.log(project);
+  (project);
   return (
    <div className="mb-6">
 
@@ -134,7 +134,7 @@ const [currentProject, setCurrentProject] = useState(project);
           />
         )}
 </div>
- <Card className="p-0 ">
+ {/* <Card className="p-0 ">
     <CardContent className=" px-5 py-3 pb-6 flex gap-3 items-center">
     <span className="text-xs text-muted-foreground shrink-0">
      Overall Progress
@@ -150,7 +150,8 @@ const [currentProject, setCurrentProject] = useState(project);
                 </span>
                 <span className="text-xs text-muted-foreground shrink-0 hidden sm:block">3/11 tasks done</span>
     </CardContent>
-</Card>
+</Card> */}
+ {/* <ProjectProgress tasks={tasks} /> */}
 </div>
 
   )

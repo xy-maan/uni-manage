@@ -16,12 +16,9 @@ export default function DeleteMembershipBtn({membership_id,name,setMembers}:{mem
         const [open, setOpen] = useState(false);
           async function handleDeleteMember(){
             
-             console.log("Calling delete for:", membership_id); // ← تأكد إن الـ id صح
 
              setLoading(true);
                 const { payload, ok  } = await RemoveMemberAction(membership_id);
-                console.log(payload);
-                  console.log("Response:", { payload, ok }); // ← شوف الـ response
 
                 
                 if(ok){

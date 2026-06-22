@@ -14,7 +14,6 @@ export async function GetAllSupervisorAction(){
       },
     });
     const payload  = await res.json();
-console.log(payload);
 
       return {    payload,
     ok: res.ok}
