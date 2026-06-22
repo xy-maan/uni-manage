@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
 import Navbar from "./_Components/Navbar/Navbar";
+import { AIChatWidget } from "@/components/ai-assistant/AIChatWidget";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 import ParentProvider from "../Providers/ParentProvider";
@@ -58,6 +59,11 @@ export default async function LocaleLayout({
                         <Toaster />
 
                 {children}
+<<<<<<< HEAD
+=======
+                        <AIChatWidget />
+                        </NotificationCountProvider>
+>>>>>>> ed379c393fa1c453f2ea76573de13a1208ac8220
             </main>
 </ReactQueryProvider>
                         </NotificationCountProvider>

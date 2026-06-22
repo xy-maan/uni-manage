@@ -11,6 +11,7 @@ urlpatterns = [
     path('api/projects/', include('projects.urls')),
     path('api/tasks/', include('tasks.urls')),
     path('api/notifications/', include('notifications.urls')),
+    path('api/ai/', include('ai_assistant.urls')),
 ]
 
 if settings.DEBUG:

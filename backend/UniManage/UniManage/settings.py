@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'projects',
     'tasks',
     'notifications',
+    'ai_assistant',
 ]
 
 MIDDLEWARE = [
