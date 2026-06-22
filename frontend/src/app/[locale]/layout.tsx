@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
 import Navbar from "./_Components/Navbar/Navbar";
+import { AIChatWidget } from "@/components/ai-assistant/AIChatWidget";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 import ParentProvider from "../Providers/ParentProvider";
@@ -58,6 +59,7 @@ export default async function RootLayout({
                         <NotificationCountProvider>
 
                 {children}
+                        <AIChatWidget />
                         </NotificationCountProvider>
             </main>
 </ReactQueryProvider>
