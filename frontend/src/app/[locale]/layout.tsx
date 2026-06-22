@@ -59,11 +59,7 @@ export default async function LocaleLayout({
                         <Toaster />
 
                 {children}
-<<<<<<< HEAD
-=======
                         <AIChatWidget />
-                        </NotificationCountProvider>
->>>>>>> ed379c393fa1c453f2ea76573de13a1208ac8220
             </main>
 </ReactQueryProvider>
                         </NotificationCountProvider>
