@@ -30,9 +30,11 @@ const statusConfig: Record<string, { label: string; class: string }> = {
 export default function SupervisorProject({
   projectId,
   project,
+  role
 }: {
   projectId: number;
   project: any;
+  role:string
 }) {
   const { data: session } = useSession();
   const currentUserEmail = session?.user?.email;
@@ -81,7 +83,6 @@ export default function SupervisorProject({
   );
   const acceptedRequests = requests.filter((r) => r.status === "approved");
 
-  // ✅ Requests موجهة لليوزر الحالي (هو المطلوب يـ accept/reject)
   const myPendingRequests = requests.filter(
     (req: any) =>
       req.supervisor_detail?.email === currentUserEmail &&
@@ -91,7 +92,9 @@ export default function SupervisorProject({
   return (
     <div className="space-y-5">
 
-      {/* ✅ Section جديد - مخصص للـ requests الموجهة لليوزر الحالي */}
+{role=="student" &&
+
+<>
       {myPendingRequests.length > 0 && (
         <Card className="p-0 border-amber-300 bg-amber-50/50 dark:border-amber-900/40 dark:bg-amber-900/10">
           <CardHeader className="p-6 pb-3">
@@ -131,14 +134,17 @@ export default function SupervisorProject({
           </CardContent>
         </Card>
       )}
-
+</>
+    }
       <CurrentSupervisorsSection
         projectId={projectId}
         isLeader={isLeader}
         acceptedRequests={acceptedRequests}
+        role={role}
       />
+{role=="student"&&
 
-      {/* ===== Assigned Supervisors ===== */}
+
       <Card className="p-0">
         <CardHeader className="p-6 pb-3">
           <div className="flex items-center justify-between">
@@ -220,8 +226,10 @@ export default function SupervisorProject({
           )}
         </CardContent>
       </Card>
+}
 
-      {/* ===== All Supervisor Requests ===== */}
+{role=="student"&&
+
       <Card className="p-0">
         <CardHeader className="p-6 pb-3">
           <h3 className="text-sm">Supervisor Requests ({requests.length})</h3>
@@ -279,7 +287,6 @@ export default function SupervisorProject({
                       </div>
                     )}
 
-                    {/* ✅ شيلتها من هنا لأنها بقت في الـ section فوق - أو سيبها لو عايزة تتكرر */}
                     {isRequestedSupervisor && req.status === "pending" && (
                       <div className="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-border">
                         <AcceptSupervisorRequestBtn request_id={req.id} setRequests={setRequests} />
@@ -294,6 +301,8 @@ export default function SupervisorProject({
           )}
         </CardContent>
       </Card>
+
+}
     </div>
   );
 }

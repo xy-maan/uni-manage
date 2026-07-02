@@ -37,7 +37,14 @@ const role = pathname.split("/")[1];
 const isDashboard = role === "student" || role === "supervisor";
 const navItems = [
   { href: `/${role}/dashboard`, icon: LayoutDashboard, label: "Dashboard" },
-  { href: `/${role}/projects/create`, icon: FolderOpen, label: "Projects" },
+   {
+    href:
+      role === "supervisor"
+        ? `/${role}/projects`
+        : `/${role}/projects/create`,
+    icon: FolderOpen,
+    label: "Projects",
+  },
   { href: `/${role}/marketplace`, icon: Store, label: "Marketplace" },
   { href: `/${role}/community`, icon: MessageSquare, label: "Community" },
 ]

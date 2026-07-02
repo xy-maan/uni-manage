@@ -9,7 +9,8 @@ import { Bell, Search } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Field } from '@/components/ui/field';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
-export default function FilteringProjects({projects}:{projects:Project[]}) {
+import ProjectCardSupervisor from '../CommunityComponent/DashboardComponents/SupervisorDashboard/ProjectCardSupervisor';
+export default function FilteringProjects({projects,role}:{projects:Project[],role:string}) {
 const statuses = [
   { label: "All", value: "all" },
   { label: "Forming", value: "forming" },
@@ -51,11 +52,35 @@ const filteredProjects =
 ))}
             </div>
         </div>
-        {filteredProjects?.length > 0 && <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+        {/* {filteredProjects?.length > 0 && <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
           {filteredProjects?.map((project: Project) => (
             <CardProject key={project.id} project={project} />
           ))}
-        </div>}
+        </div>} */}
+{filteredProjects.length > 0 && (
+  <div
+    className={
+      role === "supervisor"
+        ? "space-y-4 mt-6"
+        : "grid md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6"
+    }
+  >
+    {filteredProjects.map((project) =>
+      role === "supervisor" ? (
+        <ProjectCardSupervisor
+          key={project.id}
+          project={project}
+          role={role}
+        />
+      ) : (
+        <CardProject
+          key={project.id}
+          project={project}
+        />
+      )
+    )}
+  </div>
+)}
     </div>
   )
 }

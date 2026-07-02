@@ -11,6 +11,13 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/in
 import FilteringProjects from '@/app/[locale]/_Components/Projects/FilteringProjects';
 import EditInvitationBtn from '@/app/[locale]/_Components/Btns/InvitiationsBtn/InvitationBtn';
 import { Metadata } from "next";
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { GetAllSupervisorRequestsAction } from '@/Actions/supervisor/supervisorRequests/getAllSupervisorRequests.action';
+import ProjectCardSupervisor from '@/app/[locale]/_Components/CommunityComponent/DashboardComponents/SupervisorDashboard/ProjectCardSupervisor';
+import CardsInfoDashboard from '@/app/[locale]/_Components/CommunityComponent/DashboardComponents/CardsInfoDashboard';
+import PendingSupervisorRequestsSection from '@/app/[locale]/_Components/PendingSupervisorRequestsSection';
+
  export const metadata: Metadata = {
    title: "Create Project",
  };
@@ -22,31 +29,55 @@ export default async function Projects({
   const { role } = await params;
   
 const {projects= []}=await GetAllProjectsAction()
+    const { payload: allProjects } = await GetAllProjectsAction();
+  const { payload: allRequests } = await GetAllSupervisorRequestsAction();
+  const session = await getServerSession(authOptions);
+  const currentUserEmail = session?.user?.email;
+const supervisedProjects = allProjects?.filter((p: any) =>
+  p.supervisors?.some((s: any) => s.supervisor_detail?.email === currentUserEmail)
+);
 
+  const pendingRequests = allRequests?.filter(
+    (r: any) =>
+      r.supervisor_detail?.email === currentUserEmail &&
+      r.status === "pending"
+  );
   return (
     <div className="container mx-auto px-4 lg:px-8 py-8 ">
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="">
-            <h1 className="">My Projects</h1>
+            <h1 className="">{role=="student"?"My Projects":"Supervised Projects"}</h1>
           <div className="text-sm text-muted-foreground mt-0.5">{projects.length} project</div>
           </div>
           <div className="flex gap-2">
             {role === "student" &&
-            
-            // <Button variant="outline">
-            //   <Bell className='size-4 mr-2'/>
-            //   Invitations
-            // <Badge variant={'outline'}>1</Badge>
-            // </Button>
             <EditInvitationBtn/>
             
 }
                 {role === "student" && <CreateTeamBtn role={role} />}
-            {/* <CreateTeamBtn role={role}/> */}
           </div>
         </div>
-        <FilteringProjects projects={projects}/>
+     {/* <FilteringProjects projects={projects}/> */}
+<FilteringProjects
+  projects={role === "supervisor" ? supervisedProjects ?? [] : projects}
+  role={role}
+/>
+{role == "supervisor" && (
+  <>
+    <CardsInfoDashboard variant="projects" />
+
+    <PendingSupervisorRequestsSection
+      initialRequests={pendingRequests ?? []}
+    />
+
+    {/* <FilteringProjects
+      projects={supervisedProjects ?? []}
+      role={role}
+    /> */}
+  </>
+)}
+   
       </div>
     </div>
   )

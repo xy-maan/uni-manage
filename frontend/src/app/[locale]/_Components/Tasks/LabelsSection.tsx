@@ -35,7 +35,7 @@ export default function LabelsSection({
     loadLabels();
   }, [projectId]);
 
-  if (loading) return <Loading/>;
+  // if (loading) return <Loading/>;
 
   return (
     <Card className="p-0 mb-5">

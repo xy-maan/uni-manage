@@ -54,6 +54,7 @@ const steps = [
 export default function CreateTeamBtn({role}:{role:string}) {
  const router=useRouter()
      const [step, setStep] = useState(1);
+     const [open, setOpen] = useState(false);
      const [selectedProjectType, setSelectedProjectType] =  useState<
          "course" | "graduation" | null
        >(null);
@@ -85,10 +86,15 @@ export default function CreateTeamBtn({role}:{role:string}) {
            ...data,
            
          };
-       ( postData); 
-       
+        console.log("SUBMIT");
+  console.log(data);
     const { payload, ok  } = await createProjectAction(postData);
          if(ok){
+            formObj.reset();            
+  setStep(1);                    
+  setSelectedProjectType(null);  
+  setSelectedMethType(null);     
+  setOpen(false);               
  router.push(`/${role}/projects`)
          }
   
@@ -102,9 +108,6 @@ export default function CreateTeamBtn({role}:{role:string}) {
      else
          {toast.success(payload?.status,{position:"top-center",duration:2000})}
        }
-       function onContinue() {
-     setStep(step + 1);
-   }
    function handleBack() {
        if (step === 1) {
      router.push(`/${role}/projects`);
@@ -113,7 +116,7 @@ export default function CreateTeamBtn({role}:{role:string}) {
    }
    }
   return (
-    <Dialog>
+    <Dialog  open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button className="py-0 h-10 px-6">
         <Plus className="size-5"/>
@@ -189,7 +192,7 @@ export default function CreateTeamBtn({role}:{role:string}) {
 </div>
       <div className="w-full">
        <Form {...formObj}>
-                <form onSubmit={handleSubmit(handleCreateTeam)} className="">
+                <form onSubmit={handleSubmit(handleCreateTeam)}  className="">
 
       {step == 1 && (
                           <ProjectType
@@ -213,13 +216,15 @@ export default function CreateTeamBtn({role}:{role:string}) {
 
                       <div className="flex justify-end pt-4 mt-6 gap-3 ">
 
- {step < 4 ? (
-    <Button type="button" onClick={() => setStep(step + 1)}>
-      Continue
-    </Button>
-  ) : (
+ {step == 4 && (
     <Button type="submit">
       Create Project
+    </Button>
+  ) }
+   {step < 4 &&
+   (
+    <Button type="button" onClick={(e) =>{  setStep(step + 1)}}>
+      Continue
     </Button>
   )}
       <Button

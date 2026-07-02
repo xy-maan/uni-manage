@@ -14,10 +14,12 @@ export default function CurrentSupervisorsSection({
   projectId,
   isLeader,
   acceptedRequests,
+  role
 }: {
   projectId: number;
   isLeader: boolean;
-  acceptedRequests: any[]; // الـ requests اللي status === "accepted" عشان تعرض زرار الـ create
+  acceptedRequests: any[]; 
+  role:string
 }) {
   const [supervisors, setSupervisors] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,7 +41,6 @@ export default function CurrentSupervisorsSection({
 
   if (loading) return <Loading />;
 
-  // ✅ الـ accepted requests اللي مش عندها supervisor record لسه
   const pendingConfirmation = acceptedRequests.filter(
     (req) => !supervisors.some((s) => s.supervisor === req.supervisor && s.role === req.role)
   );
@@ -51,7 +52,7 @@ export default function CurrentSupervisorsSection({
       </CardHeader>
       <CardContent className="px-6 pb-6 space-y-3">
 
-        {isLeader && pendingConfirmation.length > 0 && (
+        {isLeader && role=="student" && pendingConfirmation.length > 0 && (
           <div className="space-y-2 pb-3 border-b border-border">
             <p className="text-xs text-muted-foreground">Awaiting confirmation:</p>
             {pendingConfirmation.map((req) => (
@@ -87,7 +88,7 @@ export default function CurrentSupervisorsSection({
               <p className="text-xs text-muted-foreground">{sup.supervisor_detail?.email}</p>
             </div>
             <Badge className="capitalize text-xs">{sup.role}</Badge>
-            {isLeader && (
+            {isLeader && role=="student" && (
               <div className="flex items-center gap-1">
                 <EditSupervisorBtn supervisor_id={sup.id} currentRole={sup.role} setSupervisors={setSupervisors} />
                 <DeleteSupervisorBtn supervisor_id={sup.id} name={sup.supervisor_detail?.full_name} setSupervisors={setSupervisors} />

@@ -20,19 +20,22 @@ import { GetJoinRequestsAction } from '@/Actions/joinRequests/getJoinRequests.ac
 import { JoinRequest } from '@/types/JoinRequests'
 import AcceptJoinRequestBtn from '../Btns/AcceptJoinRequestBtn/AcceptJoinRequestBtn'
 import RejectJoinRequestBtn from '../Btns/RejectJoinRequestBtn/RejectJoinRequestBtn'
+import { useSession } from "next-auth/react";
 
-export default function TeamProject({project:initialProject}:{project:Project}) {
+export default function TeamProject({project:initialProject,role}:{project:Project,role:string}) {
   const [project, setProject] = useState(initialProject);
   // (project);
-  
-// const [members, setMembers] = useState<Memberships[]>([]);
-  const [members, setMembers] = useState<Memberships[]>(initialProject.memberships);
+    const [members, setMembers] = useState<Memberships[]>(initialProject.memberships);
   const [invitations, setInvitations] = useState<Invitation[]>([]);
   const [requestsJoin, setRequestsJoin] = useState<JoinRequest[]>([]);
+  const { data: session } = useSession();
+    const currentUserEmail = session?.user?.email;
 
-const isLeader = project?.memberships?.some(
-  (m: any) => m.role === "leader"
-);
+  const myMembership = project.memberships.find(
+    (m: any) => m.user_detail?.email === currentUserEmail
+  );
+
+  const isLeader = myMembership?.role === "leader";
 
  function formatDueDate(dateString: string): string {
   const date = new Date(dateString);
@@ -63,8 +66,8 @@ async function getAllRequestsJoin(){
 
       <Card className="p-0 mb-5">
   <CardHeader className='p-6 pb-3 flex items-center justify-between '>
-    <h4 className="text-sm">{project.memberships.length}/{project.max_members} members)</h4>
-    {isLeader&&
+    <h4 className="text-sm">( {project.memberships.length}/{project.max_members} members )</h4>
+    {role=="student" && isLeader&&
     <InviteTeamBtn
     className="w-fit"
     projectId={project.id}
@@ -106,7 +109,7 @@ mh
        )}
 </div>
 
-    {isLeader && member.role !== "leader" && (
+    {role=="student" && isLeader && member.role !== "leader" && (
       <div className="flex items-center gap-1.5">
 <DeleteMembershipBtn membership_id={member.id}  name={member.user_detail.full_name??""} setMembers={setMembers}/>
 
@@ -124,6 +127,9 @@ mh
     </CardContent>
 </Card>
 {/* invitations */}
+{role=="student" &&
+
+
 <Card className="p-0 mb-5">
   <CardHeader className="p-6 pb-3">
     <h4 className="text-sm">
@@ -193,48 +199,9 @@ mh
     )}
   </CardContent>
 </Card>
+}
+{role=="student" && 
 
-      {/* <Card className="p-0 ">
-  <CardHeader className='p-6 pb-3'>
-    <h4 className="text-sm">Join Requests (2)</h4>
-  </CardHeader>
-    <CardContent className="px-6 pb-6">
-<div className="p-3 rounded-lg border mb-3">
-  <div className="flex items-start gap-3">
-<div className="relative flex overflow-hidden rounded-full size-9 shrink-0">
-<span className="bg-muted flex size-full items-center justify-center rounded-full text-xs">Mh</span>
-</div>
-<div className="flex-1">
-
-  <div className="flex items-center justify-between">
-    <p className="text-sm font-medium">Abdelrahman Sayed</p>
-    <p className="text-xs text-muted-foreground">1 day ago</p>
-  </div>
-  <div className="flex flex-wrap gap-1 my-1">
-    <Badge variant={'outline'}>Vue.js</Badge>
-
-  </div>
-  <p className="text-xs text-muted-foreground italic">"I have 2+ years of full-stack experience and would love to contribute to this AI project."</p>
-
-</div>
- </div>
-<div className="flex gap-2 mt-3">
-  <Button className="flex-1 py-0 gap-1.5">
-
-    <Check className="mr-1 size-4"/>
-     Accept
-  </Button>
-   <Button variant="outline" className="flex-1 py-0 gap-1.5">
-
-    <X className="mr-1 size-4"/>
-     Accept
-  </Button>
-</div>
- 
-
-</div>
-    </CardContent>
-</Card> */}
 <Card className="p-0">
   <CardHeader className="p-6 pb-3">
     <h4 className="text-sm">
@@ -322,6 +289,7 @@ mh
     )}
   </CardContent>
 </Card>
+}
     </div>
   )
 }

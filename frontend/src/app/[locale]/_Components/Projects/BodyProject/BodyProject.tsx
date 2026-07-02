@@ -63,16 +63,22 @@ className="w-full space-y-6" onValueChange={handleTabChange}>
     <TabsTrigger value="deliverables"  className='transition-all border'>Deliverables</TabsTrigger>
     <TabsTrigger value="meetings"  className='transition-all border'>Meetings</TabsTrigger>
     <TabsTrigger value="feedback"  className='transition-all border'>Feedback</TabsTrigger>
+    {/* {role=="student"&& */}
+    
     <TabsTrigger value="supervision"  className='transition-all border'>Supervision</TabsTrigger>
+    {/* } */}
   </TabsList>
 
   <TabsContent value="overview" ><OverviewProject project={project} role={role}/></TabsContent>
-  <TabsContent value="team" className='space-y-5'><TeamProject project={project}/></TabsContent>
+  <TabsContent value="team" className='space-y-5'><TeamProject role={role} project={project}/></TabsContent>
   <TabsContent value="tasks"><TasksTab project={project} isParticipant={isParticipant} members={project.memberships} currentUserEmail={currentUserEmail!}/></TabsContent>
   <TabsContent value="deliverables"><DeliverablesSection isSupervisor={isSupervisor} projectId={project.id} isParticipant={isParticipant}  isMember={isMember} /></TabsContent>
   <TabsContent value="meetings"><MeetingsSection projectId={project.id} isParticipant={isParticipant}  members={project.memberships}/></TabsContent>
   <TabsContent value="feedback"><FeedBackTab projectId={project.id} isSupervisor={isSupervisor} currentUserEmail={currentUserEmail!}/></TabsContent>
-  <TabsContent value="supervision"><SupervisorProject projectId={project.id}  project={project}/></TabsContent>
+     {/* {role=="student"&& */}
+
+  <TabsContent value="supervision"><SupervisorProject projectId={project.id} role={role}  project={project}/></TabsContent>
+{/* } */}
 </Tabs>
   )
 }
