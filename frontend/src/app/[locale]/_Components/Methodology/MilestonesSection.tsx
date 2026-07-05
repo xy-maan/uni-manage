@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import CompleteMilestoneBtn from "./Btns/Milestone/CompleteMilestoneBtn";
 import DeleteMilestoneBtn from "./Btns/Milestone/DeleteMilestoneBtn";
+import { GetMilestonesAction } from "@/Actions/methodology/Milestones/GetMilestones.action";
+import CreateMilestoneBtn from "./Btns/Milestone/CreateMilestoneBtn";
 
 
 const statusConfig: Record<string, { label: string; class: string }> = {

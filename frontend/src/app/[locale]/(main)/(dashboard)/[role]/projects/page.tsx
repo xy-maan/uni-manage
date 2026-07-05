@@ -42,13 +42,14 @@ const supervisedProjects = allProjects?.filter((p: any) =>
       r.supervisor_detail?.email === currentUserEmail &&
       r.status === "pending"
   );
+    const displayedProjects = role === "supervisor" ? supervisedProjects : allProjects ?? [];
   return (
     <div className="container mx-auto px-4 lg:px-8 py-8 ">
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="">
             <h1 className="">{role=="student"?"My Projects":"Supervised Projects"}</h1>
-          <div className="text-sm text-muted-foreground mt-0.5">{projects.length} project</div>
+          <div className="text-sm text-muted-foreground mt-0.5">{displayedProjects?.length} project</div>
           </div>
           <div className="flex gap-2">
             {role === "student" &&

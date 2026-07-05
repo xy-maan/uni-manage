@@ -124,13 +124,13 @@ export default function MethodologyType({formObj,setSelectedMethType,selectedMet
         <p className="text-sm text-muted-foreground">How will your team organize work?</p>
 
 
-<Card className={`${selectedMethType=="sprint"?"border-primary bg-primary/5 ":""} cursor-pointer transition-all hover:border-primary/60  p-0`}  onClick={() => {
+<Card className={`relative ${selectedMethType=="sprint"?"border-primary bg-primary/5 ":""} cursor-pointer transition-all hover:border-primary/60  p-0`}  onClick={() => {
   setSelectedMethType("sprint");
   formObj.setValue("methodology", "sprint");
 }} >
 
     <CardContent className='p-4  pb-6'>
-              <div className="flex items-start gap-3">
+              <div className="flex items-start gap-3 ">
 
                   <div className={`p-2 rounded-lg shrink-0  ${selectedMethType=="sprint"?"bg-primary text-primary-foreground":"bg-muted"}`}>
 
@@ -148,7 +148,7 @@ export default function MethodologyType({formObj,setSelectedMethType,selectedMet
 </Card>
 
 
-<Card className={`${selectedMethType=="milestone"?"border-primary bg-primary/5 ":""} cursor-pointer transition-all hover:border-primary/60  p-0`}  onClick={() => {
+<Card className={`relative ${selectedMethType=="milestone"?"border-primary bg-primary/5 ":""} cursor-pointer transition-all hover:border-primary/60  p-0`}  onClick={() => {
   setSelectedMethType("milestone");
   formObj.setValue("methodology", "milestone");
 }} >
@@ -172,7 +172,7 @@ export default function MethodologyType({formObj,setSelectedMethType,selectedMet
 </Card>
 
     
-<Card className={`${selectedMethType=="kanban"?"border-primary bg-primary/5 ":""} cursor-pointer transition-all hover:border-primary/60  p-0`}  onClick={() => {
+<Card className={`relative ${selectedMethType=="kanban"?"border-primary bg-primary/5 ":""} cursor-pointer transition-all hover:border-primary/60  p-0`}  onClick={() => {
   setSelectedMethType("kanban");
   formObj.setValue("methodology", "kanban");
 }} >

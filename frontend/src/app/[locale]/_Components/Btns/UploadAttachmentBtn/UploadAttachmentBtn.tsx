@@ -39,8 +39,8 @@ export default function UploadAttachmentBtn({
 
   return (
     <>
-      <input ref={inputRef} type="file" hidden onChange={handleFileChange} />
-      <Button size="sm" variant="outline" className="gap-1.5" onClick={() => inputRef.current?.click()} disabled={loading}>
+      <input ref={inputRef} type="file" hidden onChange={handleFileChange}  className="w-full"/>
+      <Button size="sm" variant="outline" className="gap-1.5 " onClick={() => inputRef.current?.click()} disabled={loading}>
         <Paperclip className="size-3.5" />
         {loading ? "Uploading..." : "Attach File"}
       </Button>

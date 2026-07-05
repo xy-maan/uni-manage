@@ -160,7 +160,7 @@ export default function KanbanBoard({
     onClose={() => setSelectedTask(null)}
     task={selectedTask}
     members={members}
-    projectId={projectId}  // ✅ ضيف دي
+    projectId={projectId} 
     isParticipant={isParticipant}
     currentUserEmail={currentUserEmail}
     setTasks={setTasks}

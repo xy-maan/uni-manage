@@ -78,7 +78,7 @@ export default function AttachmentsSection({
       {isParticipant && (
         <>
           <input ref={inputRef} type="file" hidden onChange={handleFileChange} />
-          <Button size="sm" variant="outline" className="gap-1.5" onClick={() => inputRef.current?.click()} disabled={uploading}>
+          <Button size="sm" variant="outline" className="gap-1.5 " onClick={() => inputRef.current?.click()} disabled={uploading}>
             <Paperclip className="size-3.5" />
             {uploading ? "Uploading..." : "Attach File"}
           </Button>

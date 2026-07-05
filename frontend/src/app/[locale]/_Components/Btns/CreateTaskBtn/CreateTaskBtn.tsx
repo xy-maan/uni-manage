@@ -347,7 +347,12 @@ export default function CreateTaskBtn({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Due Date</FormLabel>
-                    <FormControl><Input type="date" {...field} /></FormControl>
+                    <FormControl>   <Input
+          type="date"
+          value={field.value ?? ""} 
+          onChange={field.onChange}
+          onBlur={field.onBlur}
+        /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
